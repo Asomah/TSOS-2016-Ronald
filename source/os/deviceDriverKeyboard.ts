@@ -1,5 +1,6 @@
 ///<reference path="../globals.ts" />
 ///<reference path="deviceDriver.ts" />
+///<reference path="queue.ts" />
 
 /* ----------------------------------
    DeviceDriverKeyboard.ts
@@ -37,6 +38,8 @@ module TSOS {
             var isShifted = params[1];
             _Kernel.krnTrace("Key code:" + keyCode + " shifted:" + isShifted);
             var chr = "";
+            var length = _KernelInputQueue.getSize();
+            var tempQueue = new Queue;
             // Check to see if we even want to deal with the key that was pressed.
             if (((keyCode >= 65) && (keyCode <= 90)) ||   // A..Z
                 ((keyCode >= 97) && (keyCode <= 123))) {  // a..z {
@@ -54,6 +57,21 @@ module TSOS {
                         (keyCode == 13)) {                       // enter
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
+            }
+            else if (keyCode == 8){
+                 if (length == 1){
+                     _KernelInputQueue.dequeue(chr);   
+                    }
+                else if (length > 1){
+                 for (var i=0; i < length; i++ ){
+                      tempQueue.enqueue(chr.charAt(i));
+                     _KernelInputQueue.dequeue(chr.charAt(i));
+                  }
+                  _KernelInputQueue = tempQueue;
+                }
+                else {
+                    //Do Nothing 
+                } 
             }
         }
     }

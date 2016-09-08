@@ -1,7 +1,7 @@
 /* ----------------- *
  * CanvasText.ts   *
  *
- * Downloaded from http://www.federated.com/~jim/canvastext.
+ * Downloaded from http://www.federated.com/~jim/canvastext/canvastext.js
  *
  * This code is released to the public domain by Jim Studt, 2007.
  * He may keep some sort of up to date copy at http://www.federated.com/~jim/canvastext/

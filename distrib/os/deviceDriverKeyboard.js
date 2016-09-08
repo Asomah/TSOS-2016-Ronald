@@ -1,10 +1,10 @@
 ///<reference path="../globals.ts" />
 ///<reference path="deviceDriver.ts" />
+///<reference path="queue.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 /* ----------------------------------
    DeviceDriverKeyboard.ts
@@ -20,7 +20,12 @@ var TSOS;
         __extends(DeviceDriverKeyboard, _super);
         function DeviceDriverKeyboard() {
             // Override the base method pointers.
-            _super.call(this, this.krnKbdDriverEntry, this.krnKbdDispatchKeyPress);
+            // The code below cannot run because "this" can only be
+            // accessed after calling super.
+            //super(this.krnKbdDriverEntry, this.krnKbdDispatchKeyPress);
+            _super.call(this);
+            this.driverEntry = this.krnKbdDriverEntry;
+            this.isr = this.krnKbdDispatchKeyPress;
         }
         DeviceDriverKeyboard.prototype.krnKbdDriverEntry = function () {
             // Initialization routine for this, the kernel-mode Keyboard Device Driver.
@@ -33,6 +38,8 @@ var TSOS;
             var isShifted = params[1];
             _Kernel.krnTrace("Key code:" + keyCode + " shifted:" + isShifted);
             var chr = "";
+            var length = _KernelInputQueue.getSize();
+            var tempQueue = new TSOS.Queue;
             // Check to see if we even want to deal with the key that was pressed.
             if (((keyCode >= 65) && (keyCode <= 90)) ||
                 ((keyCode >= 97) && (keyCode <= 123))) {
@@ -52,8 +59,22 @@ var TSOS;
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
             }
+            else if (keyCode == 8) {
+                if (length == 1) {
+                    _KernelInputQueue.dequeue(chr);
+                }
+                else if (length > 1) {
+                    for (var i = 0; i < length; i++) {
+                        tempQueue.enqueue(chr);
+                        _KernelInputQueue.dequeue(chr);
+                    }
+                    _KernelInputQueue = tempQueue;
+                }
+                else {
+                }
+            }
         };
         return DeviceDriverKeyboard;
-    })(TSOS.DeviceDriver);
+    }(TSOS.DeviceDriver));
     TSOS.DeviceDriverKeyboard = DeviceDriverKeyboard;
 })(TSOS || (TSOS = {}));

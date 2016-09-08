@@ -80,19 +80,19 @@ module TSOS {
             this.commandList[this.commandList.length] = sc;
 
             // date
-            sc = new ShellCommand(this.shellPrompt,
+            sc = new ShellCommand(this.shellDate,
                                   "date",
                                   "Displays current date and time.");
             this.commandList[this.commandList.length] = sc;
 
             // whereami
-            sc = new ShellCommand(this.shellPrompt,
+            sc = new ShellCommand(this.shellWhereAmI,
                                   "whereami",
                                   "Displays the users current location.");
             this.commandList[this.commandList.length] = sc;
 
             // restart
-            sc = new ShellCommand(this.shellPrompt,
+            sc = new ShellCommand(this.shellRestart,
                                   "restart",
                                   "Restarts the OS");
             this.commandList[this.commandList.length] = sc;
@@ -335,6 +335,24 @@ module TSOS {
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        }
+
+    public shellDate(args) {
+         var date = new Date().toDateString();        
+         _StdOut.putText(date);
+            
+        }
+   public shellWhereAmI(args) {    
+            _StdOut.putText("MARS!!! There is no place for you on earth");
+            
+        }
+
+    public shellRestart(args) {
+            
+          _StdOut.putText("Restarting System...");
+          //_Kernel.krnShutdown(); Shut system down and load again
+          
+
         }
 
     }

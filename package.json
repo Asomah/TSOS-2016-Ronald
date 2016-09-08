@@ -1,0 +1,20 @@
+{
+  "name": "TSOS-2016-Ronald",
+  "version": "1.0.0",
+  "description": "Browser-based Operating System in TypeScript\r ============================================",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Asomah/TSOS-2016-Ronald.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Asomah/TSOS-2016-Ronald/issues"
+  },
+  "homepage": "https://github.com/Asomah/TSOS-2016-Ronald#readme"
+}
