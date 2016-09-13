@@ -50,6 +50,7 @@ var TSOS;
                     this.buffer = "";
                 }
                 else if (chr === String.fromCharCode(8)) {
+                    this.deleteText();
                 }
                 else {
                     // This is a "normal" character, so ...
@@ -78,31 +79,16 @@ var TSOS;
             }
         };
         Console.prototype.deleteText = function () {
-            // Delete the text at the current X and Y coordinates.
-            _KernelInputQueue.dequeue(); // dequeue inserted backspace 
-            var delChar = _KernelInputQueue.dequeue();
-            var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, delChar);
-            var width = offset.width;
-            var height = offset.height;
-            _DrawingContext.clearRect(0, this.currentYPosition - this.currentFontSize, _Canvas.width, this.currentFontSize + 5);
-            this.currentXPosition = this.currentXPosition - offset;
-            this.buffer = this.buffer.trim();
-            this.buffer = this.buffer.substring(delChar, this.buffer.length - 1);
-        };
-        /* public backspace(): void {
-            var newBuffer;
-            var currBuffer = this.buffer.split('');
-            
-            for(var i = 0; i < currBuffer.length - 1; i++){
-                newBuffer = newBuffer + currBuffer[i];
+            // Make a new buffer
+            var newBuffer = "";
+            var tempBuffer = this.buffer.split('');
+            for (var i = 0; i < tempBuffer.length - 1; i++) {
+                newBuffer = newBuffer + tempBuffer[i];
             }
             this.buffer = newBuffer;
-
-            _KernelInputQueue.dequeue();
-            _KernelInputQueue.dequeue();
             this.clearLine();
-            this.putText(">" + newBuffer);
-        }*/
+            this.putText(">" + this.buffer);
+        };
         Console.prototype.advanceLine = function () {
             this.currentXPosition = 0;
             /*
