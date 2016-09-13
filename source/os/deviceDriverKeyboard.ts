@@ -54,25 +54,23 @@ module TSOS {
                 _KernelInputQueue.enqueue(chr);
             } else if (((keyCode >= 48) && (keyCode <= 57)) ||   // digits
                         (keyCode == 32)                     ||   // space
-                        (keyCode == 13)) {                       // enter
+                        (keyCode == 13)                     ||   // backspace
+                        (keyCode == 08)) {                       // enter
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
             }
-            else if (keyCode == 8){
+           /* else if (keyCode == 8){
                  if (length == 1){
-                     _KernelInputQueue.dequeue(chr);   
+                     _KernelInputQueue.dequeue();   
                     }
                 else if (length > 1){
                  for (var i=0; i < length; i++ ){
                       tempQueue.enqueue(chr.charAt(i));
-                     _KernelInputQueue.dequeue(chr.charAt(i));
+                     _KernelInputQueue.dequeue();
                   }
                   _KernelInputQueue = tempQueue;
                 }
-                else {
-                    //Do Nothing 
-                } 
-            }
+            }*/
         }
     }
 }

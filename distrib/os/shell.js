@@ -55,8 +55,8 @@ var TSOS;
             // whereami
             sc = new TSOS.ShellCommand(this.shellWhereAmI, "whereami", "Displays the users current location.");
             this.commandList[this.commandList.length] = sc;
-            // restart
-            sc = new TSOS.ShellCommand(this.shellRestart, "restart", "Restarts the OS");
+            // time
+            sc = new TSOS.ShellCommand(this.shellTime, "time", "Time of current location");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -231,8 +231,8 @@ var TSOS;
                     case "whereami":
                         _StdOut.putText("Whereami displays the current location of user.");
                         break;
-                    case "restart":
-                        _StdOut.putText("Restart reboots the OS.");
+                    case "time":
+                        _StdOut.putText("Dispay current time to OS.");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
@@ -292,9 +292,9 @@ var TSOS;
         Shell.prototype.shellWhereAmI = function (args) {
             _StdOut.putText("MARS!!! There is no place for you on earth");
         };
-        Shell.prototype.shellRestart = function (args) {
-            _StdOut.putText("Restarting System...");
-            //_Kernel.krnShutdown(); Shut system down and load again
+        Shell.prototype.shellTime = function (args) {
+            var time = new Date().toLocaleTimeString();
+            _StdOut.putText(time);
         };
         return Shell;
     }());

@@ -1,5 +1,6 @@
 ///<reference path="../globals.ts" />
 ///<reference path="queue.ts" />
+///<reference path="../host/control.ts" />
 /* ------------
      Kernel.ts
 

@@ -29,6 +29,10 @@ var TSOS;
         Console.prototype.clearScreen = function () {
             _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);
         };
+        Console.prototype.clearLine = function () {
+            _DrawingContext.clearRect(0, this.currentYPosition - this.currentFontSize, _Canvas.width, this.currentFontSize + 5);
+            this.currentXPosition = 0;
+        };
         Console.prototype.resetXY = function () {
             this.currentXPosition = 0;
             this.currentYPosition = this.currentFontSize;
@@ -44,6 +48,8 @@ var TSOS;
                     _OsShell.handleInput(this.buffer);
                     // ... and reset our buffer.
                     this.buffer = "";
+                }
+                else if (chr === String.fromCharCode(8)) {
                 }
                 else {
                     // This is a "normal" character, so ...
@@ -71,6 +77,32 @@ var TSOS;
                 this.currentXPosition = this.currentXPosition + offset;
             }
         };
+        Console.prototype.deleteText = function () {
+            // Delete the text at the current X and Y coordinates.
+            _KernelInputQueue.dequeue(); // dequeue inserted backspace 
+            var delChar = _KernelInputQueue.dequeue();
+            var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, delChar);
+            var width = offset.width;
+            var height = offset.height;
+            _DrawingContext.clearRect(0, this.currentYPosition - this.currentFontSize, _Canvas.width, this.currentFontSize + 5);
+            this.currentXPosition = this.currentXPosition - offset;
+            this.buffer = this.buffer.trim();
+            this.buffer = this.buffer.substring(delChar, this.buffer.length - 1);
+        };
+        /* public backspace(): void {
+            var newBuffer;
+            var currBuffer = this.buffer.split('');
+            
+            for(var i = 0; i < currBuffer.length - 1; i++){
+                newBuffer = newBuffer + currBuffer[i];
+            }
+            this.buffer = newBuffer;
+
+            _KernelInputQueue.dequeue();
+            _KernelInputQueue.dequeue();
+            this.clearLine();
+            this.putText(">" + newBuffer);
+        }*/
         Console.prototype.advanceLine = function () {
             this.currentXPosition = 0;
             /*

@@ -91,10 +91,10 @@ module TSOS {
                                   "Displays the users current location.");
             this.commandList[this.commandList.length] = sc;
 
-            // restart
-            sc = new ShellCommand(this.shellRestart,
-                                  "restart",
-                                  "Restarts the OS");
+            // time
+            sc = new ShellCommand(this.shellTime,
+                                  "time",
+                                  "Time of current location");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -283,8 +283,8 @@ module TSOS {
                         _StdOut.putText("Whereami displays the current location of user.");
                         break;
 
-                    case "restart":
-                        _StdOut.putText("Restart reboots the OS.");
+                    case "time":
+                        _StdOut.putText("Dispay current time to OS.");
                         break;
                     
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
@@ -347,10 +347,10 @@ module TSOS {
             
         }
 
-    public shellRestart(args) {
+    public shellTime(args) {
             
-          _StdOut.putText("Restarting System...");
-          //_Kernel.krnShutdown(); Shut system down and load again
+          var time = new Date().toLocaleTimeString();    
+         _StdOut.putText(time);
           
 
         }

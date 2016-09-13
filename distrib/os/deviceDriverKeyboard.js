@@ -55,24 +55,23 @@ var TSOS;
             }
             else if (((keyCode >= 48) && (keyCode <= 57)) ||
                 (keyCode == 32) ||
-                (keyCode == 13)) {
+                (keyCode == 13) ||
+                (keyCode == 08)) {
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
             }
-            else if (keyCode == 8) {
-                if (length == 1) {
-                    _KernelInputQueue.dequeue(chr);
-                }
-                else if (length > 1) {
-                    for (var i = 0; i < length; i++) {
-                        tempQueue.enqueue(chr);
-                        _KernelInputQueue.dequeue(chr);
-                    }
-                    _KernelInputQueue = tempQueue;
-                }
-                else {
-                }
-            }
+            /* else if (keyCode == 8){
+                  if (length == 1){
+                      _KernelInputQueue.dequeue();
+                     }
+                 else if (length > 1){
+                  for (var i=0; i < length; i++ ){
+                       tempQueue.enqueue(chr.charAt(i));
+                      _KernelInputQueue.dequeue();
+                   }
+                   _KernelInputQueue = tempQueue;
+                 }
+             }*/
         };
         return DeviceDriverKeyboard;
     }(TSOS.DeviceDriver));
