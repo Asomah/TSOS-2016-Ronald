@@ -127,22 +127,33 @@ var TSOS;
             this.putText(">" + this.buffer);
         };
         Console.prototype.upArrow = function () {
+            //var length = this.history.length;
             if (this.indexCmd >= 0) {
                 this.buffer = this.history[this.indexCmd];
                 this.clearLine();
                 this.putText(">" + this.buffer);
-                this.indexCmd = this.indexCmd - 1;
+                if (this.indexCmd > 0) {
+                    this.indexCmd = this.indexCmd - 1;
+                }
             }
         };
         Console.prototype.downArrow = function () {
-            if (this.indexCmd >= -1) {
+            if (this.indexCmd < this.history.length && this.history.length != 0) {
                 this.buffer = this.history[this.indexCmd];
                 this.clearLine();
                 this.putText(">" + this.buffer);
-                this.indexCmd = this.indexCmd + 1;
+                if (this.indexCmd < this.history.length - 1) {
+                    this.indexCmd = this.indexCmd + 1;
+                }
             }
         };
         Console.prototype.scroll = function () {
+            if (this.currentYPosition > _Canvas.height) {
+                var newCanvas = _DrawingContext.getImageData(0, _DefaultFontSize + 8, _Canvas.width, _Canvas.height);
+                this.clearScreen();
+                _DrawingContext.putImageData(newCanvas, 0, 0);
+                this.currentYPosition = _Canvas.height - _DefaultFontSize;
+            }
         };
         Console.prototype.advanceLine = function () {
             this.currentXPosition = 0;
@@ -155,6 +166,7 @@ var TSOS;
                 _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
                 _FontHeightMargin;
             // TODO: Handle scrolling. (iProject 1)
+            this.scroll();
         };
         return Console;
     }());

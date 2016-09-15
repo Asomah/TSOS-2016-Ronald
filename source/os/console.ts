@@ -142,29 +142,39 @@ module TSOS {
         }
 
          public upArrow(): void {
+            //var length = this.history.length;
             if (this.indexCmd >= 0){
                 this.buffer = this.history[this.indexCmd];
+                
                 this.clearLine();
                 this.putText(">" + this.buffer);
-                this.indexCmd = this.indexCmd - 1;    
+                if (this.indexCmd > 0){
+                this.indexCmd = this.indexCmd - 1;  
+                }  
              }
         }
 
        public downArrow(): void {
             
-            if (this.indexCmd >=-1){
+            if (this.indexCmd <this.history.length && this.history.length != 0){
                 this.buffer = this.history[this.indexCmd];
                 this.clearLine();
                 this.putText(">" + this.buffer);
-                this.indexCmd = this.indexCmd + 1;    
+                if (this.indexCmd < this.history.length-1){
+                this.indexCmd = this.indexCmd + 1;  
+                }      
                 
              }
 
         }
  
        public scroll():void{
-
-           
+           if (this.currentYPosition > _Canvas.height) {
+               var newCanvas = _DrawingContext.getImageData(0, _DefaultFontSize + 8, _Canvas.width, _Canvas.height);
+               this.clearScreen();
+               _DrawingContext.putImageData(newCanvas, 0, 0);
+               this.currentYPosition = _Canvas.height - _DefaultFontSize;
+           }
 
        }
 
@@ -180,7 +190,7 @@ module TSOS {
                                      _FontHeightMargin;
 
             // TODO: Handle scrolling. (iProject 1)
-            
+            this.scroll();
         }
     }
  }
