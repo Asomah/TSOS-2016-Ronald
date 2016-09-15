@@ -10,17 +10,26 @@
 var TSOS;
 (function (TSOS) {
     var Console = (function () {
-        function Console(currentFont, currentFontSize, currentXPosition, currentYPosition, buffer) {
+        function Console(currentFont, currentFontSize, currentXPosition, indexCmd, currentYPosition, buffer, prevStr, history, arrayOfCommands) {
             if (currentFont === void 0) { currentFont = _DefaultFontFamily; }
             if (currentFontSize === void 0) { currentFontSize = _DefaultFontSize; }
             if (currentXPosition === void 0) { currentXPosition = 0; }
+            if (indexCmd === void 0) { indexCmd = -1; }
             if (currentYPosition === void 0) { currentYPosition = _DefaultFontSize; }
             if (buffer === void 0) { buffer = ""; }
+            if (prevStr === void 0) { prevStr = ""; }
+            if (history === void 0) { history = _ArrayOfHistory; }
+            if (arrayOfCommands === void 0) { arrayOfCommands = _ArrayOfCommands = ["ver", "help", "shutdown", "cls", "man", "trace", "rot13",
+                "prompt", "date", "whereami", "time"]; }
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
+            this.indexCmd = indexCmd;
             this.currentYPosition = currentYPosition;
             this.buffer = buffer;
+            this.prevStr = prevStr;
+            this.history = history;
+            this.arrayOfCommands = arrayOfCommands;
         }
         Console.prototype.init = function () {
             this.clearScreen();
@@ -46,11 +55,25 @@ var TSOS;
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
+                    //Add buffer to array of history of commands
+                    this.history.push(this.buffer);
+                    //Increase index of command history
+                    this.indexCmd = this.indexCmd + 1;
                     // ... and reset our buffer.
                     this.buffer = "";
+                    this.prevStr = "";
                 }
                 else if (chr === String.fromCharCode(8)) {
                     this.deleteText();
+                }
+                else if (chr === String.fromCharCode(9)) {
+                    this.tab();
+                }
+                else if (chr === String.fromCharCode(38)) {
+                    this.upArrow();
+                }
+                else if (chr === String.fromCharCode(40)) {
+                    this.downArrow();
                 }
                 else {
                     // This is a "normal" character, so ...
@@ -79,15 +102,47 @@ var TSOS;
             }
         };
         Console.prototype.deleteText = function () {
-            // Make a new buffer
+            // Make a new buffer, split current buffer into substrings and put them into a temporary buffer. 
             var newBuffer = "";
             var tempBuffer = this.buffer.split('');
+            //copy temporary buffer to new buffer but not the last string in tempoary buffer
             for (var i = 0; i < tempBuffer.length - 1; i++) {
                 newBuffer = newBuffer + tempBuffer[i];
             }
             this.buffer = newBuffer;
+            //Clear the rectangular part of the canvas and draw the text from the new buffer onto the canvas
             this.clearLine();
             this.putText(">" + this.buffer);
+        };
+        Console.prototype.tab = function () {
+            var newArray = _ArrayOfCommands.sort();
+            var text = this.buffer;
+            for (var i = 0; i < newArray.length; i++) {
+                if (newArray[i].indexOf(text) == 0 && this.prevStr != newArray[i]) {
+                    this.buffer = newArray[i];
+                    this.prevStr = newArray[i];
+                }
+            }
+            this.clearLine();
+            this.putText(">" + this.buffer);
+        };
+        Console.prototype.upArrow = function () {
+            if (this.indexCmd >= 0) {
+                this.buffer = this.history[this.indexCmd];
+                this.clearLine();
+                this.putText(">" + this.buffer);
+                this.indexCmd = this.indexCmd - 1;
+            }
+        };
+        Console.prototype.downArrow = function () {
+            if (this.indexCmd >= -1) {
+                this.buffer = this.history[this.indexCmd];
+                this.clearLine();
+                this.putText(">" + this.buffer);
+                this.indexCmd = this.indexCmd + 1;
+            }
+        };
+        Console.prototype.scroll = function () {
         };
         Console.prototype.advanceLine = function () {
             this.currentXPosition = 0;

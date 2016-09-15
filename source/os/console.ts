@@ -16,8 +16,14 @@ module TSOS {
         constructor(public currentFont = _DefaultFontFamily,
                     public currentFontSize = _DefaultFontSize,
                     public currentXPosition = 0,
+                    public indexCmd = -1,
                     public currentYPosition = _DefaultFontSize,
-                    public buffer = "") {
+                    public buffer = "",
+                    public prevStr = "",
+                    public history = _ArrayOfHistory,
+                    public arrayOfCommands = _ArrayOfCommands=["ver","help","shutdown","cls","man","trace","rot13",
+                                                               "prompt","date","whereami","time"]
+) {
         }
 
         public init(): void {
@@ -48,11 +54,25 @@ module TSOS {
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
+                    //Add buffer to array of history of commands
+                    this.history.push(this.buffer);
+                    //Increase index of command history
+                    this.indexCmd = this.indexCmd + 1;
                     // ... and reset our buffer.
                     this.buffer = "";
+                    this.prevStr = "";
                 } 
                 else if (chr === String.fromCharCode(8)) { //     Backspace key
                     this.deleteText();
+                }
+                else if (chr === String.fromCharCode(9)) { //     Tab key
+                    this.tab();
+                }
+                else if (chr === String.fromCharCode(38)) { //     Up Arrow key
+                    this.upArrow();
+                }
+                else if (chr === String.fromCharCode(40)) { //     Down Arrow key
+                    this.downArrow();
                 }
                 else {
                     // This is a "normal" character, so ...
@@ -85,21 +105,68 @@ module TSOS {
 
         public deleteText(): void {
         
-            // Make a new buffer
+            // Make a new buffer, split current buffer into substrings and put them into a temporary buffer. 
             var newBuffer = "";
             var tempBuffer = this.buffer.split('');
             
+            //copy temporary buffer to new buffer but not the last string in tempoary buffer
             for(var i = 0; i < tempBuffer.length - 1; i++){
                 newBuffer = newBuffer + tempBuffer[i];
             }
             this.buffer = newBuffer;
-
+            
+            //Clear the rectangular part of the canvas and draw the text from the new buffer onto the canvas
             this.clearLine();
             this.putText(">" + this.buffer);
 
-            
+
          }
 
+        public tab(): void {
+            
+            var newArray = _ArrayOfCommands.sort();
+            var text = this.buffer;
+
+
+            for(var i = 0; i < newArray.length; i++){
+                if( newArray[i].indexOf(text) == 0 && this.prevStr != newArray[i]){
+                   this.buffer = newArray[i]
+                   this.prevStr =  newArray[i];
+                 }
+                
+            }
+            
+            this.clearLine();
+            this.putText(">" + this.buffer);
+
+        }
+
+         public upArrow(): void {
+            if (this.indexCmd >= 0){
+                this.buffer = this.history[this.indexCmd];
+                this.clearLine();
+                this.putText(">" + this.buffer);
+                this.indexCmd = this.indexCmd - 1;    
+             }
+        }
+
+       public downArrow(): void {
+            
+            if (this.indexCmd >=-1){
+                this.buffer = this.history[this.indexCmd];
+                this.clearLine();
+                this.putText(">" + this.buffer);
+                this.indexCmd = this.indexCmd + 1;    
+                
+             }
+
+        }
+ 
+       public scroll():void{
+
+           
+
+       }
 
         public advanceLine(): void {
             this.currentXPosition = 0;
@@ -113,6 +180,7 @@ module TSOS {
                                      _FontHeightMargin;
 
             // TODO: Handle scrolling. (iProject 1)
+            
         }
     }
  }
