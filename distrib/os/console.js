@@ -50,11 +50,7 @@ var TSOS;
                 var chr = _KernelInputQueue.dequeue();
                 // Check to see if it's "special" (enter or ctrl-c) or "normal" (anything else that the keyboard device driver gave us).
                 if (chr === String.fromCharCode(13)) {
-                    // Get current date and time
-                    var date = new Date().toDateString();
-                    var time = new Date().toLocaleTimeString();
-                    //Display dateTime and status when ever user enters command
-                    document.getElementById('Time').innerHTML = 'Date: ' + date + ' Time:' + time;
+                    //Display current status
                     document.getElementById('Status').innerHTML = 'Status: ' + this.buffer;
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...

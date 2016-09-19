@@ -82,6 +82,11 @@ var TSOS;
             else {
                 this.krnTrace("Idle");
             }
+            // Get current date and time
+            var date = new Date().toDateString();
+            var time = new Date().toLocaleTimeString();
+            //Display date and time
+            document.getElementById('Time').innerHTML = 'Date: ' + date + ' Time:' + time;
         };
         //
         // Interrupt Handling

@@ -52,11 +52,7 @@ module TSOS {
                 if (chr === String.fromCharCode(13)) { //     Enter key
 
 
-                    // Get current date and time
-                    var date = new Date().toDateString();
-                    var time = new Date().toLocaleTimeString();
-                    //Display dateTime and status when ever user enters command
-                    document.getElementById('Time').innerHTML = 'Date: ' + date + ' Time:' + time;
+                    //Display current status
                     document.getElementById('Status').innerHTML ='Status: ' + this.buffer;
             
                     // The enter key marks the end of a console command, so ...
