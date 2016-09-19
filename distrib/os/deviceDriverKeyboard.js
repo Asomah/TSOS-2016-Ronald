@@ -1,6 +1,7 @@
 ///<reference path="../globals.ts" />
 ///<reference path="deviceDriver.ts" />
 ///<reference path="queue.ts" />
+///<reference path="kernel.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -36,45 +37,122 @@ var TSOS;
             // Parse the params.    TODO: Check that the params are valid and osTrapError if not.
             var keyCode = params[0];
             var isShifted = params[1];
-            _Kernel.krnTrace("Key code:" + keyCode + " shifted:" + isShifted);
-            var chr = "";
-            var length = _KernelInputQueue.getSize();
-            var tempQueue = new TSOS.Queue;
-            // Check to see if we even want to deal with the key that was pressed.
-            if (((keyCode >= 65) && (keyCode <= 90)) ||
-                ((keyCode >= 97) && (keyCode <= 123))) {
-                // Determine the character we want to display.
-                // Assume it's lowercase...
-                chr = String.fromCharCode(keyCode + 32);
-                // ... then check the shift key and re-adjust if necessary.
-                if (isShifted) {
-                    chr = String.fromCharCode(keyCode);
+            /**
+             * Check to see if length of params is 2
+             * If lenght is not 2, call the krnTrapError to clear the screen and display BSOD
+             */
+            var errorMsg = "ALPACA NOT THE PASSWORD";
+            if ((params.length != 2)) {
+                _Kernel.krnTrapError(errorMsg);
+            }
+            else {
+                _Kernel.krnTrace("Key code:" + keyCode + " shifted:" + isShifted);
+                var chr = "";
+                var length = _KernelInputQueue.getSize();
+                var tempQueue = new TSOS.Queue;
+                // Check to see if we even want to deal with the key that was pressed.
+                if (((keyCode >= 65) && (keyCode <= 90)) ||
+                    ((keyCode >= 97) && (keyCode <= 123))) {
+                    // Determine the character we want to display.
+                    // Assume it's lowercase...
+                    chr = String.fromCharCode(keyCode + 32);
+                    // ... then check the shift key and re-adjust if necessary.
+                    if (isShifted) {
+                        chr = String.fromCharCode(keyCode);
+                    }
+                    // TODO: Check for caps-lock and handle as shifted if so.
+                    _KernelInputQueue.enqueue(chr);
                 }
-                // TODO: Check for caps-lock and handle as shifted if so.
-                _KernelInputQueue.enqueue(chr);
+                else if (((keyCode >= 48) && (keyCode <= 57)) ||
+                    (keyCode == 32) ||
+                    (keyCode == 13) ||
+                    (keyCode == 08) ||
+                    (keyCode == 09) ||
+                    (keyCode == 38) ||
+                    (keyCode == 40)) {
+                    //enqueue ! @ # $ % ^ & * ( )
+                    if ((keyCode == 49) || (keyCode == 51) || (keyCode == 52) || (keyCode == 53) && isShifted) {
+                        keyCode = keyCode - 16;
+                    }
+                    else if ((keyCode == 50) && isShifted) {
+                        keyCode = keyCode + 14;
+                    }
+                    else if ((keyCode == 54) && isShifted) {
+                        keyCode = keyCode + 40;
+                    }
+                    else if ((keyCode == 56) && isShifted) {
+                        keyCode = keyCode - 14;
+                    }
+                    else if ((keyCode == 48) && isShifted) {
+                        keyCode = keyCode - 7;
+                    }
+                    chr = String.fromCharCode(keyCode);
+                    _KernelInputQueue.enqueue(chr);
+                }
+                else if ((keyCode >= 188) && (keyCode <= 191)) {
+                    if (keyCode == 189 && isShifted) {
+                        keyCode = keyCode - 94;
+                    }
+                    else if (isShifted) {
+                        keyCode = keyCode - 128;
+                    }
+                    else {
+                        keyCode = keyCode - 144;
+                    }
+                    chr = String.fromCharCode(keyCode);
+                    _KernelInputQueue.enqueue(chr);
+                }
+                else if ((keyCode >= 219) && (keyCode <= 221)) {
+                    if (isShifted) {
+                        keyCode = keyCode - 96;
+                    }
+                    else {
+                        keyCode = keyCode - 128;
+                    }
+                    chr = String.fromCharCode(keyCode);
+                    _KernelInputQueue.enqueue(chr);
+                }
+                else if ((keyCode == 222)) {
+                    if (isShifted) {
+                        keyCode = keyCode - 188;
+                    }
+                    else {
+                        keyCode = keyCode - 183;
+                    }
+                    chr = String.fromCharCode(keyCode);
+                    _KernelInputQueue.enqueue(chr);
+                }
+                else if ((keyCode == 187)) {
+                    if (isShifted) {
+                        keyCode = keyCode - 144;
+                    }
+                    else {
+                        keyCode = keyCode - 126;
+                    }
+                    chr = String.fromCharCode(keyCode);
+                    _KernelInputQueue.enqueue(chr);
+                }
+                else if ((keyCode == 192)) {
+                    if (isShifted) {
+                        keyCode = keyCode - 66;
+                    }
+                    else {
+                        keyCode = keyCode - 96;
+                    }
+                    chr = String.fromCharCode(keyCode);
+                    _KernelInputQueue.enqueue(chr);
+                }
+                else if ((keyCode == 186)) {
+                    if (isShifted) {
+                        keyCode = keyCode - 128;
+                    }
+                    else {
+                        keyCode = keyCode - 127;
+                    }
+                    chr = String.fromCharCode(keyCode);
+                    _KernelInputQueue.enqueue(chr);
+                }
             }
-            else if (((keyCode >= 48) && (keyCode <= 57)) ||
-                (keyCode == 32) ||
-                (keyCode == 13) ||
-                (keyCode == 08) ||
-                (keyCode == 09) ||
-                (keyCode == 38) ||
-                (keyCode == 40)) {
-                chr = String.fromCharCode(keyCode);
-                _KernelInputQueue.enqueue(chr);
-            }
-            /* else if (keyCode == 8){
-                  if (length == 1){
-                      _KernelInputQueue.dequeue();
-                     }
-                 else if (length > 1){
-                  for (var i=0; i < length; i++ ){
-                       tempQueue.enqueue(chr.charAt(i));
-                      _KernelInputQueue.dequeue();
-                   }
-                   _KernelInputQueue = tempQueue;
-                 }
-             }*/
         };
         return DeviceDriverKeyboard;
     }(TSOS.DeviceDriver));
