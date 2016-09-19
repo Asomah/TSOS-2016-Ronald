@@ -74,10 +74,10 @@ module TSOS {
                 else if (chr === String.fromCharCode(9)) { //     Tab key
                     this.tab();
                 }
-                else if (chr === String.fromCharCode(38)) { //     Up Arrow key
+                else if (chr === String.fromCharCode(538)) { //     Up Arrow key
                     this.upArrow();
                 }
-                else if (chr === String.fromCharCode(40)) { //     Down Arrow key
+                else if (chr === String.fromCharCode(540)) { //     Down Arrow key
                     this.downArrow();
                 }
                 else {
@@ -101,12 +101,18 @@ module TSOS {
             // UPDATE: Even though we are now working in TypeScript, char and string remain undistinguished.
             //         Consider fixing that.
             if (text !== "") {
+                 if (this.currentXPosition > 480){
+                  this.advanceLine();
+                  }
+
                 // Draw the text at the current X and Y coordinates.
                 _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
                 // Move the current X position.
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
             }
+        //Line Wrap advance line if current X position is greater than canvas width
+       
          }
 
         public deleteText(): void {

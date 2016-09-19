@@ -61,6 +61,8 @@ var TSOS;
             // bsod
             sc = new TSOS.ShellCommand(this.shellBsod, "alpaca", "Traps an OS Error");
             this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "<HEX> - Validates user code.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -240,6 +242,9 @@ var TSOS;
                     case "alpaca":
                         _StdOut.putText("Traps an OS Error.");
                         break;
+                    case "load":
+                        _StdOut.putText("Validates user code.");
+                        break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -303,9 +308,17 @@ var TSOS;
             location.reload(true);
         };
         Shell.prototype.shellBsod = function (args) {
-            args = "ALPACA NOT THE PASSWORD";
-            _StdOut.putText(args);
             _Kernel.krnTrapError(args);
+        };
+        Shell.prototype.shellLoad = function (args) {
+            var hex = document.getElementById("taProgramInput").value;
+            var regex = /\b[0-9A-F]\b/gi;
+            if (regex.test(hex)) {
+                _StdOut.putText('VALID HEX');
+            }
+            else {
+                _StdOut.putText('INVALID HEX');
+            }
         };
         return Shell;
     }());
