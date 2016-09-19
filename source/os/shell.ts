@@ -91,10 +91,16 @@ module TSOS {
                                   "Displays the users current location.");
             this.commandList[this.commandList.length] = sc;
 
-            // time
-            sc = new ShellCommand(this.shellTime,
-                                  "time",
-                                  "Time of current location");
+            // restart
+            sc = new ShellCommand(this.shellRestart,
+                                  "restart",
+                                  "Restarts the OS");
+            this.commandList[this.commandList.length] = sc;
+
+            // bsod
+            sc = new ShellCommand(this.shellBsod,
+                                  "alpaca",
+                                  "Traps an OS Error");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -283,8 +289,12 @@ module TSOS {
                         _StdOut.putText("Whereami displays the current location of user.");
                         break;
 
-                    case "time":
-                        _StdOut.putText("Dispay current time to OS.");
+                    case "restart":
+                        _StdOut.putText("Restarts the OS.");
+                        break;
+                    
+                     case "alpaca":
+                        _StdOut.putText("Traps an OS Error.");
                         break;
                     
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
@@ -334,12 +344,14 @@ module TSOS {
                 _OsShell.promptStr = args[0];
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
+               
             }
         }
 
     public shellDate(args) {
-         var date = new Date().toDateString();        
-         _StdOut.putText(date);
+         var date = new Date().toDateString();
+         var time = new Date().toLocaleTimeString();        
+         _StdOut.putText(date + ' ' + time);
             
         }
    public shellWhereAmI(args) {    
@@ -347,11 +359,14 @@ module TSOS {
             
         }
 
-    public shellTime(args) {
-            
-          var time = new Date().toLocaleTimeString();    
-         _StdOut.putText(time);
-          
+    public shellRestart(args) {  
+          location.reload(true);
+        }
+
+    public shellBsod(args) {  
+        args = "ALPACA NOT THE PASSWORD";
+        _StdOut.putText(args);
+         _Kernel.krnTrapError(args);
 
         }
 

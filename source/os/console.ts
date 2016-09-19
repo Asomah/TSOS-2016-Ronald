@@ -19,7 +19,6 @@ module TSOS {
                     public indexCmd = -1,
                     public currentYPosition = _DefaultFontSize,
                     public buffer = "",
-                    public prevStr = "",
                     public history = _ArrayOfHistory,
                     public arrayOfCommands = _ArrayOfCommands=["ver","help","shutdown","cls","man","trace","rot13",
                                                                "prompt","date","whereami","time"]
@@ -36,7 +35,7 @@ module TSOS {
         }
 
         private clearLine(): void {
-            _DrawingContext.clearRect(0, this.currentYPosition-this.currentFontSize, _Canvas.width, this.currentFontSize+5);
+            _DrawingContext.clearRect(0, this.currentYPosition-this.currentFontSize -2, _Canvas.width, this.currentFontSize+7);
             this.currentXPosition=0;
         }
 
@@ -51,6 +50,15 @@ module TSOS {
                 var chr = _KernelInputQueue.dequeue();
                 // Check to see if it's "special" (enter or ctrl-c) or "normal" (anything else that the keyboard device driver gave us).
                 if (chr === String.fromCharCode(13)) { //     Enter key
+
+
+                    // Get current date and time
+                    var date = new Date().toDateString();
+                    var time = new Date().toLocaleTimeString();
+                    //Display dateTime and status when ever user enters command
+                    document.getElementById('Time').innerHTML = 'Date: ' + date + ' Time:' + time;
+                    document.getElementById('Status').innerHTML ='Status: ' + this.buffer;
+            
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
@@ -60,7 +68,9 @@ module TSOS {
                     this.indexCmd = this.indexCmd + 1;
                     // ... and reset our buffer.
                     this.buffer = "";
-                    this.prevStr = "";
+
+                    
+                    
                 } 
                 else if (chr === String.fromCharCode(8)) { //     Backspace key
                     this.deleteText();
@@ -124,14 +134,20 @@ module TSOS {
 
         public tab(): void {
             
+         /*
+         Sort array of valid commands
+         Compare buffer to the start string of the valid commands
+         if there is a match, stop the loop and set buffer to the specific valid command
+         draw buffer on canvas
+         */
+
             var newArray = _ArrayOfCommands.sort();
             var text = this.buffer;
 
-
             for(var i = 0; i < newArray.length; i++){
-                if( newArray[i].indexOf(text) == 0 && this.prevStr != newArray[i]){
-                   this.buffer = newArray[i]
-                   this.prevStr =  newArray[i];
+                if(newArray[i].indexOf(text) == 0){
+                   this.buffer = newArray[i];
+                   break;
                  }
                 
             }
@@ -142,7 +158,12 @@ module TSOS {
         }
 
          public upArrow(): void {
-            //var length = this.history.length;
+            /*Check to see if index of command history is not less than 0
+              Set buffer to command by using the index of that command in the commandHistory array
+              Clear line and put buffer back
+              Decrease index of command history by one if it is greater than 0
+            */
+
             if (this.indexCmd >= 0){
                 this.buffer = this.history[this.indexCmd];
                 
@@ -153,9 +174,13 @@ module TSOS {
                 }  
              }
         }
+       public downArrow(): void { 
+           /*Check to see if index of command history is in the right range
+              Set buffer to command by using the index of that command in the commandHistory array
+              Clear line and put buffer back
+              Increase index of command history by one if it is less than the lenght of array -1. 
+            */
 
-       public downArrow(): void {
-            
             if (this.indexCmd <this.history.length && this.history.length != 0){
                 this.buffer = this.history[this.indexCmd];
                 this.clearLine();
@@ -168,7 +193,10 @@ module TSOS {
 
         }
  
+
        public scroll():void{
+           /*Make a new canvas of the current y position is greater than the canvas height 
+           */
            if (this.currentYPosition > _Canvas.height) {
                var newCanvas = _DrawingContext.getImageData(0, _DefaultFontSize + 8, _Canvas.width, _Canvas.height);
                this.clearScreen();

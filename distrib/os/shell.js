@@ -55,8 +55,11 @@ var TSOS;
             // whereami
             sc = new TSOS.ShellCommand(this.shellWhereAmI, "whereami", "Displays the users current location.");
             this.commandList[this.commandList.length] = sc;
-            // time
-            sc = new TSOS.ShellCommand(this.shellTime, "time", "Time of current location");
+            // restart
+            sc = new TSOS.ShellCommand(this.shellRestart, "restart", "Restarts the OS");
+            this.commandList[this.commandList.length] = sc;
+            // bsod
+            sc = new TSOS.ShellCommand(this.shellBsod, "alpaca", "Traps an OS Error");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -231,8 +234,11 @@ var TSOS;
                     case "whereami":
                         _StdOut.putText("Whereami displays the current location of user.");
                         break;
-                    case "time":
-                        _StdOut.putText("Dispay current time to OS.");
+                    case "restart":
+                        _StdOut.putText("Restarts the OS.");
+                        break;
+                    case "alpaca":
+                        _StdOut.putText("Traps an OS Error.");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
@@ -287,14 +293,19 @@ var TSOS;
         };
         Shell.prototype.shellDate = function (args) {
             var date = new Date().toDateString();
-            _StdOut.putText(date);
+            var time = new Date().toLocaleTimeString();
+            _StdOut.putText(date + ' ' + time);
         };
         Shell.prototype.shellWhereAmI = function (args) {
             _StdOut.putText("MARS!!! There is no place for you on earth");
         };
-        Shell.prototype.shellTime = function (args) {
-            var time = new Date().toLocaleTimeString();
-            _StdOut.putText(time);
+        Shell.prototype.shellRestart = function (args) {
+            location.reload(true);
+        };
+        Shell.prototype.shellBsod = function (args) {
+            args = "ALPACA NOT THE PASSWORD";
+            _StdOut.putText(args);
+            _Kernel.krnTrapError(args);
         };
         return Shell;
     }());
