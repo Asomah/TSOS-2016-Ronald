@@ -19,7 +19,7 @@ var TSOS;
             if (buffer === void 0) { buffer = ""; }
             if (history === void 0) { history = _ArrayOfHistory; }
             if (arrayOfCommands === void 0) { arrayOfCommands = _ArrayOfCommands = ["ver", "help", "shutdown", "cls", "man", "trace", "rot13",
-                "prompt", "date", "whereami", "time"]; }
+                "prompt", "date", "whereami", "restart", "alpaca", "load"]; }
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
@@ -93,6 +93,7 @@ var TSOS;
             // UPDATE: Even though we are now working in TypeScript, char and string remain undistinguished.
             //         Consider fixing that.
             if (text !== "") {
+                //move cursor to the next line if canvas is greater than 480
                 if (this.currentXPosition > 480) {
                     this.advanceLine();
                 }
@@ -166,7 +167,10 @@ var TSOS;
             }
         };
         Console.prototype.scroll = function () {
-            /*Make a new canvas of the current y position is greater than the canvas height
+            /*Make a new canvas if the current y position is greater than the canvas height
+             Clear the screen and paste the new canvas into the old one
+             Move the cursor to the bottum of the canvas
+
             */
             if (this.currentYPosition > _Canvas.height) {
                 var newCanvas = _DrawingContext.getImageData(0, _DefaultFontSize + 8, _Canvas.width, _Canvas.height);

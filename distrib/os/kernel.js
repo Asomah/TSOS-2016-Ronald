@@ -164,12 +164,14 @@ var TSOS;
             //Clear canvas and fill canvas with the color blue
             _DrawingContext.beginPath();
             _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);
-            _DrawingContext.rect(0, 0, _Canvas.width, _Canvas.height);
+            //_DrawingContext.rect(0, 0, _Canvas.width, _Canvas.height);
             _DrawingContext.fillStyle = "blue";
             _DrawingContext.fill();
             //Print Message to canvas
             _DrawingContext.beginPath();
-            _StdOut.putText("PASSWORD NOT ALPACA");
+            _DrawingContext.font = '30pt Calibri';
+            _DrawingContext.fillStyle = 'white';
+            _DrawingContext.fillText('PASSWORD NOT ALPACA', 50, 150);
             this.krnShutdown();
         };
         return Kernel;

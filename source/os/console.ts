@@ -21,7 +21,7 @@ module TSOS {
             public buffer = "",
             public history = _ArrayOfHistory,
             public arrayOfCommands = _ArrayOfCommands = ["ver", "help", "shutdown", "cls", "man", "trace", "rot13",
-                "prompt", "date", "whereami", "time"]
+                "prompt", "date", "whereami", "restart", "alpaca", "load"]
         ) {
         }
 
@@ -101,6 +101,7 @@ module TSOS {
             // UPDATE: Even though we are now working in TypeScript, char and string remain undistinguished.
             //         Consider fixing that.
             if (text !== "") {
+                //move cursor to the next line if canvas is greater than 480
                 if (this.currentXPosition > 480) {
                     this.advanceLine();
                 }

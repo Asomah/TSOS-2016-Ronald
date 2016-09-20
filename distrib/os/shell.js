@@ -311,7 +311,9 @@ var TSOS;
             _Kernel.krnTrapError(args);
         };
         Shell.prototype.shellLoad = function (args) {
+            //Get user input fromm html
             var hex = document.getElementById("taProgramInput").value;
+            //make new regex and check if user's input matches the regex
             var regex = new RegExp('^[0-9A-Fa-f\\s]+$');
             if (hex.match(regex)) {
                 _StdOut.putText('VALID HEX');
@@ -319,7 +321,6 @@ var TSOS;
             else {
                 _StdOut.putText('INVALID HEX');
             }
-            ;
         };
         return Shell;
     }());
