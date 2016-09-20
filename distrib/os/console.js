@@ -93,17 +93,29 @@ var TSOS;
             // UPDATE: Even though we are now working in TypeScript, char and string remain undistinguished.
             //         Consider fixing that.
             if (text !== "") {
-                //move cursor to the next line if canvas is greater than 480
-                if (this.currentXPosition > 480) {
+                //Line Wrap advance line if current X position is greater than canvas width
+                if (this.currentXPosition > _Canvas.width - 10) {
                     this.advanceLine();
                 }
-                // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
-                // Move the current X position.
-                var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = this.currentXPosition + offset;
+                // Check the length of text
+                if (text.length == 1) {
+                    //draw the single text if length is one
+                    // Draw the text at the current X and Y coordinates.
+                    _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
+                    // Move the current X position.
+                    var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
+                    this.currentXPosition = this.currentXPosition + offset;
+                }
+                else if (text.length > 1) {
+                    /**
+                     * if length is greater than one, loop through each character in text
+                     * call the putText function to draw each character at a time.
+                     */
+                    for (var i = 0; i < text.length; i++) {
+                        this.putText(text[i]);
+                    }
+                }
             }
-            //Line Wrap advance line if current X position is greater than canvas width
         };
         Console.prototype.deleteText = function () {
             // Make a new buffer, split current buffer into substrings and put them into a temporary buffer. 
