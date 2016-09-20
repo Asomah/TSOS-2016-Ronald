@@ -50,18 +50,18 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
             // date
-            sc = new TSOS.ShellCommand(this.shellDate, "date", "Displays current date and time.");
+            sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays current date and time.");
             this.commandList[this.commandList.length] = sc;
             // whereami
-            sc = new TSOS.ShellCommand(this.shellWhereAmI, "whereami", "Displays the users current location.");
+            sc = new TSOS.ShellCommand(this.shellWhereAmI, "whereami", "- Displays the users current location.");
             this.commandList[this.commandList.length] = sc;
             // restart
-            sc = new TSOS.ShellCommand(this.shellRestart, "restart", "Restarts the OS");
+            sc = new TSOS.ShellCommand(this.shellRestart, "restart", "- Restarts the OS");
             this.commandList[this.commandList.length] = sc;
             // bsod
-            sc = new TSOS.ShellCommand(this.shellBsod, "alpaca", "Traps an OS Error");
+            sc = new TSOS.ShellCommand(this.shellBsod, "alpaca", " - Traps an OS Error");
             this.commandList[this.commandList.length] = sc;
-            sc = new TSOS.ShellCommand(this.shellLoad, "load", "<HEX> - Validates user code.");
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", " <HEX> - Validates user code.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.

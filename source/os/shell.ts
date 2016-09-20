@@ -82,29 +82,29 @@ module TSOS {
             // date
             sc = new ShellCommand(this.shellDate,
                 "date",
-                "Displays current date and time.");
+                "- Displays current date and time.");
             this.commandList[this.commandList.length] = sc;
 
             // whereami
             sc = new ShellCommand(this.shellWhereAmI,
                 "whereami",
-                "Displays the users current location.");
+                "- Displays the users current location.");
             this.commandList[this.commandList.length] = sc;
 
             // restart
             sc = new ShellCommand(this.shellRestart,
                 "restart",
-                "Restarts the OS");
+                "- Restarts the OS");
             this.commandList[this.commandList.length] = sc;
 
             // bsod
             sc = new ShellCommand(this.shellBsod,
                 "alpaca",
-                "Traps an OS Error");
+                " - Traps an OS Error");
             this.commandList[this.commandList.length] = sc;
             sc = new ShellCommand(this.shellLoad,
                 "load",
-                "<HEX> - Validates user code.");
+                " <HEX> - Validates user code.");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
