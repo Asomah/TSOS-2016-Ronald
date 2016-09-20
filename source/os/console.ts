@@ -167,12 +167,12 @@ module TSOS {
             //FIX: This only works for only one advanced line. 
             if (this.currentXPosition < 1) {
                 //get the last x and y positions in array
-                this.currentXPosition = this.prevXpositions[this.prevXpositions.length-1];
-                this.currentYPosition = this.prevYPositions[this.prevYPositions.length-1];
+                this.currentXPosition = this.prevXpositions[this.prevXpositions.length - 1];
+                this.currentYPosition = this.prevYPositions[this.prevYPositions.length - 1];
 
-            //Remove last x and y elements from the old arrays
-            this.prevXpositions.pop();
-            this.prevYPositions.pop();
+                //Remove last x and y elements from the old arrays
+                this.prevXpositions.pop();
+                this.prevYPositions.pop();
 
             }
 
