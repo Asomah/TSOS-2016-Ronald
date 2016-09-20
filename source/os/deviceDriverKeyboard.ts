@@ -65,7 +65,7 @@ module TSOS {
                     _KernelInputQueue.enqueue(chr);
                 }
                 else if ((keyCode == 38) ||   // Up Arraow
-                    (keyCode == 40)) {                       // Down Arrow)
+                    (keyCode == 40)) {        // Down Arrow)
                     chr = String.fromCharCode(keyCode + 500);
                     _KernelInputQueue.enqueue(chr);
 
@@ -74,7 +74,7 @@ module TSOS {
                     (keyCode == 32) ||   // space
                     (keyCode == 13) ||   // Enter
                     (keyCode == 08) ||   // backspace
-                    (keyCode == 09))                         // Tab
+                    (keyCode == 09))     // Tab
                 {
 
                     //enqueue ! @ # $ % ^ & * ( )

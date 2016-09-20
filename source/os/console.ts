@@ -69,7 +69,7 @@ module TSOS {
 
                 }
                 else if (chr === String.fromCharCode(8)) { //     Backspace key
-                    this.deleteText();
+                    this.backSpace();
                 }
                 else if (chr === String.fromCharCode(9)) { //     Tab key
                     this.tab();
@@ -103,7 +103,7 @@ module TSOS {
             if (text !== "") {
 
                 //Line Wrap advance line if current X position is greater than canvas width
-                if (this.currentXPosition > _Canvas.width - 10) {
+                if (this.currentXPosition >= _Canvas.width - 10) {
                     this.advanceLine();
                 }
 
@@ -130,7 +130,8 @@ module TSOS {
 
         }
 
-        public deleteText(): void {
+        /* Another way of implementing backspace which clears the whole line and draws the buffer again
+           public deleteText(): void {
 
             // Make a new buffer, split current buffer into substrings and put them into a temporary buffer. 
             var newBuffer = "";
@@ -146,6 +147,28 @@ module TSOS {
             this.clearLine();
             this.putText(">" + this.buffer);
 
+        }*/
+
+        public backSpace(): void {
+            //Get last character in buffer
+            //get new x position and move the cursor to the new x position
+            var char = this.buffer.slice(-1);
+            var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, char);
+            this.currentXPosition = this.currentXPosition - offset;
+
+            //Delete last character in buffer
+            _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition - this.currentFontSize - 2, _Canvas.width
+                , this.currentFontSize + 7);
+
+            // Make a new buffer, split current buffer into substrings and put them into a temporary buffer. 
+            var newBuffer = "";
+            var tempBuffer = this.buffer.split('');
+
+            //copy temporary buffer to new buffer but not the last string in tempoary buffer
+            for (var i = 0; i < tempBuffer.length - 1; i++) {
+                newBuffer = newBuffer + tempBuffer[i];
+            }
+            this.buffer = newBuffer;
 
         }
 
