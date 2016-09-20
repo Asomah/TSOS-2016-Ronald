@@ -20,6 +20,8 @@ module TSOS {
             public currentYPosition = _DefaultFontSize,
             public buffer = "",
             public history = _ArrayOfHistory,
+            public prevYPosition = 0,
+            public prevXposition = 0,
             public arrayOfCommands = _ArrayOfCommands = ["ver", "help", "shutdown", "cls", "man", "trace", "rot13",
                 "prompt", "date", "whereami", "restart", "alpaca", "load"]
         ) {
@@ -160,6 +162,13 @@ module TSOS {
             _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition - this.currentFontSize - 2, _Canvas.width
                 , this.currentFontSize + 7);
 
+            //If cursor is on an advanced line, check to see if current x position is less than 1
+            //Move back to previous line and reset the x and y positions
+            if (this.currentXPosition < 1) {
+                this.currentXPosition = this.prevXposition;
+                this.currentYPosition = this.prevYPosition;
+            }
+
             // Make a new buffer, split current buffer into substrings and put them into a temporary buffer. 
             var newBuffer = "";
             var tempBuffer = this.buffer.split('');
@@ -250,12 +259,18 @@ module TSOS {
         }
 
         public advanceLine(): void {
+            //keep track of the last/highest x position before advancing to new line
+            this.prevXposition = this.currentXPosition;
+            //keep track of the last y position before advancing to new line
+            this.prevYPosition = this.currentYPosition;
+
             this.currentXPosition = 0;
             /*
              * Font size measures from the baseline to the highest point in the font.
              * Font descent measures from the baseline to the lowest point in the font.
              * Font height margin is extra spacing between the lines.
              */
+
             this.currentYPosition += _DefaultFontSize +
                 _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
                 _FontHeightMargin;
