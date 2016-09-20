@@ -312,13 +312,14 @@ var TSOS;
         };
         Shell.prototype.shellLoad = function (args) {
             var hex = document.getElementById("taProgramInput").value;
-            var regex = /\b[0-9A-F]\b/gi;
-            if (regex.test(hex)) {
+            var regex = new RegExp('^[0-9A-Fa-f\\s]+$');
+            if (hex.match(regex)) {
                 _StdOut.putText('VALID HEX');
             }
             else {
                 _StdOut.putText('INVALID HEX');
             }
+            ;
         };
         return Shell;
     }());

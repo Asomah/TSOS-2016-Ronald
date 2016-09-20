@@ -33,78 +33,78 @@ module TSOS {
 
             // ver
             sc = new ShellCommand(this.shellVer,
-                                  "ver",
-                                  "- Displays the current version data.");
+                "ver",
+                "- Displays the current version data.");
             this.commandList[this.commandList.length] = sc;
 
             // help
             sc = new ShellCommand(this.shellHelp,
-                                  "help",
-                                  "- This is the help command. Seek help.");
+                "help",
+                "- This is the help command. Seek help.");
             this.commandList[this.commandList.length] = sc;
 
             // shutdown
             sc = new ShellCommand(this.shellShutdown,
-                                  "shutdown",
-                                  "- Shuts down the virtual OS but leaves the underlying host / hardware simulation running.");
+                "shutdown",
+                "- Shuts down the virtual OS but leaves the underlying host / hardware simulation running.");
             this.commandList[this.commandList.length] = sc;
 
             // cls
             sc = new ShellCommand(this.shellCls,
-                                  "cls",
-                                  "- Clears the screen and resets the cursor position.");
+                "cls",
+                "- Clears the screen and resets the cursor position.");
             this.commandList[this.commandList.length] = sc;
 
             // man <topic>
             sc = new ShellCommand(this.shellMan,
-                                  "man",
-                                  "<topic> - Displays the MANual page for <topic>.");
+                "man",
+                "<topic> - Displays the MANual page for <topic>.");
             this.commandList[this.commandList.length] = sc;
 
             // trace <on | off>
             sc = new ShellCommand(this.shellTrace,
-                                  "trace",
-                                  "<on | off> - Turns the OS trace on or off.");
+                "trace",
+                "<on | off> - Turns the OS trace on or off.");
             this.commandList[this.commandList.length] = sc;
 
             // rot13 <string>
             sc = new ShellCommand(this.shellRot13,
-                                  "rot13",
-                                  "<string> - Does rot13 obfuscation on <string>.");
+                "rot13",
+                "<string> - Does rot13 obfuscation on <string>.");
             this.commandList[this.commandList.length] = sc;
 
             // prompt <string>
             sc = new ShellCommand(this.shellPrompt,
-                                  "prompt",
-                                  "<string> - Sets the prompt.");
+                "prompt",
+                "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
 
             // date
             sc = new ShellCommand(this.shellDate,
-                                  "date",
-                                  "Displays current date and time.");
+                "date",
+                "Displays current date and time.");
             this.commandList[this.commandList.length] = sc;
 
             // whereami
             sc = new ShellCommand(this.shellWhereAmI,
-                                  "whereami",
-                                  "Displays the users current location.");
+                "whereami",
+                "Displays the users current location.");
             this.commandList[this.commandList.length] = sc;
 
             // restart
             sc = new ShellCommand(this.shellRestart,
-                                  "restart",
-                                  "Restarts the OS");
+                "restart",
+                "Restarts the OS");
             this.commandList[this.commandList.length] = sc;
 
             // bsod
             sc = new ShellCommand(this.shellBsod,
-                                  "alpaca",
-                                  "Traps an OS Error");
+                "alpaca",
+                "Traps an OS Error");
             this.commandList[this.commandList.length] = sc;
             sc = new ShellCommand(this.shellLoad,
-                                  "load",
-                                  "<HEX> - Validates user code.");
+                "load",
+                "<HEX> - Validates user code.");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -144,7 +144,7 @@ module TSOS {
                     ++index;
                 }
             }
-            if (found) {  
+            if (found) {
                 this.execute(fn, args);
             } else {
                 // It's not found, so check for curses and apologies before declaring the command invalid.
@@ -224,14 +224,14 @@ module TSOS {
         }
 
         public shellApology() {
-           if (_SarcasticMode) {
-              _StdOut.putText("I think we can put our differences behind us.");
-              _StdOut.advanceLine();
-              _StdOut.putText("For science . . . You monster.");
-              _SarcasticMode = false;
-           } else {
-              _StdOut.putText("For what?");
-           }
+            if (_SarcasticMode) {
+                _StdOut.putText("I think we can put our differences behind us.");
+                _StdOut.advanceLine();
+                _StdOut.putText("For science . . . You monster.");
+                _SarcasticMode = false;
+            } else {
+                _StdOut.putText("For what?");
+            }
         }
 
         public shellVer(args) {
@@ -247,8 +247,8 @@ module TSOS {
         }
 
         public shellShutdown(args) {
-             _StdOut.putText("Shutting down...");
-             // Call Kernel shutdown routine.
+            _StdOut.putText("Shutting down...");
+            // Call Kernel shutdown routine.
             _Kernel.krnShutdown();
             // TODO: Stop the final prompt from being displayed.  If possible.  Not a high priority.  (Damn OCD!)
         }
@@ -296,15 +296,15 @@ module TSOS {
                     case "restart":
                         _StdOut.putText("Restarts the OS.");
                         break;
-                    
-                     case "alpaca":
+
+                    case "alpaca":
                         _StdOut.putText("Traps an OS Error.");
                         break;
                     case "load":
                         _StdOut.putText("Validates user code.");
                         break;
-                    
-                    
+
+
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -331,17 +331,17 @@ module TSOS {
                         _StdOut.putText("Trace OFF");
                         break;
                     default:
-                     _StdOut.putText("Invalid arguement.  Usage: trace <on | off>.");
+                        _StdOut.putText("Invalid arguement.  Usage: trace <on | off>.");
                 }
             } else {
                 _StdOut.putText("Usage: trace <on | off>");
             }
-        } 
+        }
 
         public shellRot13(args) {
             if (args.length > 0) {
                 // Requires Utils.ts for rot13() function.
-                _StdOut.putText(args.join(' ') + " = '" + Utils.rot13(args.join(' ')) +"'");
+                _StdOut.putText(args.join(' ') + " = '" + Utils.rot13(args.join(' ')) + "'");
             } else {
                 _StdOut.putText("Usage: rot13 <string>  Please supply a string.");
             }
@@ -352,38 +352,40 @@ module TSOS {
                 _OsShell.promptStr = args[0];
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
-               
+
             }
         }
 
-    public shellDate(args) {
-         var date = new Date().toDateString();
-         var time = new Date().toLocaleTimeString();        
-         _StdOut.putText(date + ' ' + time);
-            
+        public shellDate(args) {
+            var date = new Date().toDateString();
+            var time = new Date().toLocaleTimeString();
+            _StdOut.putText(date + ' ' + time);
+
         }
-   public shellWhereAmI(args) {    
+        public shellWhereAmI(args) {
             _StdOut.putText("MARS!!! There is no place for you on earth");
-            
-        }
-
-    public shellRestart(args) {  
-          location.reload(true);
-        }
-
-    public shellBsod(args) {  
-         _Kernel.krnTrapError(args);
 
         }
 
-        public shellLoad(args){
+        public shellRestart(args) {
+            location.reload(true);
+        }
+
+        public shellBsod(args) {
+            _Kernel.krnTrapError(args);
+
+        }
+
+        public shellLoad(args) {
+            //Get user input fromm html
             var hex = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
-            var regex = /\b[0-9A-F]\b/gi;
-            if(regex.test(hex)) {
-               _StdOut.putText('VALID HEX');
-             } else {
-              _StdOut.putText('INVALID HEX');
-             }
+            //make new regex and check if user's input matches the regex
+            var regex = new RegExp('^[0-9A-Fa-f\\s]+$');
+            if (hex.match(regex)) {
+                _StdOut.putText('VALID HEX');
+            } else {
+                _StdOut.putText('INVALID HEX');
+            }
 
         }
 

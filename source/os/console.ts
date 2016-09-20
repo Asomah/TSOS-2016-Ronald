@@ -14,15 +14,15 @@ module TSOS {
     export class Console {
 
         constructor(public currentFont = _DefaultFontFamily,
-                    public currentFontSize = _DefaultFontSize,
-                    public currentXPosition = 0,
-                    public indexCmd = -1,
-                    public currentYPosition = _DefaultFontSize,
-                    public buffer = "",
-                    public history = _ArrayOfHistory,
-                    public arrayOfCommands = _ArrayOfCommands=["ver","help","shutdown","cls","man","trace","rot13",
-                                                               "prompt","date","whereami","time"]
-) {
+            public currentFontSize = _DefaultFontSize,
+            public currentXPosition = 0,
+            public indexCmd = -1,
+            public currentYPosition = _DefaultFontSize,
+            public buffer = "",
+            public history = _ArrayOfHistory,
+            public arrayOfCommands = _ArrayOfCommands = ["ver", "help", "shutdown", "cls", "man", "trace", "rot13",
+                "prompt", "date", "whereami", "time"]
+        ) {
         }
 
         public init(): void {
@@ -35,8 +35,8 @@ module TSOS {
         }
 
         private clearLine(): void {
-            _DrawingContext.clearRect(0, this.currentYPosition-this.currentFontSize -2, _Canvas.width, this.currentFontSize+7);
-            this.currentXPosition=0;
+            _DrawingContext.clearRect(0, this.currentYPosition - this.currentFontSize - 2, _Canvas.width, this.currentFontSize + 7);
+            this.currentXPosition = 0;
         }
 
         private resetXY(): void {
@@ -53,8 +53,8 @@ module TSOS {
 
 
                     //Display current status
-                    document.getElementById('Status').innerHTML ='Status: ' + this.buffer;
-            
+                    document.getElementById('Status').innerHTML = 'Status: ' + this.buffer;
+
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
@@ -65,9 +65,9 @@ module TSOS {
                     // ... and reset our buffer.
                     this.buffer = "";
 
-                    
-                    
-                } 
+
+
+                }
                 else if (chr === String.fromCharCode(8)) { //     Backspace key
                     this.deleteText();
                 }
@@ -101,9 +101,9 @@ module TSOS {
             // UPDATE: Even though we are now working in TypeScript, char and string remain undistinguished.
             //         Consider fixing that.
             if (text !== "") {
-                 if (this.currentXPosition > 480){
-                  this.advanceLine();
-                  }
+                if (this.currentXPosition > 480) {
+                    this.advanceLine();
+                }
 
                 // Draw the text at the current X and Y coordinates.
                 _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
@@ -111,102 +111,105 @@ module TSOS {
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
             }
-        //Line Wrap advance line if current X position is greater than canvas width
-       
-         }
+            //Line Wrap advance line if current X position is greater than canvas width
+
+        }
 
         public deleteText(): void {
-        
+
             // Make a new buffer, split current buffer into substrings and put them into a temporary buffer. 
             var newBuffer = "";
             var tempBuffer = this.buffer.split('');
-            
+
             //copy temporary buffer to new buffer but not the last string in tempoary buffer
-            for(var i = 0; i < tempBuffer.length - 1; i++){
+            for (var i = 0; i < tempBuffer.length - 1; i++) {
                 newBuffer = newBuffer + tempBuffer[i];
             }
             this.buffer = newBuffer;
-            
+
             //Clear the rectangular part of the canvas and draw the text from the new buffer onto the canvas
             this.clearLine();
             this.putText(">" + this.buffer);
 
 
-         }
+        }
 
         public tab(): void {
-            
-         /*
-         Sort array of valid commands
-         Compare buffer to the start string of the valid commands
-         if there is a match, stop the loop and set buffer to the specific valid command
-         draw buffer on canvas
-         */
+
+            /*
+            Sort array of valid commands
+            Compare buffer to the start string of the valid commands
+            if there is a match, stop the loop and set buffer to the specific valid command
+            draw buffer on canvas
+            */
 
             var newArray = _ArrayOfCommands.sort();
             var text = this.buffer;
 
-            for(var i = 0; i < newArray.length; i++){
-                if(newArray[i].indexOf(text) == 0){
-                   this.buffer = newArray[i];
-                   break;
-                 }
-                
+            for (var i = 0; i < newArray.length; i++) {
+                if (newArray[i].indexOf(text) == 0) {
+                    this.buffer = newArray[i];
+                    break;
+                }
+
             }
-            
+
             this.clearLine();
             this.putText(">" + this.buffer);
 
         }
 
-         public upArrow(): void {
+        public upArrow(): void {
             /*Check to see if index of command history is not less than 0
               Set buffer to command by using the index of that command in the commandHistory array
               Clear line and put buffer back
               Decrease index of command history by one if it is greater than 0
             */
 
-            if (this.indexCmd >= 0){
+            if (this.indexCmd >= 0) {
                 this.buffer = this.history[this.indexCmd];
-                
+
                 this.clearLine();
                 this.putText(">" + this.buffer);
-                if (this.indexCmd > 0){
-                this.indexCmd = this.indexCmd - 1;  
-                }  
-             }
+                if (this.indexCmd > 0) {
+                    this.indexCmd = this.indexCmd - 1;
+                }
+            }
         }
-       public downArrow(): void { 
-           /*Check to see if index of command history is in the right range
-              Set buffer to command by using the index of that command in the commandHistory array
-              Clear line and put buffer back
-              Increase index of command history by one if it is less than the lenght of array -1. 
+        public downArrow(): void {
+            /*Check to see if index of command history is in the right range
+               Set buffer to command by using the index of that command in the commandHistory array
+               Clear line and put buffer back
+               Increase index of command history by one if it is less than the lenght of array -1. 
+             */
+
+            if (this.indexCmd < this.history.length && this.history.length != 0) {
+                this.buffer = this.history[this.indexCmd];
+                this.clearLine();
+                this.putText(">" + this.buffer);
+                if (this.indexCmd < this.history.length - 1) {
+                    this.indexCmd = this.indexCmd + 1;
+                }
+
+            }
+
+        }
+
+
+        public scroll(): void {
+            /*Make a new canvas if the current y position is greater than the canvas height
+             Clear the screen and paste the new canvas into the old one
+             Move the cursor to the bottum of the canvas
+
             */
-
-            if (this.indexCmd <this.history.length && this.history.length != 0){
-                this.buffer = this.history[this.indexCmd];
-                this.clearLine();
-                this.putText(">" + this.buffer);
-                if (this.indexCmd < this.history.length-1){
-                this.indexCmd = this.indexCmd + 1;  
-                }      
-                
-             }
+            if (this.currentYPosition > _Canvas.height) {
+                var newCanvas = _DrawingContext.getImageData(0, _DefaultFontSize + 8, _Canvas.width, _Canvas.height);
+                this.clearScreen();
+                _DrawingContext.putImageData(newCanvas, 0, 0);
+                this.currentYPosition = _Canvas.height - _DefaultFontSize;
+            }
 
         }
- 
-
-       public scroll():void{
-           /*Make a new canvas of the current y position is greater than the canvas height 
-           */
-           if (this.currentYPosition > _Canvas.height) {
-               var newCanvas = _DrawingContext.getImageData(0, _DefaultFontSize + 8, _Canvas.width, _Canvas.height);
-               this.clearScreen();
-               _DrawingContext.putImageData(newCanvas, 0, 0);
-               this.currentYPosition = _Canvas.height - _DefaultFontSize;
-           }
-
-       }
 
         public advanceLine(): void {
             this.currentXPosition = 0;
@@ -215,12 +218,12 @@ module TSOS {
              * Font descent measures from the baseline to the lowest point in the font.
              * Font height margin is extra spacing between the lines.
              */
-            this.currentYPosition += _DefaultFontSize + 
-                                     _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
-                                     _FontHeightMargin;
+            this.currentYPosition += _DefaultFontSize +
+                _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
+                _FontHeightMargin;
 
             // TODO: Handle scrolling. (iProject 1)
             this.scroll();
         }
     }
- }
+}
