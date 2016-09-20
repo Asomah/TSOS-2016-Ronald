@@ -20,8 +20,8 @@ module TSOS {
             public currentYPosition = _DefaultFontSize,
             public buffer = "",
             public history = _ArrayOfHistory,
-            public prevYPosition = 0,
-            public prevXposition = 0,
+            public prevYPositions = [],
+            public prevXpositions = [],
             public arrayOfCommands = _ArrayOfCommands = ["ver", "help", "shutdown", "cls", "man", "trace", "rot13",
                 "prompt", "date", "whereami", "restart", "alpaca", "load"]
         ) {
@@ -164,9 +164,16 @@ module TSOS {
 
             //If cursor is on an advanced line, check to see if current x position is less than 1
             //Move back to previous line and reset the x and y positions
+            //FIX: This only works for only one advanced line. 
             if (this.currentXPosition < 1) {
-                this.currentXPosition = this.prevXposition;
-                this.currentYPosition = this.prevYPosition;
+                //get the last x and y positions in array
+                this.currentXPosition = this.prevXpositions[this.prevXpositions.length-1];
+                this.currentYPosition = this.prevYPositions[this.prevYPositions.length-1];
+
+            //Remove last x and y elements from the old arrays
+            this.prevXpositions.pop();
+            this.prevYPositions.pop();
+
             }
 
             // Make a new buffer, split current buffer into substrings and put them into a temporary buffer. 
@@ -260,9 +267,9 @@ module TSOS {
 
         public advanceLine(): void {
             //keep track of the last/highest x position before advancing to new line
-            this.prevXposition = this.currentXPosition;
+            this.prevXpositions.push(this.currentXPosition);
             //keep track of the last y position before advancing to new line
-            this.prevYPosition = this.currentYPosition;
+            this.prevYPositions.push(this.currentYPosition);
 
             this.currentXPosition = 0;
             /*

@@ -10,7 +10,7 @@
 var TSOS;
 (function (TSOS) {
     var Console = (function () {
-        function Console(currentFont, currentFontSize, currentXPosition, indexCmd, currentYPosition, buffer, history, prevYPosition, prevXposition, arrayOfCommands) {
+        function Console(currentFont, currentFontSize, currentXPosition, indexCmd, currentYPosition, buffer, history, prevYPositions, prevXpositions, arrayOfCommands) {
             if (currentFont === void 0) { currentFont = _DefaultFontFamily; }
             if (currentFontSize === void 0) { currentFontSize = _DefaultFontSize; }
             if (currentXPosition === void 0) { currentXPosition = 0; }
@@ -18,8 +18,8 @@ var TSOS;
             if (currentYPosition === void 0) { currentYPosition = _DefaultFontSize; }
             if (buffer === void 0) { buffer = ""; }
             if (history === void 0) { history = _ArrayOfHistory; }
-            if (prevYPosition === void 0) { prevYPosition = 0; }
-            if (prevXposition === void 0) { prevXposition = 0; }
+            if (prevYPositions === void 0) { prevYPositions = []; }
+            if (prevXpositions === void 0) { prevXpositions = []; }
             if (arrayOfCommands === void 0) { arrayOfCommands = _ArrayOfCommands = ["ver", "help", "shutdown", "cls", "man", "trace", "rot13",
                 "prompt", "date", "whereami", "restart", "alpaca", "load"]; }
             this.currentFont = currentFont;
@@ -29,8 +29,8 @@ var TSOS;
             this.currentYPosition = currentYPosition;
             this.buffer = buffer;
             this.history = history;
-            this.prevYPosition = prevYPosition;
-            this.prevXposition = prevXposition;
+            this.prevYPositions = prevYPositions;
+            this.prevXpositions = prevXpositions;
             this.arrayOfCommands = arrayOfCommands;
         }
         Console.prototype.init = function () {
@@ -149,9 +149,14 @@ var TSOS;
             _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition - this.currentFontSize - 2, _Canvas.width, this.currentFontSize + 7);
             //If cursor is on an advanced line, check to see if current x position is less than 1
             //Move back to previous line and reset the x and y positions
+            //FIX: This only works for only one advanced line. 
             if (this.currentXPosition < 1) {
-                this.currentXPosition = this.prevXposition;
-                this.currentYPosition = this.prevYPosition;
+                //get the last x and y positions in array
+                this.currentXPosition = this.prevXpositions[this.prevXpositions.length - 1];
+                this.currentYPosition = this.prevYPositions[this.prevYPositions.length - 1];
+                //Remove last x and y elements from the old arrays
+                this.prevXpositions.pop();
+                this.prevYPositions.pop();
             }
             // Make a new buffer, split current buffer into substrings and put them into a temporary buffer. 
             var newBuffer = "";
@@ -225,9 +230,9 @@ var TSOS;
         };
         Console.prototype.advanceLine = function () {
             //keep track of the last/highest x position before advancing to new line
-            this.prevXposition = this.currentXPosition;
+            this.prevXpositions.push(this.currentXPosition);
             //keep track of the last y position before advancing to new line
-            this.prevYPosition = this.currentYPosition;
+            this.prevYPositions.push(this.currentYPosition);
             this.currentXPosition = 0;
             /*
              * Font size measures from the baseline to the highest point in the font.
