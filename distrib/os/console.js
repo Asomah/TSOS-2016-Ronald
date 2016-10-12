@@ -54,8 +54,6 @@ var TSOS;
                 var chr = _KernelInputQueue.dequeue();
                 // Check to see if it's "special" (enter or ctrl-c) or "normal" (anything else that the keyboard device driver gave us).
                 if (chr === String.fromCharCode(13)) {
-                    //Display current status
-                    document.getElementById('Status').innerHTML = 'Status: ' + this.buffer;
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);

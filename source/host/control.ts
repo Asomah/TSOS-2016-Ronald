@@ -1,6 +1,7 @@
 ///<reference path="../globals.ts" />
 ///<reference path="../os/canvastext.ts" />
 
+
 /* ------------
      Control.ts
 
@@ -29,6 +30,7 @@ module TSOS {
 
         public static hostInit(): void {
             // This is called from index.html's onLoad event via the onDocumentLoad function pointer.
+
 
             // Get a global reference to the canvas.  TODO: Should we move this stuff into a Display Device Driver?
             _Canvas = <HTMLCanvasElement>document.getElementById('display');
@@ -75,6 +77,60 @@ module TSOS {
         }
 
 
+        public static memManagerTable():void {
+            _MemoryManager.init();
+           var myTableDiv = document.getElementById("metric_results")
+            var table = document.createElement('TABLE')
+            var tableBody = document.createElement('TBODY')
+
+            //table.border = '1'
+            table.appendChild(tableBody);
+
+            var heading = new Array();
+            heading[0] = "Request Type"
+            heading[1] = "Group A"
+            heading[2] = "Groub B"
+            heading[3] = "Group C"
+            heading[4] = "Total"
+
+            var stock = new Array()
+            stock[0] = new Array("Cars", _MemoryArray[0], "85.50", "85.81", "987")
+            stock[1] = new Array("Veggies", "88.625", "85.50", "85.81", "988")
+            stock[2] = new Array("Colors", "88.625", "85.50", "85.81", "989")
+            stock[3] = new Array("Numbers", "88.625", "85.50", "85.81", "990")
+            stock[4] = new Array("Requests", "88.625", "85.50", "85.81", "991")
+
+            //TABLE COLUMNS
+            var tr = document.createElement('TR');
+            tableBody.appendChild(tr);
+            for (var i = 0; i < heading.length; i++) {
+                var th = document.createElement('TH')
+                th.clientWidth = 75;
+                th.appendChild(document.createTextNode(heading[i]));
+                tr.appendChild(th);
+
+            }
+
+            //TABLE ROWS
+            var tr = document.createElement('TR');
+            tableBody.appendChild(tr);
+
+            for (i = 0; i < stock.length; i++) {
+                 var tr = document.createElement('TR');
+    for (var j = 0; j < stock[i].length; j++) {
+        var td = document.createElement('TD')
+        td.appendChild(document.createTextNode(stock[i][j]));
+        tr.appendChild(td)
+    }
+    tableBody.appendChild(tr);
+            }
+
+            myTableDiv.appendChild(table)
+
+
+        }
+
+
         //
         // Host Events
         //
@@ -92,6 +148,7 @@ module TSOS {
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);

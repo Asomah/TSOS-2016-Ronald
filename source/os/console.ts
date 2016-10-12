@@ -54,9 +54,6 @@ module TSOS {
                 if (chr === String.fromCharCode(13)) { //     Enter key
 
 
-                    //Display current status
-                    document.getElementById('Status').innerHTML = 'Status: ' + this.buffer;
-
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);

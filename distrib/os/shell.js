@@ -61,6 +61,10 @@ var TSOS;
             // bsod
             sc = new TSOS.ShellCommand(this.shellBsod, "alpaca", " - Traps an OS Error");
             this.commandList[this.commandList.length] = sc;
+            //status
+            sc = new TSOS.ShellCommand(this.shellStatus, "status", " <String> - Status of user.");
+            this.commandList[this.commandList.length] = sc;
+            //load 
             sc = new TSOS.ShellCommand(this.shellLoad, "load", " <HEX> - Validates user code.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
@@ -242,6 +246,9 @@ var TSOS;
                     case "alpaca":
                         _StdOut.putText("Traps an OS Error.");
                         break;
+                    case "status":
+                        _StdOut.putText("Displays status of user.");
+                        break;
                     case "load":
                         _StdOut.putText("Validates user code.");
                         break;
@@ -310,16 +317,27 @@ var TSOS;
         Shell.prototype.shellBsod = function (args) {
             _Kernel.krnTrapError(args);
         };
+        Shell.prototype.shellStatus = function (args) {
+            //Display current status
+            var statusString = "";
+            for (var i = 0; i < args.length; i++) {
+                statusString = statusString + args[i] + " ";
+            }
+            document.getElementById('Status').innerHTML = 'Status: ' + statusString;
+        };
         Shell.prototype.shellLoad = function (args) {
             //Get user input fromm html
-            var hex = document.getElementById("taProgramInput").value;
+            _ProgramInput = document.getElementById("taProgramInput").value;
+            var hex = _ProgramInput;
             //make new regex and check if user's input matches the regex
             var regex = new RegExp('^[0-9A-Fa-f\\s]+$');
             if (hex.match(regex)) {
-                _StdOut.putText('VALID HEX');
+                _StdOut.putText('VALID HEX' + hex.replace(/[\s]/g, ""));
             }
             else {
                 _StdOut.putText('INVALID HEX');
+                //reset program input if not valid
+                _ProgramInput = "";
             }
         };
         return Shell;

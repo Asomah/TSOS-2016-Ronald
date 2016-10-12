@@ -102,6 +102,13 @@ module TSOS {
                 "alpaca",
                 " - Traps an OS Error");
             this.commandList[this.commandList.length] = sc;
+            //status
+            sc = new ShellCommand(this.shellStatus,
+                "status",
+                " <String> - Status of user.");
+            this.commandList[this.commandList.length] = sc;
+
+            //load 
             sc = new ShellCommand(this.shellLoad,
                 "load",
                 " <HEX> - Validates user code.");
@@ -300,6 +307,9 @@ module TSOS {
                     case "alpaca":
                         _StdOut.putText("Traps an OS Error.");
                         break;
+                     case "status":
+                        _StdOut.putText("Displays status of user.");
+                        break;
                     case "load":
                         _StdOut.putText("Validates user code.");
                         break;
@@ -375,16 +385,30 @@ module TSOS {
             _Kernel.krnTrapError(args);
 
         }
+          
+        public shellStatus(args) {
+             //Display current status
+             var statusString = "";
+             for(var i = 0; i <args.length; i++){
+               statusString = statusString + args[i] + " ";
+             }
+             document.getElementById('Status').innerHTML = 'Status: ' + statusString;
+        }
 
         public shellLoad(args) {
             //Get user input fromm html
-            var hex = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
+            _ProgramInput = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
+            var hex = _ProgramInput;
             //make new regex and check if user's input matches the regex
             var regex = new RegExp('^[0-9A-Fa-f\\s]+$');
             if (hex.match(regex)) {
-                _StdOut.putText('VALID HEX');
+                _StdOut.putText('VALID HEX' + hex.replace(/[\s]/g, ""));
+
             } else {
                 _StdOut.putText('INVALID HEX');
+                //reset program input if not valid
+                _ProgramInput = "";
+
             }
 
         }
