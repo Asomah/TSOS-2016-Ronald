@@ -34,7 +34,10 @@ var _Mode: number = 0;     // (currently unused)  0 = Kernel Mode, 1 = User Mode
 
 var _ArrayOfCommands: string[] = [];
 var _ArrayOfHistory: string[] = [];
+
+var _ProgramSize: number = 256; //Allocate 256 bytes for program
 var _MemoryArray: string[] = [];
+
 
 var _Canvas: HTMLCanvasElement;         // Initialized in Control.hostInit().
 var _DrawingContext: any; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
@@ -44,14 +47,12 @@ var _FontHeightMargin: number = 4;              // Additional space added to fon
 
 var _Trace: boolean = true;  // Default the OS trace to be on.
 
-var _Memory;
-var _MemoryManager: TSOS.MemoryManager;
-
+var _Memory: any;
+var _MemoryManager: any;
 
 
 var _ProgramInput = "";      //Program input
 
-var _ProgramSize: number = 256; //Allocate 256 bytes for program
 
 // The OS Kernel and its queues.
 var _Kernel: TSOS.Kernel;

@@ -9,7 +9,7 @@ export class MemoryManager {
           var programInput = _ProgramInput.replace(/[\s]/g, "");
 
           for (var i = 0 ; i < programInput.length/2; i=+2){
-                _Memory.memoryArr[i]=programInput[i] + programInput[i+1];
+                _MemoryArray[i]=programInput[i] + programInput[i+1];
           }
 
 

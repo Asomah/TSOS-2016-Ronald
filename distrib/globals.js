@@ -25,6 +25,7 @@ var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _ArrayOfCommands = [];
 var _ArrayOfHistory = [];
+var _ProgramSize = 256; //Allocate 256 bytes for program
 var _MemoryArray = [];
 var _Canvas; // Initialized in Control.hostInit().
 var _DrawingContext; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
@@ -35,7 +36,6 @@ var _Trace = true; // Default the OS trace to be on.
 var _Memory;
 var _MemoryManager;
 var _ProgramInput = ""; //Program input
-var _ProgramSize = 256; //Allocate 256 bytes for program
 // The OS Kernel and its queues.
 var _Kernel;
 var _KernelInterruptQueue; // Initializing this to null (which I would normally do) would then require us to specify the 'any' type, as below.

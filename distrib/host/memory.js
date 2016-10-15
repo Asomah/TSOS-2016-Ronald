@@ -2,15 +2,11 @@
 var TSOS;
 (function (TSOS) {
     var Memory = (function () {
-        function Memory(bytes, memoryArr) {
-            if (bytes === void 0) { bytes = _ProgramSize; }
-            if (memoryArr === void 0) { memoryArr = new Array(bytes); }
-            this.bytes = bytes;
-            this.memoryArr = memoryArr;
+        function Memory() {
         }
         Memory.prototype.init = function () {
-            for (var i = 0; i < this.memoryArr.length; i++) {
-                this.memoryArr[i] = "00";
+            for (var i = 0; i < _ProgramSize; i++) {
+                _MemoryArray.push("00");
             }
         };
         return Memory;

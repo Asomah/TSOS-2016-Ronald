@@ -78,54 +78,43 @@ module TSOS {
 
 
         public static memManagerTable():void {
-            _MemoryManager.init();
-           var myTableDiv = document.getElementById("metric_results")
+         _Kernel.loadMemory();
+         //document.getElementById("metric_results").innerHTML = "";
+
+           var myTableDiv = document.getElementById("memoryTable")
             var table = document.createElement('TABLE')
             var tableBody = document.createElement('TBODY')
 
             //table.border = '1'
-            table.appendChild(tableBody);
+            //table.appendChild(tableBody);
 
-            var heading = new Array();
-            heading[0] = "Request Type"
-            heading[1] = "Group A"
-            heading[2] = "Groub B"
-            heading[3] = "Group C"
-            heading[4] = "Total"
+           for (var i = 0; i < _MemoryArray.length; i++) {
+              if (i % 8 === 0) {
+                // Create a new row if current row has 8 cells
+                var row = document.createElement("tr");
+                document.getElementById("memoryTable").appendChild(row);
+                
+                var cell = document.createElement("td");
+                var hexString = i.toString(16);
 
-            var stock = new Array()
-            stock[0] = new Array("Cars", _MemoryArray[0], "85.50", "85.81", "987")
-            stock[1] = new Array("Veggies", "88.625", "85.50", "85.81", "988")
-            stock[2] = new Array("Colors", "88.625", "85.50", "85.81", "989")
-            stock[3] = new Array("Numbers", "88.625", "85.50", "85.81", "990")
-            stock[4] = new Array("Requests", "88.625", "85.50", "85.81", "991")
+                while (hexString.length < 3) {
+                  hexString = "0" + hexString;
+                }
 
-            //TABLE COLUMNS
-            var tr = document.createElement('TR');
-            tableBody.appendChild(tr);
-            for (var i = 0; i < heading.length; i++) {
-                var th = document.createElement('TH')
-                th.clientWidth = 75;
-                th.appendChild(document.createTextNode(heading[i]));
-                tr.appendChild(th);
-
+                var data = document.createTextNode("0x" + hexString.toUpperCase());
+                cell.appendChild(data);
+                row.appendChild(cell);
+              }
+              var cell = document.createElement("td");
+              var data = document.createTextNode(_MemoryArray[i]);
+              var rows = document.getElementById("memoryTable").getElementsByTagName("tr");
+              var lastRow = rows[rows.length - 1];
+              cell.appendChild(data);
+              lastRow.appendChild(cell);
             }
 
-            //TABLE ROWS
-            var tr = document.createElement('TR');
-            tableBody.appendChild(tr);
 
-            for (i = 0; i < stock.length; i++) {
-                 var tr = document.createElement('TR');
-    for (var j = 0; j < stock[i].length; j++) {
-        var td = document.createElement('TD')
-        td.appendChild(document.createTextNode(stock[i][j]));
-        tr.appendChild(td)
-    }
-    tableBody.appendChild(tr);
-            }
-
-            myTableDiv.appendChild(table)
+            //myTableDiv.appendChild(table)
 
 
         }
@@ -155,6 +144,8 @@ module TSOS {
             // .. and call the OS Kernel Bootstrap routine.
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
+            this.memManagerTable();
+
         }
 
         public static hostBtnHaltOS_click(btn): void {

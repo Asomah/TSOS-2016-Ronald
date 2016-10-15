@@ -88,6 +88,11 @@ var TSOS;
             //Display date and time
             document.getElementById('Time').innerHTML = 'Date: ' + date + ' Time:' + time;
         };
+        Kernel.prototype.loadMemory = function () {
+            for (var i = 0; i < _ProgramSize; i++) {
+                _MemoryArray.push("00");
+            }
+        };
         //
         // Interrupt Handling
         //
