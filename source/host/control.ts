@@ -78,7 +78,9 @@ module TSOS {
 
 
         public static memManagerTable():void {
-         _Kernel.loadMemory();
+         _Memory = new Memory();
+         _Memory.init();
+
          //_Kernel.loadProgToMem();
          //document.getElementById("metric_results").innerHTML = "";
 
@@ -120,27 +122,6 @@ module TSOS {
 
         }
 
-    public static updteMemTable():void {
-         //load program to memory
-         _Kernel.loadProgToMem();
-         
-         //get Memory table and insert memory into the table cells
-         var memoryTable : HTMLTableElement = <HTMLTableElement> document.getElementById("memoryTable");
-         var rows = memoryTable.getElementsByTagName("tr");
-
-
-        var memIndex = 0;
-         for (var i = 0 ; i < rows.length; i++){
-                   
-                    var cells = rows[i].cells;
-                    for (var j = 1 ; j < cells.length; j++){
-                     rows[i].cells[j].innerHTML = _MemoryArray[memIndex];
-                     memIndex++;
-               }                  
-               }
-         
-
-        }
 
 
         //
@@ -160,14 +141,16 @@ module TSOS {
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
-
+            
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
+
             this.memManagerTable();
+
             
 
         }

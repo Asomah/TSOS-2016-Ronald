@@ -27,12 +27,24 @@ var _ArrayOfCommands = [];
 var _ArrayOfHistory = [];
 var _ProgramSize = 256; //Allocate 256 bytes for program
 var _MemoryArray = [];
+var _PID = -1; //PID for PCB
+// states of process for PCB.. Make constants to represent different states.
+var PS_New = 0;
+var PS_Ready = 1;
+var PS_Running = 2;
+var PS_Waiting = 3;
+var PS_Terminated = 4;
+var _Base = 0; //defualt base of memory
+var _CurrMemIndex = 0; //defualt base of memory
+var _ResidentQueue = []; //resident queue 
+var _ReadyQueue = []; //resident queue
 var _Canvas; // Initialized in Control.hostInit().
 var _DrawingContext; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
 var _DefaultFontFamily = "sans"; // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.
 var _DefaultFontSize = 13;
 var _FontHeightMargin = 4; // Additional space added to font size when advancing a line.
 var _Trace = true; // Default the OS trace to be on.
+var _Pcb;
 var _Memory;
 var _MemoryManager;
 var _ProgramInput = ""; //Program input

@@ -38,16 +38,20 @@ var _ArrayOfHistory: string[] = [];
 var _ProgramSize: number = 256; //Allocate 256 bytes for program
 var _MemoryArray: string[] = [];
 
-var _PID: number = 0;             //PID for PCB
+var _PID: number = -1;             //PID for PCB
 
 // states of process for PCB.. Make constants to represent different states.
-const PS_NEW: number = 0;
-const PS_READY: number = 1;
-const PS_RUNNING: number = 2;
-const PS_WAITING: number = 3;
-const PS_TERMINATED: number = 4;
+const PS_New: number = 0;
+const PS_Ready: number = 1;
+const PS_Running: number = 2;
+const PS_Waiting: number = 3;
+const PS_Terminated: number = 4;
 
-var _Priority : number = 0;    //default priority for PCB Process
+var _Base: number = 0;                  //defualt base of memory
+var _CurrMemIndex: number = 0;                  //defualt base of memory
+
+var _ResidentQueue: any = [];         //resident queue 
+var _ReadyQueue: any = [];           //resident queue
 
 
 var _Canvas: HTMLCanvasElement;         // Initialized in Control.hostInit().
@@ -58,6 +62,7 @@ var _FontHeightMargin: number = 4;              // Additional space added to fon
 
 var _Trace: boolean = true;  // Default the OS trace to be on.
 
+var _Pcb: TSOS.Pcb;
 var _Memory: TSOS.Memory;
 var _MemoryManager: TSOS.MemoryManager; 
 

@@ -9,8 +9,11 @@ module TSOS {
                 public Yreg: number = 0,
                 public Zflag: number = 0,
                 public PID: number = _PID,
-                public state: number = PS_NEW,
-                public priority: number = _PRIORITY) {
+                public base: number = _Base,
+                public limit: number = _ProgramSize - 1,
+                public state: number = PS_New,
+                public isExecuting: boolean = false,
+                public pcbProgram :string = "") {
     }
   }
 }
