@@ -402,7 +402,8 @@ module TSOS {
             //make new regex and check if user's input matches the regex
             var regex = new RegExp('^[0-9A-Fa-f\\s]+$');
             if (hex.match(regex)) {
-                _StdOut.putText('VALID HEX' + hex.replace(/[\s]/g, ""));
+                _StdOut.putText('VALID HEX');
+                TSOS.Control.updteMemTable();
 
             } else {
                 _StdOut.putText('INVALID HEX');
@@ -410,6 +411,48 @@ module TSOS {
                 _ProgramInput = "";
 
             }
+
+        }
+          public updateMemory():void {
+         _Kernel.loadMemory();
+         _Kernel.loadProgToMem();
+         //document.getElementById("metric_results").innerHTML = "";
+
+           var myTableDiv = document.getElementById("memoryTable")
+            var table = document.createElement('TABLE')
+            var tableBody = document.createElement('TBODY')
+
+            //table.border = '1'
+            //table.appendChild(tableBody);
+
+           for (var i = 0; i < _MemoryArray.length; i++) {
+              if (i % 8 === 0) {
+                // Create a new row if current row has 8 cells
+                var row = document.createElement("tr");
+                document.getElementById("memoryTable").appendChild(row);
+                
+                var cell = document.createElement("td");
+                var hexString = i.toString(16);
+
+                while (hexString.length < 3) {
+                  hexString = "0" + hexString;
+                }
+
+                var data = document.createTextNode("0x" + hexString.toUpperCase());
+                cell.appendChild(data);
+                row.appendChild(cell);
+              }
+              var cell = document.createElement("td");
+              var data = document.createTextNode(_MemoryArray[i]);
+              var rows = document.getElementById("memoryTable").getElementsByTagName("tr");
+              var lastRow = rows[rows.length - 1];
+              cell.appendChild(data);
+              lastRow.appendChild(cell);
+            }
+
+
+            //myTableDiv.appendChild(table)
+
 
         }
 

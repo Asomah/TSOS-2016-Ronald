@@ -64,6 +64,7 @@ var TSOS;
         };
         Control.memManagerTable = function () {
             _Kernel.loadMemory();
+            //_Kernel.loadProgToMem();
             //document.getElementById("metric_results").innerHTML = "";
             var myTableDiv = document.getElementById("memoryTable");
             var table = document.createElement('TABLE');
@@ -92,6 +93,27 @@ var TSOS;
                 lastRow.appendChild(cell);
             }
             //myTableDiv.appendChild(table)
+        };
+        Control.updteMemTable = function () {
+            //_Kernel.loadMemory();
+            _Kernel.loadProgToMem();
+            var memoryTable = document.getElementById("memoryTable");
+            var rows = memoryTable.getElementsByTagName("tr");
+            //rows.remove();
+            //rows[0].cells[1].innerHTML = "YE";
+            //alert(rows[0].cells[1]);
+            //var rows = memoryTable.rows[0];
+            //rows.nodeValue[1];
+            // var cells = memoryTable
+            //var cells = null;
+            var memIndex = 0;
+            for (var i = 0; i < rows.length; i++) {
+                var cells = rows[i].cells;
+                for (var j = 1; j < cells.length; j++) {
+                    rows[i].cells[j].innerHTML = _MemoryArray[memIndex];
+                    memIndex++;
+                }
+            }
         };
         //
         // Host Events

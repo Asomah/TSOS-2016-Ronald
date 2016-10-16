@@ -79,6 +79,7 @@ module TSOS {
 
         public static memManagerTable():void {
          _Kernel.loadMemory();
+         //_Kernel.loadProgToMem();
          //document.getElementById("metric_results").innerHTML = "";
 
            var myTableDiv = document.getElementById("memoryTable")
@@ -119,6 +120,28 @@ module TSOS {
 
         }
 
+    public static updteMemTable():void {
+         //load program to memory
+         _Kernel.loadProgToMem();
+         
+         //get Memory table and insert memory into the table cells
+         var memoryTable : HTMLTableElement = <HTMLTableElement> document.getElementById("memoryTable");
+         var rows = memoryTable.getElementsByTagName("tr");
+
+
+        var memIndex = 0;
+         for (var i = 0 ; i < rows.length; i++){
+                   
+                    var cells = rows[i].cells;
+                    for (var j = 1 ; j < cells.length; j++){
+                     rows[i].cells[j].innerHTML = _MemoryArray[memIndex];
+                     memIndex++;
+               }                  
+               }
+         
+
+        }
+
 
         //
         // Host Events
@@ -145,10 +168,12 @@ module TSOS {
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
             this.memManagerTable();
+            
 
         }
 
         public static hostBtnHaltOS_click(btn): void {
+            
             Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.

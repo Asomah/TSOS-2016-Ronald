@@ -102,11 +102,39 @@ module TSOS {
 
         }
         
+        //Create default memory
         public loadMemory() {
            for (var i = 0; i < _ProgramSize; i++){
                _MemoryArray.push("00");
            }
         }
+
+        //Load programInput into memory 
+      public loadProgToMem(){
+          var programInput = (<HTMLInputElement>document.getElementById("taProgramInput")).value.replace(/[\s]/g, "");
+          var j = 0;
+          //var i = 0;
+
+          for (var i = 0 ; i < programInput.length; i++){
+                _MemoryArray[j]=programInput[i] + programInput[i+1];
+                j = j + 1;
+                i = i + 1;
+
+            }
+
+         /* var rows = document.getElementById("memoryTable").getElementsByTagName("tr");
+
+          
+               for (var i = 0 ; i < rows.length; i++){
+                   
+                var cells = rows[i].cells
+                    for (var i = 0 ; i < cells.length; i++){
+                     cells[i].innerHTML = "YES"
+                   
+               }                  
+               }*/
+  
+      }
         //
         // Interrupt Handling
         //
