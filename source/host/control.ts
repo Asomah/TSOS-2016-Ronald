@@ -77,23 +77,21 @@ module TSOS {
         }
 
 
-        public static memManagerTable():void {
+        public static memoryTable():void {
+        //Create an array of memory
          _Memory = new Memory();
          _Memory.init();
 
-         //_Kernel.loadProgToMem();
-         //document.getElementById("metric_results").innerHTML = "";
-
+         
+           //Create table with 9 columns
            var myTableDiv = document.getElementById("memoryTable")
             var table = document.createElement('TABLE')
             var tableBody = document.createElement('TBODY')
 
-            //table.border = '1'
-            //table.appendChild(tableBody);
+           //Loop through memory array and create a new row if length of current row is 8
 
            for (var i = 0; i < _MemoryArray.length; i++) {
-              if (i % 8 === 0) {
-                // Create a new row if current row has 8 cells
+              if (i % 8 == 0) {
                 var row = document.createElement("tr");
                 document.getElementById("memoryTable").appendChild(row);
                 
@@ -149,7 +147,7 @@ module TSOS {
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
 
-            this.memManagerTable();
+            this.memoryTable();
 
             
 

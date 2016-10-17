@@ -62,19 +62,17 @@ var TSOS;
             taLog.value = str + taLog.value;
             // TODO in the future: Optionally update a log database or some streaming service.
         };
-        Control.memManagerTable = function () {
+        Control.memoryTable = function () {
+            //Create an array of memory
             _Memory = new TSOS.Memory();
             _Memory.init();
-            //_Kernel.loadProgToMem();
-            //document.getElementById("metric_results").innerHTML = "";
+            //Create table with 9 columns
             var myTableDiv = document.getElementById("memoryTable");
             var table = document.createElement('TABLE');
             var tableBody = document.createElement('TBODY');
-            //table.border = '1'
-            //table.appendChild(tableBody);
+            //Loop through memory array and create a new row if length of current row is 8
             for (var i = 0; i < _MemoryArray.length; i++) {
-                if (i % 8 === 0) {
-                    // Create a new row if current row has 8 cells
+                if (i % 8 == 0) {
                     var row = document.createElement("tr");
                     document.getElementById("memoryTable").appendChild(row);
                     var cell = document.createElement("td");
@@ -114,7 +112,7 @@ var TSOS;
             // .. and call the OS Kernel Bootstrap routine.
             _Kernel = new TSOS.Kernel();
             _Kernel.krnBootstrap(); // _GLaDOS.afterStartup() will get called in there, if configured.
-            this.memManagerTable();
+            this.memoryTable();
         };
         Control.hostBtnHaltOS_click = function (btn) {
             Control.hostLog("Emergency halt", "host");

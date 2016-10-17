@@ -114,6 +114,12 @@ module TSOS {
                 " <HEX> - Validates user code.");
             this.commandList[this.commandList.length] = sc;
 
+            //run
+            sc = new ShellCommand(this.shellRun,
+                "run",
+                " <pid> - run a valid process.");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -313,6 +319,9 @@ module TSOS {
                     case "load":
                         _StdOut.putText("Validates user code.");
                         break;
+                    case "run":
+                        _StdOut.putText("Runs a valid process.");
+                        break;
 
 
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
@@ -416,6 +425,25 @@ module TSOS {
                 _ProgramInput = "";
 
             }
+
+        }
+
+        public shellRun(args) {
+            var pid = -1;
+            for(var i = 0; i < _ResidentQueue.length; i++){
+                if (args == _ResidentQueue[i].PID){
+                    pid = _ResidentQueue[i].PID;
+                    break;
+                }   
+
+            }
+            if (pid >= 0 && pid < _ResidentQueue.length){
+                _StdOut.putText('Running ' + pid);
+            }
+            else{
+                _StdOut.putText('Ivalid PID... Please enter correct PID');
+            }
+
 
         }
          
