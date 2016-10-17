@@ -29,11 +29,11 @@ var _ProgramSize = 256; //Allocate 256 bytes for program
 var _MemoryArray = [];
 var _PID = -1; //PID for PCB
 // states of process for PCB.. Make constants to represent different states.
-var PS_New = 0;
-var PS_Ready = 1;
-var PS_Running = 2;
-var PS_Waiting = 3;
-var PS_Terminated = 4;
+var PS_New = "New";
+var PS_Ready = "Ready";
+var PS_Running = "Running";
+var PS_Waiting = "Waiting";
+var PS_Terminated = "Terminated";
 var _Base = 0; //defualt base of memory
 var _CurrMemIndex = 0; //defualt base of memory
 var _ResidentQueue = []; //resident queue 

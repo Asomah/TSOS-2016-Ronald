@@ -67,9 +67,7 @@ var TSOS;
             _Memory = new TSOS.Memory();
             _Memory.init();
             //Create table with 9 columns
-            var myTableDiv = document.getElementById("memoryTable");
-            var table = document.createElement('TABLE');
-            var tableBody = document.createElement('TBODY');
+            var memTable = document.getElementById("memoryTable");
             //Loop through memory array and create a new row if length of current row is 8
             for (var i = 0; i < _MemoryArray.length; i++) {
                 if (i % 8 == 0) {
@@ -91,7 +89,6 @@ var TSOS;
                 cell.appendChild(data);
                 lastRow.appendChild(cell);
             }
-            //myTableDiv.appendChild(table)
         };
         //
         // Host Events

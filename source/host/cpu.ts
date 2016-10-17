@@ -39,39 +39,44 @@ module TSOS {
         }
 
       //Get the next two bytes from programm input
-      public getTwoBytes(program:string){
-          var bytes = program[this.counter] + program[this.counter+1] + program[this.counter+2] + program[this.counter+3];
-          this.counter = this.counter+4;
-
+      public getTwoBytes(memory){
+          var bytes = memory[this.counter] + memory[this.counter+1];
+          this.counter = this.counter+2;
           return bytes;
       }
 
       //Get the next byte from programm input
-      public getOneByte(program:string){
-          var bytes = program[this.counter] + program[this.counter+1];
-          this.counter = this.counter + 2;
+      public getOneByte(memory){
+          var bytes = memory[this.counter];
+          this.counter = this.counter + 1;
 
           return bytes;
       }
 
-       public loadCode(program :string){
-           var program = _ProgramInput.replace(" ", "");
-           var opCode = this.getOneByte(program);
+       public loadCode(){
+           var memory = _MemoryArray;
+           var opCode = this.getOneByte(memory);
            
            if (opCode == "A9"){
                //Load the accumulator with constant
                
                // Load the the next byte 
-               var hex = this.getOneByte(program);
+               var hex = this.getOneByte(memory);
                
                //convert constant from hex to base 10 and set it to accumulator
                this.Acc= parseInt(hex, 16);
+               _Acc = this.Acc;
            }
            else if (opCode == "AD"){
                // Load the acccumulator from memeory
 
-               // Load the the next two bytes 
-               var hex = this.getTwoBytes(program);
+               // Load the the next two bytes and switch them
+               var memAddress = this.getOneByte(memory);
+               memAddress = this.getOneByte(memory) + memAddress;
+               
+               var value = memory[parseInt(memAddress, 16)];
+               this.Acc = parseInt(value, 16)
+
 
                //co
 
@@ -80,42 +85,64 @@ module TSOS {
                //Store accumulator in memory
 
                // Load the the next two bytes 
-               var hex = this.getTwoBytes(program);
+               var memAddress = this.getOneByte(memory);
+               memAddress = this.getOneByte(memory) + memAddress;
+               
+               var destAddress = parseInt(memAddress, 16)
+               
+               if (destAddress <= _ProgramSize){
+                   memory[destAddress] = this.Acc.toString(16);
+               }
+
 
            }
            else if (opCode == "6D"){
                //Add with carry
 
                // Load the the next two bytes 
-               var hex = this.getTwoBytes(program);
+               var memAddress = this.getOneByte(memory);
+               memAddress = this.getOneByte(memory) + memAddress;
+
+               var value = memory[parseInt(memAddress, 16)];
+               this.Acc = this.Acc + parseInt(value, 16)
 
            }
            else if (opCode == "A2"){
                //Load the X resgister with a constant
 
                // Load the the next byte 
-               var hex = this.getOneByte(program);
+               var numValue = this.getOneByte(memory);
+               this.Xreg = parseInt(numValue, 16)
 
            }
            else if (opCode == "AE"){
                //Load the X register from memory
 
                // Load the the next two bytes 
-               var hex = this.getTwoBytes(program);
+               var memAddress = this.getOneByte(memory);
+               memAddress = this.getOneByte(memory) + memAddress;
+               
+               var value = memory[parseInt(memAddress, 16)];
+               this.Xreg = parseInt(value, 16);
 
            }
            else if (opCode == "A0"){
                //Load Y register with a constant 
 
                // Load the the next byte 
-               var hex = this.getOneByte(program);
+               var numValue = this.getOneByte(memory);
+               this.Yreg = parseInt(numValue, 16)
 
            }
            else if (opCode == "AC"){
                //Load Y register from memory 
 
                // Load the the next two bytes 
-               var hex = this.getTwoBytes(program);
+               var memAddress = this.getOneByte(memory);
+               memAddress = this.getOneByte(memory) + memAddress;
+               
+               var value = memory[parseInt(memAddress, 16)];
+               this.Yreg = parseInt(value, 16);
 
            }
            else if (opCode == "EA"){
@@ -124,6 +151,12 @@ module TSOS {
            }
            else if (opCode == "00"){
                //Break
+               _CPU.counter = this.counter;
+               _CPU.PC = this.PC;
+               _CPU.Acc = this.Acc;
+               _CPU.Xreg = this.Xreg;
+               _CPU.Yreg = this.Yreg;
+               _CPU.Zflag = this.Zflag;
 
            }
            else if (opCode == "EC"){
@@ -131,7 +164,18 @@ module TSOS {
                //Set the Z flag if equal
 
                // Load the the next two bytes 
-               var hex = this.getTwoBytes(program);
+              var memAddress = this.getOneByte(memory);
+               memAddress = this.getOneByte(memory) + memAddress;
+               
+               var value = memory[parseInt(memAddress, 16)];
+               var xValue = parseInt(value, 16);
+               if (xValue != this.Xreg){
+                   this.Zflag = 0;
+               }
+               else{
+                   this.Zflag = 1
+               }
+
 
            }
            else if (opCode == "D0"){

@@ -353,6 +353,10 @@ var TSOS;
             }
         };
         Shell.prototype.shellRun = function (args) {
+            /*
+            compare arg with all pids in resident Queue
+            if arg equals any pid, run that job else display an error message
+            */
             var pid = -1;
             for (var i = 0; i < _ResidentQueue.length; i++) {
                 if (args == _ResidentQueue[i].PID) {
@@ -361,7 +365,7 @@ var TSOS;
                 }
             }
             if (pid >= 0 && pid < _ResidentQueue.length) {
-                _StdOut.putText('Running ' + pid);
+                _StdOut.putText('Running PID ' + pid);
             }
             else {
                 _StdOut.putText('Ivalid PID... Please enter correct PID');

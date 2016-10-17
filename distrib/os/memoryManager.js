@@ -26,6 +26,66 @@ var TSOS;
             _Pcb.pcbProgram = programInput;
             _ResidentQueue.push(_Pcb);
             _StdOut.putText("PID " + _PID + " Loaded");
+            //Create row and insert into PCB table
+            var myTable = document.getElementById("pcbTable");
+            var newRow = myTable.insertRow(myTable.rows.length);
+            //myTable.insertRow(myTable.rows.length);
+            // Insert a cell in the row at index 0
+            var newCell1 = newRow.insertCell(0);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_Pcb.PID + "");
+            newCell1.appendChild(newText);
+            // Insert a cell in the row at index 1
+            var newCell2 = newRow.insertCell(1);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_Pcb.PC + "");
+            newCell2.appendChild(newText);
+            // Insert a cell in the row at index 2
+            var newCell3 = newRow.insertCell(2);
+            // Append a text node to the cell
+            var newText = document.createTextNode("Not");
+            newCell3.appendChild(newText);
+            // Insert a cell in the row at index 4
+            var newCell4 = newRow.insertCell(3);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_Pcb.Acc + "");
+            newCell4.appendChild(newText);
+            // Insert a cell in the row at index 5
+            var newCell5 = newRow.insertCell(4);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_Pcb.Xreg + "");
+            newCell5.appendChild(newText);
+            // Insert a cell in the row at index 6
+            var newCell6 = newRow.insertCell(5);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_Pcb.Yreg + "");
+            newCell6.appendChild(newText);
+            // Insert a cell in the row at index 7
+            var newCell7 = newRow.insertCell(6);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_Pcb.Zflag + "");
+            newCell7.appendChild(newText);
+            // Insert a cell in the row at index 8
+            var newCell8 = newRow.insertCell(7);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_Pcb.base + "");
+            newCell8.appendChild(newText);
+            // Insert a cell in the row at index 9
+            var newCell9 = newRow.insertCell(8);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_Pcb.limit + "");
+            newCell9.appendChild(newText);
+            // Insert a cell in the row at index 10
+            var newCell10 = newRow.insertCell(9);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_Pcb.state + "");
+            newCell10.appendChild(newText);
+            //alert(myTable.rows.length)
+        };
+        MemoryManager.prototype.createPcbRow = function (pcb) {
+            //Create table with 9 columns
+            var pcbTable = document.getElementById("pcbTable");
+            var rows = pcbTable.getElementsByTagName("tr");
         };
         MemoryManager.prototype.updateMemTable = function () {
             //load program to memory

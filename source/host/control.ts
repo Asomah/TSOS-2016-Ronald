@@ -84,9 +84,7 @@ module TSOS {
 
          
            //Create table with 9 columns
-           var myTableDiv = document.getElementById("memoryTable")
-            var table = document.createElement('TABLE')
-            var tableBody = document.createElement('TBODY')
+           var memTable = document.getElementById("memoryTable")
 
            //Loop through memory array and create a new row if length of current row is 8
 
@@ -113,9 +111,6 @@ module TSOS {
               cell.appendChild(data);
               lastRow.appendChild(cell);
             }
-
-
-            //myTableDiv.appendChild(table)
 
 
         }
