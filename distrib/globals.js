@@ -28,6 +28,12 @@ var _ArrayOfHistory = [];
 var _ProgramSize = 256; //Allocate 256 bytes for program
 var _MemoryArray = [];
 var _PID = -1; //PID for PCB
+var _IR = 0;
+var _Acc = 0;
+var _PC = 0;
+var _Xreg = 0;
+var _Yreg = 0;
+var _Zflag = 0;
 // states of process for PCB.. Make constants to represent different states.
 var PS_New = "New";
 var PS_Ready = "Ready";

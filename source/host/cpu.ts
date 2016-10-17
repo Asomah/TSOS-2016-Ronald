@@ -53,7 +53,7 @@ module TSOS {
           return bytes;
       }
 
-       public loadCode(){
+       public executeProgram(){
            var memory = _MemoryArray;
            var opCode = this.getOneByte(memory);
            
@@ -75,7 +75,8 @@ module TSOS {
                memAddress = this.getOneByte(memory) + memAddress;
                
                var value = memory[parseInt(memAddress, 16)];
-               this.Acc = parseInt(value, 16)
+               this.Acc = parseInt(value, 16);
+               _Acc = parseInt(value, 16);
 
 
                //co
@@ -104,7 +105,8 @@ module TSOS {
                memAddress = this.getOneByte(memory) + memAddress;
 
                var value = memory[parseInt(memAddress, 16)];
-               this.Acc = this.Acc + parseInt(value, 16)
+               this.Acc = this.Acc + parseInt(value, 16);
+               _Acc = this.Acc + parseInt(value, 16);
 
            }
            else if (opCode == "A2"){
@@ -112,7 +114,8 @@ module TSOS {
 
                // Load the the next byte 
                var numValue = this.getOneByte(memory);
-               this.Xreg = parseInt(numValue, 16)
+               this.Xreg = parseInt(numValue, 16);
+               _Xreg = parseInt(numValue, 16);
 
            }
            else if (opCode == "AE"){
@@ -124,6 +127,7 @@ module TSOS {
                
                var value = memory[parseInt(memAddress, 16)];
                this.Xreg = parseInt(value, 16);
+               _Xreg = parseInt(value, 16);
 
            }
            else if (opCode == "A0"){
@@ -132,6 +136,7 @@ module TSOS {
                // Load the the next byte 
                var numValue = this.getOneByte(memory);
                this.Yreg = parseInt(numValue, 16)
+               _Yreg = parseInt(numValue, 16);
 
            }
            else if (opCode == "AC"){
@@ -143,6 +148,7 @@ module TSOS {
                
                var value = memory[parseInt(memAddress, 16)];
                this.Yreg = parseInt(value, 16);
+               _Yreg = parseInt(value, 16);
 
            }
            else if (opCode == "EA"){
@@ -171,9 +177,11 @@ module TSOS {
                var xValue = parseInt(value, 16);
                if (xValue != this.Xreg){
                    this.Zflag = 0;
+                   _Zflag = 0;
                }
                else{
-                   this.Zflag = 1
+                   this.Zflag = 1;
+                   _Zflag = 1;
                }
 
 
@@ -185,10 +193,25 @@ module TSOS {
            }
            else if (opCode == "EE"){
                //Increament the value of a byte
+               var memAddress = this.getOneByte(memory);
+               memAddress = this.getOneByte(memory) + memAddress;
+               var address = parseInt(memAddress, 16);
+
+               var value = memory[address];
+               var newValue = parseInt(value, 16) + 1;
+               
+               if (address <= _ProgramSize){
+                   value = newValue.toString(16);
+               }
+
 
            }
            else if (opCode == "FF"){
                //Do a system call
+               if (this.Xreg === 1) {
+                _StdOut.putText("" + this.Yreg);
+            }
+
 
            }
 
@@ -200,6 +223,7 @@ module TSOS {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            this.executeProgram();
         }
     }
 }

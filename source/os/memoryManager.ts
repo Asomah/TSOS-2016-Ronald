@@ -52,7 +52,7 @@ export class MemoryManager {
          // Insert a cell in the row at index 2
           var newCell3  = newRow.insertCell(2);
          // Append a text node to the cell
-         var newText  = document.createTextNode("Not");
+         var newText  = document.createTextNode(_Pcb.IR + "");
          newCell3.appendChild(newText);
 
          // Insert a cell in the row at index 4

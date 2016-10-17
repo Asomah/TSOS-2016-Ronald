@@ -447,6 +447,9 @@ module TSOS {
             if (pid >= 0 && pid < _ResidentQueue.length){
                 _StdOut.putText('Running PID ' + pid);
                 _ResidentQueue[index].state = PS_Running;
+                _CPU = new Cpu();
+                //_CPU.isExecuting = true;
+                _CPU.executeProgram();
 
 
             }

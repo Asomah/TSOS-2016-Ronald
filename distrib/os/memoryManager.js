@@ -24,6 +24,7 @@ var TSOS;
             _PID++;
             _Pcb = new TSOS.Pcb();
             _Pcb.pcbProgram = programInput;
+            _Pcb.state = PS_Ready;
             _ResidentQueue.push(_Pcb);
             _StdOut.putText("PID " + _PID + " Loaded");
             //Create row and insert into PCB table
@@ -81,11 +82,6 @@ var TSOS;
             var newText = document.createTextNode(_Pcb.state + "");
             newCell10.appendChild(newText);
             //alert(myTable.rows.length)
-        };
-        MemoryManager.prototype.createPcbRow = function (pcb) {
-            //Create table with 9 columns
-            var pcbTable = document.getElementById("pcbTable");
-            var rows = pcbTable.getElementsByTagName("tr");
         };
         MemoryManager.prototype.updateMemTable = function () {
             //load program to memory
