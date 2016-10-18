@@ -31,6 +31,7 @@ module TSOS {
         }
 
         public init(): void {
+            this.counter = 0;
             this.PC = 0;
             this.IR = _IR;
             this.Acc = 0;
@@ -46,7 +47,7 @@ module TSOS {
 
             //Get Next byte from memory
             this.PC++;
-            var memAddress = _MemoryManager.fetch(this.PC);
+            var memAddress = _MemoryManager.fetch(++this.counter);
 
             //convert constant from hex to base 10 and set it to accumulator
             this.Acc = parseInt(memAddress, 16);
@@ -67,8 +68,9 @@ module TSOS {
                 // Load the acccumulator from memeory
 
                 // Load the the next two bytes and switch them
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC); + memAddress;
+                this.PC +=2;
+                var memAddress = _MemoryManager.fetch(++this.counter);
+                memAddress = _MemoryManager.fetch(++this.counter); + memAddress;
 
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Acc = parseInt(value, 16);
@@ -82,8 +84,9 @@ module TSOS {
                 //Store accumulator in memory
 
                 // Load the the next two bytes 
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
+                this.PC +=2;
+                var memAddress = _MemoryManager.fetch(++this.counter);
+                memAddress = _MemoryManager.fetch(++this.counter) + memAddress;
 
                 var destAddress = parseInt(memAddress, 16)
 
@@ -98,8 +101,9 @@ module TSOS {
                 //Add with carry
 
                 // Load the the next two bytes 
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
+                this.PC +=2;
+                var memAddress = _MemoryManager.fetch(++this.counter);
+                memAddress = _MemoryManager.fetch(++this.counter) + memAddress;
 
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Acc = this.Acc + parseInt(value, 16);
@@ -112,7 +116,8 @@ module TSOS {
                 //Load the X resgister with a constant
 
                 // Load the the next byte 
-                var numValue = _MemoryManager.fetch(++this.PC);
+                this.PC ++;
+                var numValue = _MemoryManager.fetch(++this.counter);
                 this.Xreg = parseInt(numValue, 16);
                 _Xreg = parseInt(numValue, 16);
                 alert(opCode);
@@ -123,9 +128,10 @@ module TSOS {
                 _IR = opCode;
                 //Load the X register from memory
 
-                // Load the the next two bytes 
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
+                // Load the the next two bytes
+                this.PC +=2; 
+                var memAddress = _MemoryManager.fetch(++this.counter);
+                memAddress = _MemoryManager.fetch(++this.counter) + memAddress;
 
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Xreg = parseInt(value, 16);
@@ -138,7 +144,8 @@ module TSOS {
                 //Load Y register with a constant 
 
                 // Load the the next byte 
-                var numValue = _MemoryManager.fetch(++this.PC);
+                this.PC++;
+                var numValue = _MemoryManager.fetch(++this.counter);
                 this.Yreg = parseInt(numValue, 16);
                 _Yreg = parseInt(numValue, 16);
                 alert(opCode);
@@ -149,9 +156,10 @@ module TSOS {
                 _IR = opCode;
                 //Load Y register from memory 
 
-                // Load the the next two bytes 
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
+                // Load the the next two bytes
+                this.PC +=2; 
+                var memAddress = _MemoryManager.fetch(++this.counter);
+                memAddress = _MemoryManager.fetch(++this.counter) + memAddress;
 
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Yreg = parseInt(value, 16);
@@ -187,8 +195,9 @@ module TSOS {
                 //Set the Z flag if equal
 
                 // Load the the next two bytes 
-                var memAddress = _MemoryManager.fetch(++this.PC);;
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
+                this.PC +=2;
+                var memAddress = _MemoryManager.fetch(++this.counter);;
+                memAddress = _MemoryManager.fetch(++this.counter) + memAddress;
 
                 var value = _Memory[parseInt(memAddress, 16)];
                 var xValue = parseInt(value, 16);
@@ -215,8 +224,9 @@ module TSOS {
             else if (opCode == "EE") {
                 _IR = opCode;
                 //Increament the value of a byte
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC); + memAddress;
+                this.PC +=2;
+                var memAddress = _MemoryManager.fetch(++this.counter);
+                memAddress = _MemoryManager.fetch(++this.counter); + memAddress;
                 var address = parseInt(memAddress, 16);
 
                 var value = _MemoryArray[address];
@@ -241,6 +251,7 @@ module TSOS {
             }
 
             this.PC++;
+            this.counter++;
 
 
         }
@@ -254,8 +265,8 @@ module TSOS {
             var program = _ProgramInput.replace(/[\s]/g, "");
             while (i < program.length / 2) {
 
-                if (_MemoryManager.fetch(this.PC) != "00") {
-                    this.executeProgram(_MemoryManager.fetch(this.PC));
+                if (_MemoryManager.fetch(this.counter) != "00") {
+                    this.executeProgram(_MemoryManager.fetch(this.counter));
                     _MemoryManager.updatePcbTable();
                     _MemoryManager.updateCpuTable();
                     i++;

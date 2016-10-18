@@ -449,7 +449,7 @@ module TSOS {
                 if (_ResidentQueue[index].state != PS_Terminated){
                 _StdOut.putText('Running PID ' + pid);
                 _ResidentQueue[index].state = PS_Running;
-                _CPU.PC = _ResidentQueue[index].startIndex;
+                _CPU.counter = _ResidentQueue[index].startIndex;
                 _CPU.cycle();
                 _ResidentQueue[index].state = PS_Terminated;
                 _MemoryManager.updatePcbTable();
