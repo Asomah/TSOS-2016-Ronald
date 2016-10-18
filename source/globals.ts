@@ -35,11 +35,13 @@ var _Mode: number = 0;     // (currently unused)  0 = Kernel Mode, 1 = User Mode
 var _ArrayOfCommands: string[] = [];
 var _ArrayOfHistory: string[] = [];
 
+var _CurrentProcess = new Pcb();
+
 var _ProgramSize: number = 256; //Allocate 256 bytes for program
-var _MemoryArray: string[] = [];
+var _MemoryArray = [];
 
 var _PID: number = -1;             //PID for PCB
-var _IR: number = 0;
+var _IR: string = "";
 var _Acc: number = 0;
 var _PC: number = 0;
 var _Xreg: number = 0;
@@ -57,7 +59,7 @@ var _Base: number = 0;                  //defualt base of memory
 var _CurrMemIndex: number = 0;                  //defualt base of memory
 
 var _ResidentQueue: any = [];         //resident queue 
-var _ReadyQueue: any = [];           //resident queue
+//var _ReadyQueue: any = [];           //resident queue
 
 
 var _Canvas: HTMLCanvasElement;         // Initialized in Control.hostInit().

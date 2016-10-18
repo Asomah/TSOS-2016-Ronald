@@ -21,7 +21,8 @@ export class MemoryManager {
                 i++;
                 }
             }
-            _CurrMemIndex = j;
+            //Increase current memory index by 2 so that new process starts by 2 bytes offset
+            _CurrMemIndex = j + 2;
           
           _PID++;
           _Pcb = new Pcb();
@@ -123,6 +124,61 @@ export class MemoryManager {
          
 
         }
+
+        public updatePcbTable():void {
+         //load program to memory
+         //this.loadProgToMem();
+         
+         //get Memory table and upadte memory cells
+         var pcbTable : HTMLTableElement = <HTMLTableElement> document.getElementById("pcbTable");
+         var rows = pcbTable.getElementsByTagName("tr");
+
+
+         for (var i = 1 ; i < rows.length; i++){
+                   
+                    var cells = rows[i].cells;
+                        for (var k = 0 ; k < _ResidentQueue.length; k++){
+
+                              if (_ResidentQueue[k].state == PS_Running && rows[i].cells[0].innerHTML == _ResidentQueue[k].PID){
+                                  rows[i].cells[0].innerHTML = _ResidentQueue[k].PID + "";
+                                  rows[i].cells[1].innerHTML = _CPU.PC + "";
+                                  rows[i].cells[2].innerHTML = _IR;
+                                  rows[i].cells[3].innerHTML = _Acc + "";
+                                  rows[i].cells[4].innerHTML = _Xreg + "";
+                                  rows[i].cells[5].innerHTML = _Yreg + "";
+                                  rows[i].cells[6].innerHTML = _Zflag + "";
+                                  rows[i].cells[7].innerHTML = _ResidentQueue[k].base + "";
+                                  rows[i].cells[8].innerHTML = _ResidentQueue[k].limit + "";
+                                  rows[i].cells[9].innerHTML = _ResidentQueue[k].state;
+                                  break;
+                              }
+                              if (_ResidentQueue[k].state == PS_Terminated && rows[i].cells[0].innerHTML == _ResidentQueue[k].PID){
+                                    rows[i].cells[9].innerHTML = _ResidentQueue[k].state;
+                                    break;
+                              }
+
+                    
+               }                  
+               }
+         
+
+        }
+
+       // Fetch opcode
+        public fetch(addIndex){
+              var nextByte = _MemoryArray[addIndex];
+              return nextByte;
+
+        }
+        
+        public decode(){
+
+        }
+
+        public execute(opcode){
+
+        }
+
 
 
    }

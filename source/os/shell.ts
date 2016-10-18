@@ -447,9 +447,18 @@ module TSOS {
             if (pid >= 0 && pid < _ResidentQueue.length){
                 _StdOut.putText('Running PID ' + pid);
                 _ResidentQueue[index].state = PS_Running;
-                _CPU = new Cpu();
-                //_CPU.isExecuting = true;
-                _CPU.executeProgram();
+                _CPU.cycle();
+                _ResidentQueue[index].state = PS_Terminated;
+                _MemoryManager.updatePcbTable();
+                /*var i = 0;
+
+                while(i < _ProgramInput.replace(/[\s]/g, "").length/2){
+                     _CPU.executeProgram();
+                     _MemoryManager.updatePcbTable();
+                     i++;
+              
+                }  */
+               
 
 
             }

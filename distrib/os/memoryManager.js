@@ -20,7 +20,9 @@ var TSOS;
                     i++;
                 }
             }
-            _CurrMemIndex = j;
+            //Increase current memory index by 2 so that new process starts by 2 bytes offset
+            _CurrMemIndex = j + 2;
+            alert(_CurrMemIndex);
             _PID++;
             _Pcb = new TSOS.Pcb();
             _Pcb.pcbProgram = programInput;
@@ -44,7 +46,7 @@ var TSOS;
             // Insert a cell in the row at index 2
             var newCell3 = newRow.insertCell(2);
             // Append a text node to the cell
-            var newText = document.createTextNode("Not");
+            var newText = document.createTextNode(_Pcb.IR + "");
             newCell3.appendChild(newText);
             // Insert a cell in the row at index 4
             var newCell4 = newRow.insertCell(3);
@@ -97,6 +99,44 @@ var TSOS;
                     memIndex++;
                 }
             }
+        };
+        MemoryManager.prototype.updatePcbTable = function () {
+            //load program to memory
+            //this.loadProgToMem();
+            //get Memory table and upadte memory cells
+            var pcbTable = document.getElementById("pcbTable");
+            var rows = pcbTable.getElementsByTagName("tr");
+            for (var i = 1; i < rows.length; i++) {
+                var cells = rows[i].cells;
+                for (var k = 0; k < _ResidentQueue.length; k++) {
+                    if (_ResidentQueue[k].state == PS_Running && rows[i].cells[0].innerHTML == _ResidentQueue[k].PID) {
+                        rows[i].cells[0].innerHTML = _ResidentQueue[k].PID + "";
+                        rows[i].cells[1].innerHTML = _CPU.PC + "";
+                        rows[i].cells[2].innerHTML = _IR;
+                        rows[i].cells[3].innerHTML = _Acc + "";
+                        rows[i].cells[4].innerHTML = _Xreg + "";
+                        rows[i].cells[5].innerHTML = _Yreg + "";
+                        rows[i].cells[6].innerHTML = _Zflag + "";
+                        rows[i].cells[7].innerHTML = _ResidentQueue[k].base + "";
+                        rows[i].cells[8].innerHTML = _ResidentQueue[k].limit + "";
+                        rows[i].cells[9].innerHTML = _ResidentQueue[k].state;
+                        break;
+                    }
+                    if (_ResidentQueue[k].state == PS_Terminated && rows[i].cells[0].innerHTML == _ResidentQueue[k].PID) {
+                        rows[i].cells[9].innerHTML = _ResidentQueue[k].state;
+                        break;
+                    }
+                }
+            }
+        };
+        // Fetch opcode
+        MemoryManager.prototype.fetch = function (addIndex) {
+            var nextByte = _MemoryArray[addIndex];
+            return nextByte;
+        };
+        MemoryManager.prototype.decode = function () {
+        };
+        MemoryManager.prototype.execute = function (opcode) {
         };
         return MemoryManager;
     }());

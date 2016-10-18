@@ -28,7 +28,7 @@ var _ArrayOfHistory = [];
 var _ProgramSize = 256; //Allocate 256 bytes for program
 var _MemoryArray = [];
 var _PID = -1; //PID for PCB
-var _IR = 0;
+var _IR = "";
 var _Acc = 0;
 var _PC = 0;
 var _Xreg = 0;
@@ -43,7 +43,7 @@ var PS_Terminated = "Terminated";
 var _Base = 0; //defualt base of memory
 var _CurrMemIndex = 0; //defualt base of memory
 var _ResidentQueue = []; //resident queue 
-var _ReadyQueue = []; //resident queue
+//var _ReadyQueue: any = [];           //resident queue
 var _Canvas; // Initialized in Control.hostInit().
 var _DrawingContext; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
 var _DefaultFontFamily = "sans"; // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.

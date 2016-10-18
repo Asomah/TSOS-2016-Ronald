@@ -368,9 +368,9 @@ var TSOS;
             if (pid >= 0 && pid < _ResidentQueue.length) {
                 _StdOut.putText('Running PID ' + pid);
                 _ResidentQueue[index].state = PS_Running;
-                _CPU = new TSOS.Cpu();
-                //_CPU.isExecuting = true;
-                _CPU.executeProgram();
+                _CPU.cycle();
+                _ResidentQueue[index].state = PS_Terminated;
+                _MemoryManager.updatePcbTable();
             }
             else {
                 _StdOut.putText('Ivalid PID... Please enter correct PID');

@@ -4,7 +4,7 @@ module TSOS {
   
   export class Pcb {
     constructor(public PC: number = _PC,
-                public IR: number = _IR,
+                public IR: string = _IR,
                 public Acc: number = _Acc,
                 public Xreg: number = _Xreg,
                 public Yreg: number = _Yreg,
