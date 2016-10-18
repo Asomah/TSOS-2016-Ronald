@@ -41,7 +41,7 @@ var _ProgramSize: number = 256; //Allocate 256 bytes for program
 var _MemoryArray = [];
 
 var _PID: number = -1;             //PID for PCB
-var _IR: string = "";
+var _IR: string = "0";
 var _Acc: number = 0;
 var _PC: number = 0;
 var _Xreg: number = 0;

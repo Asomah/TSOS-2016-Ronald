@@ -102,10 +102,79 @@ export class MemoryManager {
          newCell10.appendChild(newText);
 
           //alert(myTable.rows.length)
+          
+          //Ctreate CPU log
+          this.cpuTableLog();
 
       }
 
 
+      public cpuTableLog(){
+       _CPU = new Cpu() ;
+       _CPU.init();
+
+       
+         //Create row and insert into CPU table
+          var myTable: HTMLTableElement = <HTMLTableElement> document.getElementById("cpuTable");
+
+          var newRow   = myTable.insertRow(myTable.rows.length);
+      
+          if (myTable.rows.length <= 2){
+
+          // Insert a cell in the row at index 0
+          var newCell1  = newRow.insertCell(0);
+         // Append a text node to the cell
+         var newText  = document.createTextNode(_CPU.PC+ "");
+         newCell1.appendChild(newText);
+
+         // Insert a cell in the row at index 1
+          var newCell2  = newRow.insertCell(1);
+         // Append a text node to the cell
+         var newText  = document.createTextNode(_CPU.IR+ "");
+         newCell2.appendChild(newText);
+
+         // Insert a cell in the row at index 2
+          var newCell3  = newRow.insertCell(2);
+         // Append a text node to the cell
+         var newText  = document.createTextNode(_CPU.Acc + "");
+         newCell3.appendChild(newText);
+
+         // Insert a cell in the row at index 3
+          var newCell4  = newRow.insertCell(3);
+         // Append a text node to the cell
+         var newText  = document.createTextNode(_CPU.Xreg + "");
+         newCell4.appendChild(newText);
+
+         // Insert a cell in the row at index 4
+          var newCell5  = newRow.insertCell(4);
+         // Append a text node to the cell
+         var newText  = document.createTextNode(_CPU.Yreg + "");
+         newCell5.appendChild(newText);
+
+         // Insert a cell in the row at index 5
+          var newCell6  = newRow.insertCell(5);
+         // Append a text node to the cell
+         var newText  = document.createTextNode(_CPU.Zflag + "");
+         newCell6.appendChild(newText);
+          }
+          
+
+
+      }
+
+      public updateCpuTable():void {
+             //get Memory table and upadte memory cells
+         var cpuTable : HTMLTableElement = <HTMLTableElement> document.getElementById("cpuTable");
+         var row = cpuTable.getElementsByTagName("tr")[1];
+
+         row.cells[0].innerHTML = _CPU.PC + "";
+         row.cells[1].innerHTML = _CPU.IR ;
+         row.cells[2].innerHTML = _CPU.Acc + "";
+         row.cells[3].innerHTML = _CPU.Xreg + "";
+         row.cells[4].innerHTML = _CPU.Yreg + "";
+         row.cells[5].innerHTML = _CPU.Zflag + "";
+      }
+      
       public updateMemTable():void {
          //load program to memory
          this.loadProgToMem(_ProgramInput);

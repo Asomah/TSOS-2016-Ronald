@@ -143,6 +143,7 @@ module TSOS {
             _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
 
             this.memoryTable();
+            
 
             
 

@@ -16,9 +16,10 @@
 var TSOS;
 (function (TSOS) {
     var Cpu = (function () {
-        function Cpu(counter, PC, Acc, Xreg, Yreg, Zflag, isExecuting) {
+        function Cpu(counter, PC, IR, Acc, Xreg, Yreg, Zflag, isExecuting) {
             if (counter === void 0) { counter = 0; }
             if (PC === void 0) { PC = 0; }
+            if (IR === void 0) { IR = _IR; }
             if (Acc === void 0) { Acc = 0; }
             if (Xreg === void 0) { Xreg = 0; }
             if (Yreg === void 0) { Yreg = 0; }
@@ -26,6 +27,7 @@ var TSOS;
             if (isExecuting === void 0) { isExecuting = false; }
             this.counter = counter;
             this.PC = PC;
+            this.IR = IR;
             this.Acc = Acc;
             this.Xreg = Xreg;
             this.Yreg = Yreg;
@@ -34,6 +36,7 @@ var TSOS;
         }
         Cpu.prototype.init = function () {
             this.PC = 0;
+            this.IR = _IR;
             this.Acc = 0;
             this.Xreg = 0;
             this.Yreg = 0;
@@ -206,6 +209,7 @@ var TSOS;
                 if (_MemoryManager.fetch(this.PC) != "00") {
                     this.executeProgram(_MemoryManager.fetch(this.PC));
                     _MemoryManager.updatePcbTable();
+                    _MemoryManager.updateCpuTable();
                     i++;
                 }
                 else {

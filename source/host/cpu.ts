@@ -21,6 +21,7 @@ module TSOS {
 
         constructor(public counter: number = 0,
             public PC: number = 0,
+            public IR: string = _IR,
             public Acc: number = 0,
             public Xreg: number = 0,
             public Yreg: number = 0,
@@ -31,6 +32,7 @@ module TSOS {
 
         public init(): void {
             this.PC = 0;
+            this.IR = _IR;
             this.Acc = 0;
             this.Xreg = 0;
             this.Yreg = 0;
@@ -255,6 +257,7 @@ module TSOS {
                 if (_MemoryManager.fetch(this.PC) != "00") {
                     this.executeProgram(_MemoryManager.fetch(this.PC));
                     _MemoryManager.updatePcbTable();
+                    _MemoryManager.updateCpuTable();
                     i++;
                 }
                 else {
