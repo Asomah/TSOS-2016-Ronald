@@ -5,13 +5,13 @@ var TSOS;
         function MemoryManager() {
         }
         //Load programInput into memory 
-        MemoryManager.prototype.loadProgToMem = function () {
+        MemoryManager.prototype.loadProgToMem = function (programInput) {
             /*
             Get program input from html and remove all spaces from program input
             put program input into memory if current address is less than programSize
             Increase PID by one, Create a new instance of PCB by one and push cusrrent PCB to Resident queue
             */
-            var programInput = _ProgramInput.replace(/[\s]/g, "");
+            programInput = _ProgramInput.replace(/[\s]/g, "");
             var j = _CurrMemIndex;
             for (var i = 0; i < programInput.length; i++) {
                 if (_CurrMemIndex < _ProgramSize) {
@@ -20,15 +20,15 @@ var TSOS;
                     i++;
                 }
             }
-            //Increase current memory index by 2 so that new process starts by 2 bytes offset
-            _CurrMemIndex = j + 2;
-            alert(_CurrMemIndex);
             _PID++;
             _Pcb = new TSOS.Pcb();
             _Pcb.pcbProgram = programInput;
+            _Pcb.startIndex = _CurrMemIndex;
             _Pcb.state = PS_Ready;
             _ResidentQueue.push(_Pcb);
             _StdOut.putText("PID " + _PID + " Loaded");
+            //Increase current memory index by 2 so that new process starts by 2 bytes offset
+            _CurrMemIndex = j + 2;
             //Create row and insert into PCB table
             var myTable = document.getElementById("pcbTable");
             var newRow = myTable.insertRow(myTable.rows.length);
@@ -87,7 +87,7 @@ var TSOS;
         };
         MemoryManager.prototype.updateMemTable = function () {
             //load program to memory
-            this.loadProgToMem();
+            this.loadProgToMem(_ProgramInput);
             //get Memory table and upadte memory cells
             var memoryTable = document.getElementById("memoryTable");
             var rows = memoryTable.getElementsByTagName("tr");

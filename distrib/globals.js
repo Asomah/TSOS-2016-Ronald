@@ -25,6 +25,7 @@ var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _ArrayOfCommands = [];
 var _ArrayOfHistory = [];
+//var _CurrentProcess = new Pcb();
 var _ProgramSize = 256; //Allocate 256 bytes for program
 var _MemoryArray = [];
 var _PID = -1; //PID for PCB
@@ -40,6 +41,7 @@ var PS_Ready = "Ready";
 var PS_Running = "Running";
 var PS_Waiting = "Waiting";
 var PS_Terminated = "Terminated";
+var _PcbStartIndex = 0;
 var _Base = 0; //defualt base of memory
 var _CurrMemIndex = 0; //defualt base of memory
 var _ResidentQueue = []; //resident queue 

@@ -366,11 +366,17 @@ var TSOS;
                 }
             }
             if (pid >= 0 && pid < _ResidentQueue.length) {
-                _StdOut.putText('Running PID ' + pid);
-                _ResidentQueue[index].state = PS_Running;
-                _CPU.cycle();
-                _ResidentQueue[index].state = PS_Terminated;
-                _MemoryManager.updatePcbTable();
+                if (_ResidentQueue[index].state != PS_Terminated) {
+                    _StdOut.putText('Running PID ' + pid);
+                    _ResidentQueue[index].state = PS_Running;
+                    _CPU.PC = _ResidentQueue[index].startIndex;
+                    _CPU.cycle();
+                    _ResidentQueue[index].state = PS_Terminated;
+                    _MemoryManager.updatePcbTable();
+                }
+                else {
+                    _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
+                }
             }
             else {
                 _StdOut.putText('Ivalid PID... Please enter correct PID');

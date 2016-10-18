@@ -5,13 +5,13 @@ module TSOS {
 export class MemoryManager {
 
       //Load programInput into memory 
-      public loadProgToMem(){
+      public loadProgToMem(programInput){
           /*
           Get program input from html and remove all spaces from program input
           put program input into memory if current address is less than programSize
           Increase PID by one, Create a new instance of PCB by one and push cusrrent PCB to Resident queue 
           */
-          var programInput = _ProgramInput.replace(/[\s]/g, "");
+          programInput = _ProgramInput.replace(/[\s]/g, "");
           var j = _CurrMemIndex;
           
           for (var i = 0 ; i < programInput.length; i++){
@@ -21,16 +21,19 @@ export class MemoryManager {
                 i++;
                 }
             }
-            //Increase current memory index by 2 so that new process starts by 2 bytes offset
-            _CurrMemIndex = j + 2;
           
           _PID++;
           _Pcb = new Pcb();
           _Pcb.pcbProgram = programInput;
+          _Pcb.startIndex = _CurrMemIndex;
           _Pcb.state = PS_Ready;
           _ResidentQueue.push(_Pcb);
           
           _StdOut.putText("PID " + _PID + " Loaded");
+
+
+          //Increase current memory index by 2 so that new process starts by 2 bytes offset
+            _CurrMemIndex = j + 2;
 
 
           //Create row and insert into PCB table
@@ -105,7 +108,7 @@ export class MemoryManager {
 
       public updateMemTable():void {
          //load program to memory
-         this.loadProgToMem();
+         this.loadProgToMem(_ProgramInput);
          
          //get Memory table and upadte memory cells
          var memoryTable : HTMLTableElement = <HTMLTableElement> document.getElementById("memoryTable");

@@ -7,7 +7,7 @@ var TSOS;
         //Create default memory
         Memory.prototype.init = function () {
             for (var i = 0; i < _ProgramSize; i++) {
-                _MemoryArray.push("00");
+                _MemoryArray[i] = "00";
             }
         };
         return Memory;

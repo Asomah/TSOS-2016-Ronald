@@ -81,7 +81,7 @@ module TSOS {
 
                 // Load the the next two bytes 
                 var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC); + memAddress;
+                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
 
                 var destAddress = parseInt(memAddress, 16)
 
@@ -97,7 +97,7 @@ module TSOS {
 
                 // Load the the next two bytes 
                 var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC); + memAddress;
+                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
 
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Acc = this.Acc + parseInt(value, 16);
@@ -149,7 +149,7 @@ module TSOS {
 
                 // Load the the next two bytes 
                 var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC); + memAddress;
+                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
 
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Yreg = parseInt(value, 16);
@@ -186,7 +186,7 @@ module TSOS {
 
                 // Load the the next two bytes 
                 var memAddress = _MemoryManager.fetch(++this.PC);;
-                memAddress = _MemoryManager.fetch(++this.PC); + memAddress;
+                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
 
                 var value = _Memory[parseInt(memAddress, 16)];
                 var xValue = parseInt(value, 16);

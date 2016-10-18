@@ -73,8 +73,7 @@ var TSOS;
                 //Store accumulator in memory
                 // Load the the next two bytes 
                 var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC);
-                +memAddress;
+                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
                 var destAddress = parseInt(memAddress, 16);
                 if (destAddress <= _ProgramSize) {
                     _MemoryArray[destAddress] = this.Acc.toString(16);
@@ -86,8 +85,7 @@ var TSOS;
                 //Add with carry
                 // Load the the next two bytes 
                 var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC);
-                +memAddress;
+                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Acc = this.Acc + parseInt(value, 16);
                 _Acc = this.Acc + parseInt(value, 16);
@@ -127,8 +125,7 @@ var TSOS;
                 //Load Y register from memory 
                 // Load the the next two bytes 
                 var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC);
-                +memAddress;
+                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Yreg = parseInt(value, 16);
                 _Yreg = parseInt(value, 16);
@@ -157,8 +154,7 @@ var TSOS;
                 // Load the the next two bytes 
                 var memAddress = _MemoryManager.fetch(++this.PC);
                 ;
-                memAddress = _MemoryManager.fetch(++this.PC);
-                +memAddress;
+                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
                 var value = _Memory[parseInt(memAddress, 16)];
                 var xValue = parseInt(value, 16);
                 if (xValue != this.Xreg) {

@@ -440,16 +440,29 @@ module TSOS {
                 if (args == _ResidentQueue[index].PID){
                     pid = _ResidentQueue[index].PID;
                     break;
-                }   
+                }
+                
 
             }
     
             if (pid >= 0 && pid < _ResidentQueue.length){
+                if (_ResidentQueue[index].state != PS_Terminated){
                 _StdOut.putText('Running PID ' + pid);
                 _ResidentQueue[index].state = PS_Running;
+                _CPU.PC = _ResidentQueue[index].startIndex;
                 _CPU.cycle();
                 _ResidentQueue[index].state = PS_Terminated;
                 _MemoryManager.updatePcbTable();
+
+                }
+                else{
+                    _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
+                }
+                
+                //Remove finished process from resident queue
+                //_ResidentQueue.splice(index, 1);
+
+                
                 /*var i = 0;
 
                 while(i < _ProgramInput.replace(/[\s]/g, "").length/2){

@@ -35,7 +35,7 @@ var _Mode: number = 0;     // (currently unused)  0 = Kernel Mode, 1 = User Mode
 var _ArrayOfCommands: string[] = [];
 var _ArrayOfHistory: string[] = [];
 
-var _CurrentProcess = new Pcb();
+//var _CurrentProcess = new Pcb();
 
 var _ProgramSize: number = 256; //Allocate 256 bytes for program
 var _MemoryArray = [];
@@ -54,6 +54,8 @@ var PS_Ready: string = "Ready";
 var PS_Running: string = "Running";
 var PS_Waiting: string = "Waiting";
 var PS_Terminated: string = "Terminated";
+
+var _PcbStartIndex: number = 0;
 
 var _Base: number = 0;                  //defualt base of memory
 var _CurrMemIndex: number = 0;                  //defualt base of memory
