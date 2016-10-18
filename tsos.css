@@ -54,3 +54,8 @@ display:block;
 border:1px solid;  
 margin-top:50px;    
 }
+
+div.left, div.right {
+ float: left;
+ padding: 10px;    
+}

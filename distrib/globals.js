@@ -45,7 +45,6 @@ var _PcbStartIndex = 0;
 var _Base = 0; //defualt base of memory
 var _CurrMemIndex = 0; //defualt base of memory
 var _ResidentQueue = []; //resident queue 
-//var _ReadyQueue: any = [];           //resident queue
 var _Canvas; // Initialized in Control.hostInit().
 var _DrawingContext; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
 var _DefaultFontFamily = "sans"; // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.

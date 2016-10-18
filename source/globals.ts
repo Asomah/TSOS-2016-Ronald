@@ -57,12 +57,11 @@ var PS_Terminated: string = "Terminated";
 
 var _PcbStartIndex: number = 0;
 
+
 var _Base: number = 0;                  //defualt base of memory
 var _CurrMemIndex: number = 0;                  //defualt base of memory
 
 var _ResidentQueue: any = [];         //resident queue 
-//var _ReadyQueue: any = [];           //resident queue
-
 
 var _Canvas: HTMLCanvasElement;         // Initialized in Control.hostInit().
 var _DrawingContext: any; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.

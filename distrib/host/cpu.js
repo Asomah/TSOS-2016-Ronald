@@ -58,7 +58,7 @@ var TSOS;
             if (opCode == "A9") {
                 _IR = opCode;
                 this.loadAcc();
-                alert(opCode);
+                ;
             }
             else if (opCode == "AD") {
                 _IR = opCode;
@@ -71,7 +71,6 @@ var TSOS;
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Acc = parseInt(value, 16);
                 _Acc = parseInt(value, 16);
-                alert(opCode);
             }
             else if (opCode == "8D") {
                 _IR = opCode;
@@ -84,7 +83,6 @@ var TSOS;
                 if (destAddress <= _ProgramSize) {
                     _MemoryArray[destAddress] = this.Acc.toString(16);
                 }
-                alert(opCode);
             }
             else if (opCode == "6D") {
                 _IR = opCode;
@@ -96,7 +94,7 @@ var TSOS;
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Acc = this.Acc + parseInt(value, 16);
                 _Acc = this.Acc + parseInt(value, 16);
-                alert(opCode);
+                ;
             }
             else if (opCode == "A2") {
                 _IR = opCode;
@@ -106,7 +104,7 @@ var TSOS;
                 var numValue = _MemoryManager.fetch(++this.counter);
                 this.Xreg = parseInt(numValue, 16);
                 _Xreg = parseInt(numValue, 16);
-                alert(opCode);
+                ;
             }
             else if (opCode == "AE") {
                 _IR = opCode;
@@ -118,7 +116,7 @@ var TSOS;
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Xreg = parseInt(value, 16);
                 _Xreg = parseInt(value, 16);
-                alert(opCode);
+                ;
             }
             else if (opCode == "A0") {
                 _IR = opCode;
@@ -128,7 +126,7 @@ var TSOS;
                 var numValue = _MemoryManager.fetch(++this.counter);
                 this.Yreg = parseInt(numValue, 16);
                 _Yreg = parseInt(numValue, 16);
-                alert(opCode);
+                ;
             }
             else if (opCode == "AC") {
                 _IR = opCode;
@@ -140,12 +138,12 @@ var TSOS;
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Yreg = parseInt(value, 16);
                 _Yreg = parseInt(value, 16);
-                alert(opCode);
+                ;
             }
             else if (opCode == "EA") {
                 _IR = opCode;
                 //Do Nothing
-                alert(opCode);
+                ;
             }
             else if (opCode == "00") {
                 _IR = opCode;
@@ -156,7 +154,7 @@ var TSOS;
                 _CPU.Xreg = this.Xreg;
                 _CPU.Yreg = this.Yreg;
                 _CPU.Zflag = this.Zflag;
-                alert(opCode);
+                ;
             }
             else if (opCode == "EC") {
                 _IR = opCode;
@@ -177,12 +175,12 @@ var TSOS;
                     this.Zflag = 1;
                     _Zflag = 1;
                 }
-                alert(opCode);
+                ;
             }
             else if (opCode == "D0") {
                 _IR = opCode;
                 //Branch n bytes if Z flag is zero
-                alert(opCode);
+                ;
             }
             else if (opCode == "EE") {
                 _IR = opCode;
@@ -197,7 +195,7 @@ var TSOS;
                 if (address <= _ProgramSize) {
                     value = newValue.toString(16);
                 }
-                alert(opCode);
+                ;
             }
             else if (opCode == "FF") {
                 _IR = opCode;
@@ -205,7 +203,7 @@ var TSOS;
                 if (this.Xreg === 1) {
                     _StdOut.putText("" + this.Yreg);
                 }
-                alert(opCode);
+                ;
             }
             this.PC++;
             this.counter++;
@@ -214,18 +212,26 @@ var TSOS;
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            //increase clock cycle if program is executiing 
+            /*if (this.isExecuting == true){
+                CPU_CLOCK_INTERVAL = 500;
+            }
+            else{
+                CPU_CLOCK_INTERVAL = 100;
+            }*/
             var i = 0;
             var program = _ProgramInput.replace(/[\s]/g, "");
-            while (i < program.length / 2) {
-                if (_MemoryManager.fetch(this.counter) != "00") {
-                    this.executeProgram(_MemoryManager.fetch(this.counter));
-                    _MemoryManager.updatePcbTable();
-                    _MemoryManager.updateCpuTable();
-                    i++;
-                }
-                else {
-                    break;
-                }
+            if (_MemoryManager.fetch(this.counter) != "00") {
+                this.executeProgram(_MemoryManager.fetch(this.counter));
+                _Pcb.state = PS_Running;
+                _MemoryManager.updatePcbTable();
+                _MemoryManager.updateCpuTable();
+            }
+            else {
+                this.isExecuting = false;
+                _Pcb.state = PS_Terminated;
+                _MemoryManager.updateCpuTable();
+                this.counter = _Pcb.startIndex;
             }
         };
         return Cpu;

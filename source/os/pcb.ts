@@ -14,7 +14,6 @@ module TSOS {
                 public limit: number = _ProgramSize - 1,
                 public startIndex: number = _PcbStartIndex,
                 public state: string = PS_New,
-                public isExecuting: boolean = false,
                 public pcbProgram :string = "") {
     }
   }

@@ -61,7 +61,7 @@ module TSOS {
             if (opCode == "A9") {
                 _IR = opCode;
                 this.loadAcc();
-                alert(opCode);
+                ;
             }
             else if (opCode == "AD") {
                 _IR = opCode;
@@ -75,7 +75,6 @@ module TSOS {
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Acc = parseInt(value, 16);
                 _Acc = parseInt(value, 16);
-                alert(opCode);
 
 
             }
@@ -94,7 +93,6 @@ module TSOS {
                     _MemoryArray[destAddress] = this.Acc.toString(16);
                 }
 
-                alert(opCode);
             }
             else if (opCode == "6D") {
                 _IR = opCode;
@@ -108,7 +106,7 @@ module TSOS {
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Acc = this.Acc + parseInt(value, 16);
                 _Acc = this.Acc + parseInt(value, 16);
-                alert(opCode);
+                ;
 
             }
             else if (opCode == "A2") {
@@ -120,8 +118,7 @@ module TSOS {
                 var numValue = _MemoryManager.fetch(++this.counter);
                 this.Xreg = parseInt(numValue, 16);
                 _Xreg = parseInt(numValue, 16);
-                alert(opCode);
-
+                ;
 
             }
             else if (opCode == "AE") {
@@ -136,7 +133,7 @@ module TSOS {
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Xreg = parseInt(value, 16);
                 _Xreg = parseInt(value, 16);
-                alert(opCode);
+                ;
 
             }
             else if (opCode == "A0") {
@@ -148,7 +145,7 @@ module TSOS {
                 var numValue = _MemoryManager.fetch(++this.counter);
                 this.Yreg = parseInt(numValue, 16);
                 _Yreg = parseInt(numValue, 16);
-                alert(opCode);
+                ;
 
 
             }
@@ -164,7 +161,7 @@ module TSOS {
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Yreg = parseInt(value, 16);
                 _Yreg = parseInt(value, 16);
-                alert(opCode);
+                ;
 
 
             }
@@ -172,7 +169,7 @@ module TSOS {
                 _IR = opCode;
                 //Do Nothing
 
-                alert(opCode);
+                ;
 
 
             }
@@ -186,7 +183,7 @@ module TSOS {
                 _CPU.Yreg = this.Yreg;
                 _CPU.Zflag = this.Zflag;
 
-                alert(opCode);
+                ;
 
             }
             else if (opCode == "EC") {
@@ -211,13 +208,13 @@ module TSOS {
                 }
 
 
-                alert(opCode);
+                ;
             }
             else if (opCode == "D0") {
                 _IR = opCode;
                 //Branch n bytes if Z flag is zero
 
-                alert(opCode);
+                ;
 
 
             }
@@ -236,7 +233,7 @@ module TSOS {
                     value = newValue.toString(16);
                 }
 
-                alert(opCode);
+                ;
             }
             else if (opCode == "FF") {
                 _IR = opCode;
@@ -246,7 +243,7 @@ module TSOS {
 
                 }
 
-                alert(opCode);
+                ;
 
             }
 
@@ -261,21 +258,30 @@ module TSOS {
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
 
+            //increase clock cycle if program is executiing 
+            /*if (this.isExecuting == true){
+                CPU_CLOCK_INTERVAL = 500;
+            }
+            else{
+                CPU_CLOCK_INTERVAL = 100;
+            }*/
+
             var i = 0;
             var program = _ProgramInput.replace(/[\s]/g, "");
-            while (i < program.length / 2) {
 
                 if (_MemoryManager.fetch(this.counter) != "00") {
                     this.executeProgram(_MemoryManager.fetch(this.counter));
+                    _Pcb.state = PS_Running;
                     _MemoryManager.updatePcbTable();
                     _MemoryManager.updateCpuTable();
-                    i++;
+                    
+                }else{
+                    this.isExecuting = false;
+                    _Pcb.state = PS_Terminated;
+                    _MemoryManager.updateCpuTable();
+                    this.counter = _Pcb.startIndex;
+                    
                 }
-                else {
-                    break;
-                }
-
-            }
 
         }
     }

@@ -88,8 +88,6 @@ var TSOS;
             this.cpuTableLog();
         };
         MemoryManager.prototype.cpuTableLog = function () {
-            _CPU = new TSOS.Cpu();
-            _CPU.init();
             //Create row and insert into CPU table
             var myTable = document.getElementById("cpuTable");
             var newRow = myTable.insertRow(myTable.rows.length);
@@ -131,7 +129,7 @@ var TSOS;
             var cpuTable = document.getElementById("cpuTable");
             var row = cpuTable.getElementsByTagName("tr")[1];
             row.cells[0].innerHTML = _CPU.PC + "";
-            row.cells[1].innerHTML = _CPU.IR;
+            row.cells[1].innerHTML = _IR;
             row.cells[2].innerHTML = _CPU.Acc + "";
             row.cells[3].innerHTML = _CPU.Xreg + "";
             row.cells[4].innerHTML = _CPU.Yreg + "";

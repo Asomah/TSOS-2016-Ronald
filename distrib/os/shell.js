@@ -367,12 +367,9 @@ var TSOS;
             }
             if (pid >= 0 && pid < _ResidentQueue.length) {
                 if (_ResidentQueue[index].state != PS_Terminated) {
+                    //alert(pid);
                     _StdOut.putText('Running PID ' + pid);
-                    _ResidentQueue[index].state = PS_Running;
-                    _CPU.counter = _ResidentQueue[index].startIndex;
-                    _CPU.cycle();
-                    _ResidentQueue[index].state = PS_Terminated;
-                    _MemoryManager.updatePcbTable();
+                    _CPU.isExecuting = true;
                 }
                 else {
                     _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
