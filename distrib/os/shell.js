@@ -369,7 +369,13 @@ var TSOS;
                 if (_ResidentQueue[index].state != PS_Terminated) {
                     //alert(pid);
                     _StdOut.putText('Running PID ' + pid);
-                    _CPU.isExecuting = true;
+                    if (document.getElementById("singleStep").disabled == true) {
+                        _CPU.cycle();
+                    }
+                    else {
+                        _CPU.init();
+                        _CPU.isExecuting = true;
+                    }
                 }
                 else {
                     _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');

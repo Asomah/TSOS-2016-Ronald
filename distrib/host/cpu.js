@@ -180,7 +180,16 @@ var TSOS;
             else if (opCode == "D0") {
                 _IR = opCode;
                 //Branch n bytes if Z flag is zero
-                ;
+                var jump = parseInt(_MemoryManager.fetch(++this.counter), 16);
+                if (this.Zflag != 0) {
+                    // Fetch the next byte and Branch
+                    var nextAddress = this.counter + jump;
+                    if (nextAddress >= _ProgramSize) {
+                        nextAddress = nextAddress - _ProgramSize;
+                    }
+                    this.counter = nextAddress;
+                    alert(nextAddress);
+                }
             }
             else if (opCode == "EE") {
                 _IR = opCode;
@@ -219,7 +228,6 @@ var TSOS;
             else{
                 CPU_CLOCK_INTERVAL = 100;
             }*/
-            var i = 0;
             var program = _ProgramInput.replace(/[\s]/g, "");
             if (_MemoryManager.fetch(this.counter) != "00") {
                 this.executeProgram(_MemoryManager.fetch(this.counter));
@@ -231,7 +239,6 @@ var TSOS;
                 this.isExecuting = false;
                 _Pcb.state = PS_Terminated;
                 _MemoryManager.updateCpuTable();
-                this.counter = _Pcb.startIndex;
             }
         };
         return Cpu;

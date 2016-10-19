@@ -127,6 +127,24 @@ var TSOS;
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
         };
+        Control.hostBtnSingleStepOS_click = function (btn) {
+            document.getElementById("execStep").disabled = false;
+            document.getElementById("singleStep").disabled = true;
+        };
+        Control.hostBtnExecStepOS_click = function (btn) {
+            if (_CPU.PC > 0) {
+                if (_MemoryManager.fetch(_CPU.counter) != "00") {
+                    _StdOut.putText(_MemoryManager.fetch(_CPU.counter) + " ");
+                    _CPU.cycle();
+                }
+                else {
+                    _CPU.cycle();
+                    document.getElementById("singleStep").disabled = false;
+                    document.getElementById("execStep").disabled = true;
+                    alert("disabled");
+                }
+            }
+        };
         return Control;
     }());
     TSOS.Control = Control;

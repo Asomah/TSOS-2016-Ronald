@@ -449,7 +449,13 @@ module TSOS {
                 if (_ResidentQueue[index].state != PS_Terminated){
                 //alert(pid);
                 _StdOut.putText('Running PID ' + pid);
+                if ((<HTMLButtonElement>document.getElementById("singleStep")).disabled == true){
+                    _CPU.cycle();
+                }
+                else{
+                _CPU.init();
                 _CPU.isExecuting = true;
+                }
                 //_ResidentQueue[index].state = PS_Running;
                // _CPU.counter = _ResidentQueue[index].startIndex;
                 //_CPU.isExecuting = false;

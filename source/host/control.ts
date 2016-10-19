@@ -167,5 +167,28 @@ module TSOS {
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
         }
+
+       public static hostBtnSingleStepOS_click(btn): void {
+                (<HTMLButtonElement>document.getElementById("execStep")).disabled = false;
+                (<HTMLButtonElement>document.getElementById("singleStep")).disabled = true;
+                 
+       }
+       public static hostBtnExecStepOS_click(btn): void {
+                if (_CPU.PC > 0 ){
+                 if (_MemoryManager.fetch(_CPU.counter) != "00"){
+                    _StdOut.putText(_MemoryManager.fetch(_CPU.counter) + " ");
+                   _CPU.cycle();
+                }else{
+                  _CPU.cycle();
+                  (<HTMLButtonElement>document.getElementById("singleStep")).disabled = false;
+                  (<HTMLButtonElement>document.getElementById("execStep")).disabled = true;
+                  alert("disabled");
+                }
+                
+                }
+                
+                 
+       }
+
     }
 }

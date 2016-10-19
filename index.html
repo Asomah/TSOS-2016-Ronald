@@ -67,6 +67,26 @@
              value="Reset"
              tabindex="2"
              onclick="TSOS.Control.hostBtnReset_click(this);">
+
+      <input type="button"
+             id = "singleStep"
+             name="singleStep"
+             class="normal_button"
+             value="Single Step"
+             tabindex="3"
+             onclick="TSOS.Control.hostBtnSingleStepOS_click(this);">
+
+       <input type="button"
+             id = "execStep"
+             name="execStep"
+             class="normal_button"
+             disabled="disabled"
+             value="  >  "
+             tabindex="4"
+             onclick="TSOS.Control.hostBtnExecStepOS_click(this);">
+
+
+
    </div>
   
    <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
