@@ -94,7 +94,6 @@ var TSOS;
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Acc = this.Acc + parseInt(value, 16);
                 _Acc = this.Acc + parseInt(value, 16);
-                ;
             }
             else if (opCode == "A2") {
                 _IR = opCode;
@@ -104,7 +103,6 @@ var TSOS;
                 var numValue = _MemoryManager.fetch(++this.counter);
                 this.Xreg = parseInt(numValue, 16);
                 _Xreg = parseInt(numValue, 16);
-                ;
             }
             else if (opCode == "AE") {
                 _IR = opCode;
@@ -116,7 +114,6 @@ var TSOS;
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Xreg = parseInt(value, 16);
                 _Xreg = parseInt(value, 16);
-                ;
             }
             else if (opCode == "A0") {
                 _IR = opCode;
@@ -126,7 +123,6 @@ var TSOS;
                 var numValue = _MemoryManager.fetch(++this.counter);
                 this.Yreg = parseInt(numValue, 16);
                 _Yreg = parseInt(numValue, 16);
-                ;
             }
             else if (opCode == "AC") {
                 _IR = opCode;
@@ -138,12 +134,9 @@ var TSOS;
                 var value = _MemoryArray[parseInt(memAddress, 16)];
                 this.Yreg = parseInt(value, 16);
                 _Yreg = parseInt(value, 16);
-                ;
             }
             else if (opCode == "EA") {
                 _IR = opCode;
-                //Do Nothing
-                ;
             }
             else if (opCode == "00") {
                 _IR = opCode;
@@ -154,7 +147,6 @@ var TSOS;
                 _CPU.Xreg = this.Xreg;
                 _CPU.Yreg = this.Yreg;
                 _CPU.Zflag = this.Zflag;
-                ;
             }
             else if (opCode == "EC") {
                 _IR = opCode;
@@ -167,27 +159,30 @@ var TSOS;
                 memAddress = _MemoryManager.fetch(++this.counter) + memAddress;
                 var value = _Memory[parseInt(memAddress, 16)];
                 var xValue = parseInt(value, 16);
-                if (xValue != this.Xreg) {
-                    this.Zflag = 0;
-                    _Zflag = 0;
-                }
-                else {
+                if (xValue == this.Xreg) {
                     this.Zflag = 1;
                     _Zflag = 1;
                 }
-                ;
+                else {
+                    this.Zflag = 0;
+                    _Zflag = 0;
+                }
             }
             else if (opCode == "D0") {
                 _IR = opCode;
                 //Branch n bytes if Z flag is zero
+                this.PC++;
                 var jump = parseInt(_MemoryManager.fetch(++this.counter), 16);
-                if (this.Zflag != 0) {
+                alert(jump);
+                if (!this.Zflag) {
                     // Fetch the next byte and Branch
                     var nextAddress = this.counter + jump;
+                    alert(nextAddress);
                     if (nextAddress >= _ProgramSize) {
                         nextAddress = nextAddress - _ProgramSize;
                     }
                     this.counter = nextAddress;
+                    this.PC = nextAddress;
                     alert(nextAddress);
                 }
             }
@@ -204,15 +199,13 @@ var TSOS;
                 if (address <= _ProgramSize) {
                     value = newValue.toString(16);
                 }
-                ;
             }
             else if (opCode == "FF") {
                 _IR = opCode;
                 //Do a system call
-                if (this.Xreg === 1) {
+                if (this.Xreg == 1) {
                     _StdOut.putText("" + this.Yreg);
                 }
-                ;
             }
             this.PC++;
             this.counter++;
