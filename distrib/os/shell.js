@@ -357,32 +357,37 @@ var TSOS;
             compare arg with all pids in resident Queue
             if arg equals any pid, run that job else display an error message
             */
-            var pid = -1;
-            var index = -1;
-            for (index = 0; index < _ResidentQueue.length; index++) {
-                if (args == _ResidentQueue[index].PID) {
-                    pid = _ResidentQueue[index].PID;
-                    break;
-                }
+            if (args.length == 0) {
+                _StdOut.putText('Empty PID... Please enter PID');
             }
-            if (pid >= 0 && pid < _ResidentQueue.length) {
-                if (_ResidentQueue[index].state != PS_Terminated) {
-                    //alert(pid);
-                    _StdOut.putText('Running PID ' + pid);
-                    if (document.getElementById("singleStep").disabled == true) {
-                        _CPU.cycle();
+            else {
+                var pid = -1;
+                var index = -1;
+                for (index = 0; index < _ResidentQueue.length; index++) {
+                    if (args == _ResidentQueue[index].PID) {
+                        pid = _ResidentQueue[index].PID;
+                        break;
+                    }
+                }
+                if (pid >= 0 && pid < _ResidentQueue.length) {
+                    if (_ResidentQueue[index].state != PS_Terminated) {
+                        //alert(pid);
+                        _StdOut.putText('Running PID ' + pid);
+                        if (document.getElementById("singleStep").disabled == true) {
+                            _CPU.cycle();
+                        }
+                        else {
+                            _CPU.init();
+                            _CPU.isExecuting = true;
+                        }
                     }
                     else {
-                        _CPU.init();
-                        _CPU.isExecuting = true;
+                        _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
                     }
                 }
                 else {
-                    _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
+                    _StdOut.putText('Ivalid PID... Please enter correct PID');
                 }
-            }
-            else {
-                _StdOut.putText('Ivalid PID... Please enter correct PID');
             }
         };
         return Shell;

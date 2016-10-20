@@ -133,15 +133,15 @@ var TSOS;
         };
         Control.hostBtnExecStepOS_click = function (btn) {
             if (_CPU.PC > 0) {
-                if (_MemoryManager.fetch(_CPU.counter) != "00") {
-                    _StdOut.putText(_MemoryManager.fetch(_CPU.counter) + " ");
+                if (_MemoryManager.fetch(_CPU.PC) != "00") {
+                    _StdOut.putText(_MemoryManager.fetch(_CPU.PC) + " ");
                     _CPU.cycle();
                 }
                 else {
                     _CPU.cycle();
                     document.getElementById("singleStep").disabled = false;
                     document.getElementById("execStep").disabled = true;
-                    alert("disabled");
+                    debugger;
                 }
             }
         };

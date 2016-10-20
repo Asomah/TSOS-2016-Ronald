@@ -43,11 +43,11 @@ module TSOS {
 
             // Clear the log text box.
             // Use the TypeScript cast to HTMLInputElement
-            (<HTMLInputElement> document.getElementById("taHostLog")).value="";
+            (<HTMLInputElement>document.getElementById("taHostLog")).value = "";
 
             // Set focus on the start button.
             // Use the TypeScript cast to HTMLInputElement
-            (<HTMLInputElement> document.getElementById("btnStartOS")).focus();
+            (<HTMLInputElement>document.getElementById("btnStartOS")).focus();
 
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
@@ -67,49 +67,49 @@ module TSOS {
             var now: number = new Date().getTime();
 
             // Build the log string.
-            var str: string = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now  + " })"  + "\n";
+            var str: string = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now + " })" + "\n";
 
             // Update the log console.
-            var taLog = <HTMLInputElement> document.getElementById("taHostLog");
+            var taLog = <HTMLInputElement>document.getElementById("taHostLog");
             taLog.value = str + taLog.value;
 
             // TODO in the future: Optionally update a log database or some streaming service.
         }
 
 
-        public static memoryTable():void {
-        //Create an array of memory
-         _Memory = new Memory();
-         _Memory.init();
+        public static memoryTable(): void {
+            //Create an array of memory
+            _Memory = new Memory();
+            _Memory.init();
 
-         
-           //Create table with 9 columns
-           var memTable = document.getElementById("memoryTable")
 
-           //Loop through memory array and create a new row if length of current row is 8
+            //Create table with 9 columns
+            var memTable = document.getElementById("memoryTable")
 
-           for (var i = 0; i < _MemoryArray.length; i++) {
-              if (i % 8 == 0) {
-                var row = document.createElement("tr");
-                document.getElementById("memoryTable").appendChild(row);
-                
-                var cell = document.createElement("td");
-                var hexString = i.toString(16);
+            //Loop through memory array and create a new row if length of current row is 8
 
-                while (hexString.length < 3) {
-                  hexString = "0" + hexString;
+            for (var i = 0; i < _MemoryArray.length; i++) {
+                if (i % 8 == 0) {
+                    var row = document.createElement("tr");
+                    document.getElementById("memoryTable").appendChild(row);
+
+                    var cell = document.createElement("td");
+                    var hexString = i.toString(16);
+
+                    while (hexString.length < 3) {
+                        hexString = "0" + hexString;
+                    }
+
+                    var data = document.createTextNode("0x" + hexString.toUpperCase());
+                    cell.appendChild(data);
+                    row.appendChild(cell);
                 }
-
-                var data = document.createTextNode("0x" + hexString.toUpperCase());
+                var cell = document.createElement("td");
+                var data = document.createTextNode(_MemoryArray[i]);
+                var rows = document.getElementById("memoryTable").getElementsByTagName("tr");
+                var lastRow = rows[rows.length - 1];
                 cell.appendChild(data);
-                row.appendChild(cell);
-              }
-              var cell = document.createElement("td");
-              var data = document.createTextNode(_MemoryArray[i]);
-              var rows = document.getElementById("memoryTable").getElementsByTagName("tr");
-              var lastRow = rows[rows.length - 1];
-              cell.appendChild(data);
-              lastRow.appendChild(cell);
+                lastRow.appendChild(cell);
             }
 
 
@@ -134,7 +134,7 @@ module TSOS {
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
-            
+
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
@@ -143,14 +143,14 @@ module TSOS {
             _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
 
             this.memoryTable();
-            
 
-            
+
+
 
         }
 
         public static hostBtnHaltOS_click(btn): void {
-            
+
             Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.
@@ -168,27 +168,27 @@ module TSOS {
             // page from its cache, which is not what we want.
         }
 
-       public static hostBtnSingleStepOS_click(btn): void {
-                (<HTMLButtonElement>document.getElementById("execStep")).disabled = false;
-                (<HTMLButtonElement>document.getElementById("singleStep")).disabled = true;
-                 
-       }
-       public static hostBtnExecStepOS_click(btn): void {
-                if (_CPU.PC > 0 ){
-                 if (_MemoryManager.fetch(_CPU.counter) != "00"){
-                    _StdOut.putText(_MemoryManager.fetch(_CPU.counter) + " ");
-                   _CPU.cycle();
-                }else{
-                  _CPU.cycle();
-                  (<HTMLButtonElement>document.getElementById("singleStep")).disabled = false;
-                  (<HTMLButtonElement>document.getElementById("execStep")).disabled = true;
-                  alert("disabled");
+        public static hostBtnSingleStepOS_click(btn): void {
+            (<HTMLButtonElement>document.getElementById("execStep")).disabled = false;
+            (<HTMLButtonElement>document.getElementById("singleStep")).disabled = true;
+
+        }
+        public static hostBtnExecStepOS_click(btn): void {
+            if (_CPU.PC > 0) {
+                if (_MemoryManager.fetch(_CPU.PC) != "00") {
+                    _StdOut.putText(_MemoryManager.fetch(_CPU.PC) + " ");
+                    _CPU.cycle();
+                } else {
+                    _CPU.cycle();
+                    (<HTMLButtonElement>document.getElementById("singleStep")).disabled = false;
+                    (<HTMLButtonElement>document.getElementById("execStep")).disabled = true;
+                    debugger;
                 }
-                
-                }
-                
-                 
-       }
+
+            }
+
+
+        }
 
     }
 }

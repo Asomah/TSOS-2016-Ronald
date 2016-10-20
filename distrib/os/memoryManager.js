@@ -184,10 +184,6 @@ var TSOS;
             var nextByte = _MemoryArray[addIndex];
             return nextByte;
         };
-        MemoryManager.prototype.decode = function () {
-        };
-        MemoryManager.prototype.execute = function (opcode) {
-        };
         return MemoryManager;
     }());
     TSOS.MemoryManager = MemoryManager;
