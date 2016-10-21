@@ -3,7 +3,7 @@
 module TSOS {
   
   export class Pcb {
-    constructor(public PC: number = _PC,
+    constructor(public PC: number = 0,
                 public IR: string = _IR,
                 public Acc: number = _Acc,
                 public Xreg: number = _Xreg,
@@ -11,8 +11,9 @@ module TSOS {
                 public Zflag: number = _Zflag,
                 public PID: number = _PID,
                 public base: number = _Base,
-                public limit: number = _ProgramSize - 1,
+                public limit: number = (_Base + _ProgramSize - 1),
                 public state: string = PS_New,
+                public startIndex: number = 0,
                 public pcbProgram :string = "") {
     }
   }

@@ -120,6 +120,13 @@ module TSOS {
                 " <pid> - run a valid process.");
             this.commandList[this.commandList.length] = sc;
 
+            //clear All
+            sc = new ShellCommand(this.shellClearAll,
+                "clearall",
+                "Clears all memory partitions .");
+            this.commandList[this.commandList.length] = sc;
+
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -322,6 +329,9 @@ module TSOS {
                     case "run":
                         _StdOut.putText("Runs a valid process.");
                         break;
+                    case "clearall":
+                        _StdOut.putText("Clears all memory partitions.");
+                        break;
 
 
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
@@ -443,16 +453,31 @@ module TSOS {
                 for (index = 0; index < _ResidentQueue.length; index++) {
                     if (args == _ResidentQueue[index].PID) {
                         pid = _ResidentQueue[index].PID;
+
+                       
+                        //remove process from resident queue and push it to ready queue
+                        _ResidentQueue[index].state = PS_Ready;
+                        _CurrentProgram = _ResidentQueue[index];
+                        _ResidentQueue.splice(index, 1);
+                        
+                        //push pcb to ready queue
+                        _ReadyQueue.push(_CurrentProgram);
+                        alert("Res " + _ResidentQueue.length);
+                        alert("ready " + _ReadyQueue.length);
+                        alert("new PCBID "+ _CurrentProgram.PID);
+
+                        //update pcb table
+                        _MemoryManager.updatePcbTable(_CurrentProgram);
                         break;
                     }
 
 
                 }
-
-                if (pid >= 0 && pid < _ResidentQueue.length) {
-                    if (_ResidentQueue[index].state != PS_Terminated) {
+             
+                
+                    if (_CurrentProgram.state != PS_Terminated) {
                         //alert(pid);
-                        _StdOut.putText('Running PID ' + pid);
+                        _StdOut.putText('Running PID ' + pid );
                         if ((<HTMLButtonElement>document.getElementById("singleStep")).disabled == true) {
                             _CPU.cycle();
                         }
@@ -471,28 +496,14 @@ module TSOS {
                         _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
                     }
 
-                    //Remove finished process from resident queue
-                    //_ResidentQueue.splice(index, 1);
-
-
-                    /*var i = 0;
-    
-                    while(i < _ProgramInput.replace(/[\s]/g, "").length/2){
-                         _CPU.executeProgram();
-                         _MemoryManager.updatePcbTable();
-                         i++;
-                  
-                    }  */
-
-
-
-                }
-                else {
-                    _StdOut.putText('Ivalid PID... Please enter correct PID');
-                }
-
-
             }
+        }
+
+        public shellClearAll(args) {
+            //clear memory and update memory log
+            _Memory.init();
+            _MemoryManager.clearMemoryLog();
+
         }
 
 

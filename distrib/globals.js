@@ -46,15 +46,17 @@ var _RowNumber = 0; //row number for each program
 var _CurrMemIndex = 0;
 var _Base = 0; //defualt base of memory
 var _ResidentQueue = []; //resident queue 
+var _ReadyQueue = []; //ready queue 
 var _Canvas; // Initialized in Control.hostInit().
 var _DrawingContext; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
 var _DefaultFontFamily = "sans"; // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.
 var _DefaultFontSize = 13;
 var _FontHeightMargin = 4; // Additional space added to font size when advancing a line.
 var _Trace = true; // Default the OS trace to be on.
-var _Pcb;
+var _CurrentProgram;
 var _Memory;
 var _MemoryManager;
+var _BaseProgram = 0; //start index for each program
 var _ProgramInput = ""; //Program input
 // The OS Kernel and its queues.
 var _Kernel;

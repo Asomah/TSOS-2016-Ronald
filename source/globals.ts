@@ -64,6 +64,8 @@ var _CurrMemIndex: number = 0;
 var _Base: number = 0;                  //defualt base of memory
 
 var _ResidentQueue: any = [];         //resident queue 
+var _ReadyQueue: any = [];             //ready queue 
+
 
 var _Canvas: HTMLCanvasElement;         // Initialized in Control.hostInit().
 var _DrawingContext: any; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.
@@ -73,9 +75,11 @@ var _FontHeightMargin: number = 4;              // Additional space added to fon
 
 var _Trace: boolean = true;  // Default the OS trace to be on.
 
-var _Pcb: TSOS.Pcb;
+var _CurrentProgram: TSOS.Pcb;
 var _Memory: TSOS.Memory;
 var _MemoryManager: TSOS.MemoryManager; 
+
+var _BaseProgram: number = 0; //start index for each program
 
 var _ProgramInput = "";  //Program input
 

@@ -70,6 +70,9 @@ var TSOS;
             //run
             sc = new TSOS.ShellCommand(this.shellRun, "run", " <pid> - run a valid process.");
             this.commandList[this.commandList.length] = sc;
+            //clear All
+            sc = new TSOS.ShellCommand(this.shellClearAll, "clearall", "Clears all memory partitions .");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -258,6 +261,9 @@ var TSOS;
                     case "run":
                         _StdOut.putText("Runs a valid process.");
                         break;
+                    case "clearall":
+                        _StdOut.putText("Clears all memory partitions.");
+                        break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -366,29 +372,40 @@ var TSOS;
                 for (index = 0; index < _ResidentQueue.length; index++) {
                     if (args == _ResidentQueue[index].PID) {
                         pid = _ResidentQueue[index].PID;
+                        //remove process from resident queue and push it to ready queue
+                        _ResidentQueue[index].state = PS_Ready;
+                        _CurrentProgram = _ResidentQueue[index];
+                        _ResidentQueue.splice(index, 1);
+                        //push pcb to ready queue
+                        _ReadyQueue.push(_CurrentProgram);
+                        alert("Res " + _ResidentQueue.length);
+                        alert("ready " + _ReadyQueue.length);
+                        alert("new PCBID " + _CurrentProgram.PID);
+                        //update pcb table
+                        _MemoryManager.updatePcbTable(_CurrentProgram);
                         break;
                     }
                 }
-                if (pid >= 0 && pid < _ResidentQueue.length) {
-                    if (_ResidentQueue[index].state != PS_Terminated) {
-                        //alert(pid);
-                        _StdOut.putText('Running PID ' + pid);
-                        if (document.getElementById("singleStep").disabled == true) {
-                            _CPU.cycle();
-                        }
-                        else {
-                            _CPU.init();
-                            _CPU.isExecuting = true;
-                        }
+                if (_CurrentProgram.state != PS_Terminated) {
+                    //alert(pid);
+                    _StdOut.putText('Running PID ' + pid);
+                    if (document.getElementById("singleStep").disabled == true) {
+                        _CPU.cycle();
                     }
                     else {
-                        _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
+                        _CPU.init();
+                        _CPU.isExecuting = true;
                     }
                 }
                 else {
-                    _StdOut.putText('Ivalid PID... Please enter correct PID');
+                    _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
                 }
             }
+        };
+        Shell.prototype.shellClearAll = function (args) {
+            //clear memory and update memory log
+            _Memory.init();
+            _MemoryManager.clearMemoryLog();
         };
         return Shell;
     }());
