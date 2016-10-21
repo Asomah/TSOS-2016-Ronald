@@ -38,6 +38,7 @@ var _ArrayOfHistory: string[] = [];
 //var _CurrentProcess = new Pcb();
 
 var _ProgramSize: number = 256; //Allocate 256 bytes for program
+var _MemorySize: number = _ProgramSize * 3 ; // Memory size 
 var _MemoryArray = [];
 
 var _PID: number = -1;             //PID for PCB
@@ -55,11 +56,12 @@ var PS_Running: string = "Running";
 var PS_Waiting: string = "Waiting";
 var PS_Terminated: string = "Terminated";
 
-var _PcbStartIndex: number = 0;
 
+var _RowNumber: number = 0;         //row number for each program
+
+var _CurrMemIndex: number = 0;
 
 var _Base: number = 0;                  //defualt base of memory
-var _CurrMemIndex: number = 0;                  //defualt base of memory
 
 var _ResidentQueue: any = [];         //resident queue 
 

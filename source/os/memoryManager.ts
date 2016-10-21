@@ -12,28 +12,39 @@ module TSOS {
                   Increase PID by one, Create a new instance of PCB by one and push cusrrent PCB to Resident queue 
                   */
                   programInput = _ProgramInput.replace(/[\s]/g, "");
-                  var j = _CurrMemIndex;
+                  alert ("Base : " + _Base); 
+                  var j = _Base;
+                  alert ("j : " + j); 
 
+                  if ((programInput.length -1) < _ProgramSize){
                   for (var i = 0; i < programInput.length; i++) {
-                        if (_CurrMemIndex < _ProgramSize) {
                               _MemoryArray[j] = programInput[i] + programInput[i + 1];
+                              alert(_MemoryArray[j]);
                               j++;
                               i++;
-                        }
                   }
+                  }else{
+                        //Error if program is greater than or equal to 256
+                        _StdOut.putText("Program too Large.. ");
+                  }
+
+                  
+                  
+                  //Get new base
+                  _Base = _Base + 256;
+
+                  //Increase current memory index by 2 so that new process starts by 2 bytes offset
+                  //_CurrMemIndex = (_Base - j) + j;
+
 
                   _PID++;
                   _Pcb = new Pcb();
                   _Pcb.pcbProgram = programInput;
-                  _Pcb.startIndex = _CurrMemIndex;
                   _Pcb.state = PS_Ready;
                   _ResidentQueue.push(_Pcb);
 
                   _StdOut.putText("PID " + _PID + " Loaded");
 
-
-                  //Increase current memory index by 2 so that new process starts by 2 bytes offset
-                  _CurrMemIndex = j + 2;
 
 
                   //Create row and insert into PCB table
@@ -105,6 +116,45 @@ module TSOS {
 
                   //Ctreate CPU log
                   this.cpuTableLog();
+                  
+
+            }
+
+ public updateMemTable(): void {
+                  //load program to memory
+                  this.loadProgToMem(_ProgramInput);
+
+                  //get Memory table and upadte memory cells
+                  var memoryTable: HTMLTableElement = <HTMLTableElement>document.getElementById("memoryTable");
+                  var rows = memoryTable.getElementsByTagName("tr");
+                
+                   alert("current Base " + _Base);
+                   var prevBase = _Base - 256;
+                   var startRowIndex = 0
+                  
+                  alert("Prev Base " + prevBase);
+                  alert(_MemoryArray[prevBase]);
+                  if (_MemoryArray[prevBase] != "00"){
+                         startRowIndex = _RowNumber;
+                        _RowNumber = _RowNumber + 32;
+                        
+                  }
+
+
+                 //To DO : Error if Base is greater than 512
+                  var memIndex = prevBase;
+                  
+                  alert(startRowIndex);
+                  alert(_RowNumber);
+                  for (var i = startRowIndex ; i < _RowNumber; i++) {
+                         
+                        var cells = rows[i].cells;
+                        for (var j = 1; j < cells.length; j++) {
+                              rows[i].cells[j].innerHTML = _MemoryArray[memIndex];
+                              memIndex++;
+                        }
+                  }
+
 
             }
 
@@ -172,28 +222,7 @@ module TSOS {
                   row.cells[5].innerHTML = _CPU.Zflag + "";
             }
 
-            public updateMemTable(): void {
-                  //load program to memory
-                  this.loadProgToMem(_ProgramInput);
-
-                  //get Memory table and upadte memory cells
-                  var memoryTable: HTMLTableElement = <HTMLTableElement>document.getElementById("memoryTable");
-                  var rows = memoryTable.getElementsByTagName("tr");
-
-
-                  var memIndex = 0;
-                  for (var i = 0; i < rows.length; i++) {
-
-                        var cells = rows[i].cells;
-                        for (var j = 1; j < cells.length; j++) {
-                              rows[i].cells[j].innerHTML = _MemoryArray[memIndex];
-                              memIndex++;
-                        }
-                  }
-
-
-            }
-
+           
             public updatePcbTable(): void {
                   //load program to memory
                   //this.loadProgToMem();

@@ -182,7 +182,6 @@ module TSOS {
                     _CPU.cycle();
                     (<HTMLButtonElement>document.getElementById("singleStep")).disabled = false;
                     (<HTMLButtonElement>document.getElementById("execStep")).disabled = true;
-                    debugger;
                 }
 
             }

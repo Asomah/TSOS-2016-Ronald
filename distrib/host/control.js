@@ -141,7 +141,6 @@ var TSOS;
                     _CPU.cycle();
                     document.getElementById("singleStep").disabled = false;
                     document.getElementById("execStep").disabled = true;
-                    debugger;
                 }
             }
         };

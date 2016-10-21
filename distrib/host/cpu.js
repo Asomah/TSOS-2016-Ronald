@@ -170,7 +170,6 @@ var TSOS;
                     }
                     _StdOut.putText(str);
                 }
-                _Console.advanceLine();
             }
             this.PC++;
         };

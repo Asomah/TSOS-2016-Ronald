@@ -49,13 +49,12 @@ h3 {
 
 table{
  overflow-y:scroll; 
-height:100px; 
 display:block;  
-border:1px solid;  
-margin-top:50px;    
+border:1px solid;    
 }
 
-div.left, div.right {
- float: left;
- padding: 10px;    
+.Division{
+   float: left;
+    height: 200px;
+    
 }

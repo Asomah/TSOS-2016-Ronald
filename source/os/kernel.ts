@@ -89,7 +89,7 @@ module TSOS {
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
                 _CPU.cycle();
-                
+
 
             } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 this.krnTrace("Idle");
@@ -102,9 +102,9 @@ module TSOS {
             document.getElementById('Time').innerHTML = 'Date: ' + date + ' Time:' + time;
 
         }
-        
 
-     
+
+
 
         //
         // Interrupt Handling
