@@ -20,10 +20,7 @@ module TSOS {
                               j++;
                               i++;
                   }
-                  }else{
-                        //Error if program is greater than or equal to 256
-                        _StdOut.putText("Program too Large.. ");
-                  }
+                  
 
 
                   //Increase current memory index by 2 so that new process starts by 2 bytes offset
@@ -112,6 +109,11 @@ module TSOS {
 
                   //Get new base
                   _Base = _Base + 256;
+
+                  }else{
+                        //Error if program is greater than or equal to 256
+                        _StdOut.putText("Program too Large.. ");
+                  }
                   
 
             }
@@ -247,10 +249,10 @@ module TSOS {
                                     rows[i].cells[0].innerHTML = pcb.PID + "";
                                     rows[i].cells[1].innerHTML = _CPU.PC + "";
                                     rows[i].cells[2].innerHTML = _IR;
-                                    rows[i].cells[3].innerHTML = _Acc + "";
-                                    rows[i].cells[4].innerHTML = _Xreg + "";
-                                    rows[i].cells[5].innerHTML = _Yreg + "";
-                                    rows[i].cells[6].innerHTML = _Zflag + "";
+                                    rows[i].cells[3].innerHTML = _CPU.Acc + "";
+                                    rows[i].cells[4].innerHTML = _CPU.Xreg + "";
+                                    rows[i].cells[5].innerHTML = _CPU.Yreg + "";
+                                    rows[i].cells[6].innerHTML = _CPU.Zflag + "";
                                     rows[i].cells[7].innerHTML = pcb.base + "";
                                     rows[i].cells[8].innerHTML = pcb.limit + "";
                                     rows[i].cells[9].innerHTML = pcb.state;

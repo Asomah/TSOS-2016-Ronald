@@ -73,6 +73,9 @@ var TSOS;
             //clear All
             sc = new TSOS.ShellCommand(this.shellClearAll, "clearall", "Clears all memory partitions .");
             this.commandList[this.commandList.length] = sc;
+            //run All
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "Runs all loaded programs in memory.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -264,6 +267,9 @@ var TSOS;
                     case "clearall":
                         _StdOut.putText("Clears all memory partitions.");
                         break;
+                    case "runall":
+                        _StdOut.putText("Runs all loaded programs in memory");
+                        break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -378,9 +384,6 @@ var TSOS;
                         _ResidentQueue.splice(index, 1);
                         //push pcb to ready queue
                         _ReadyQueue.push(_CurrentProgram);
-                        alert("Res " + _ResidentQueue.length);
-                        alert("ready " + _ReadyQueue.length);
-                        alert("new PCBID " + _CurrentProgram.PID);
                         //update pcb table
                         _MemoryManager.updatePcbTable(_CurrentProgram);
                         break;
@@ -400,6 +403,34 @@ var TSOS;
                 else {
                     _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
                 }
+            }
+        };
+        Shell.prototype.shellRunAll = function (args) {
+            //run all programs in resident queue if not empty
+            if (_ResidentQueue.length > 0) {
+                for (var i = 0; i < _ResidentQueue.length; i++) {
+                    if (_ResidentQueue[i] !== undefined
+                        && _ResidentQueue[i].state !== PS_Terminated) {
+                        _CurrentProgram = _ResidentQueue[i];
+                        _CurrentProgram.state = PS_Ready;
+                        _ReadyQueue.push(_CurrentProgram);
+                        _MemoryManager.updatePcbTable(_CurrentProgram);
+                    }
+                }
+                if (_CurrentProgram.state != PS_Terminated) {
+                    //alert(pid);
+                    _StdOut.putText('Running PID ' + _CurrentProgram.PID);
+                    if (document.getElementById("singleStep").disabled == true) {
+                        _CPU.cycle();
+                    }
+                    else {
+                        _CPU.init();
+                        _CPU.isExecuting = true;
+                    }
+                }
+            }
+            else {
+                _StdOut.putText("No loaded programs to run... Please load a program to run.");
             }
         };
         Shell.prototype.shellClearAll = function (args) {
