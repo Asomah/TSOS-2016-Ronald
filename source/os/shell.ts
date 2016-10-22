@@ -126,6 +126,13 @@ module TSOS {
                 "Clears all memory partitions .");
             this.commandList[this.commandList.length] = sc;
 
+            //run All
+            sc = new ShellCommand(this.shellRunAll,
+                "runall",
+                "Runs all loaded programs in memory.");
+            this.commandList[this.commandList.length] = sc;
+
+
 
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -332,6 +339,9 @@ module TSOS {
                     case "clearall":
                         _StdOut.putText("Clears all memory partitions.");
                         break;
+                    case "runall":
+                        _StdOut.putText("Runs all loaded programs in memory");
+                        break;
 
 
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
@@ -454,17 +464,14 @@ module TSOS {
                     if (args == _ResidentQueue[index].PID) {
                         pid = _ResidentQueue[index].PID;
 
-                       
+
                         //remove process from resident queue and push it to ready queue
                         _ResidentQueue[index].state = PS_Ready;
                         _CurrentProgram = _ResidentQueue[index];
                         _ResidentQueue.splice(index, 1);
-                        
+
                         //push pcb to ready queue
                         _ReadyQueue.push(_CurrentProgram);
-                        alert("Res " + _ResidentQueue.length);
-                        alert("ready " + _ReadyQueue.length);
-                        alert("new PCBID "+ _CurrentProgram.PID);
 
                         //update pcb table
                         _MemoryManager.updatePcbTable(_CurrentProgram);
@@ -473,36 +480,71 @@ module TSOS {
 
 
                 }
-             
-                
-                    if (_CurrentProgram.state != PS_Terminated) {
-                        //alert(pid);
-                        _StdOut.putText('Running PID ' + pid );
-                        if ((<HTMLButtonElement>document.getElementById("singleStep")).disabled == true) {
-                            _CPU.cycle();
-                        }
-                        else {
-                            _CPU.init();
-                            _CPU.isExecuting = true;
-                        }
-                        //_ResidentQueue[index].state = PS_Running;
-                        // _CPU.counter = _ResidentQueue[index].startIndex;
-                        //_CPU.isExecuting = false;
-                        //_ResidentQueue[index].state = PS_Terminated;
-                        //_MemoryManager.updatePcbTable();
 
+
+                if (_CurrentProgram.state != PS_Terminated) {
+                    //alert(pid);
+                    _StdOut.putText('Running PID ' + pid);
+                    if ((<HTMLButtonElement>document.getElementById("singleStep")).disabled == true) {
+                        _CPU.cycle();
                     }
                     else {
-                        _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
+                        _CPU.init();
+                        _CPU.isExecuting = true;
                     }
+                    //_ResidentQueue[index].state = PS_Running;
+                    // _CPU.counter = _ResidentQueue[index].startIndex;
+                    //_CPU.isExecuting = false;
+                    //_ResidentQueue[index].state = PS_Terminated;
+                    //_MemoryManager.updatePcbTable();
+
+                }
+                else {
+                    _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
+                }
 
             }
         }
+
+        public shellRunAll(args) {
+            //run all programs in resident queue if not empty
+           
+                if (_ResidentQueue.length > 0) {
+                for (var i = 0; i < _ResidentQueue.length; i++) {
+                    if (_ResidentQueue[i] !== undefined
+                        && _ResidentQueue[i].state !== PS_Terminated) {
+                        _CurrentProgram = _ResidentQueue[i];
+                        _CurrentProgram.state = PS_Ready;
+                        _ReadyQueue.push(_CurrentProgram);
+                        _MemoryManager.updatePcbTable(_CurrentProgram);
+                    }
+                }
+                if (_CurrentProgram.state != PS_Terminated) {
+                    //alert(pid);
+                    _StdOut.putText('Running PID ' + _CurrentProgram.PID);
+                    if ((<HTMLButtonElement>document.getElementById("singleStep")).disabled == true) {
+                        _CPU.cycle();
+                    }
+                    else {
+                        _CPU.init();
+                        _CPU.isExecuting = true;
+                    }
+
+                }
+            } else {
+                _StdOut.putText("No loaded programs to run... Please load a program to run.");
+            }
+           
+
+
+        }
+
 
         public shellClearAll(args) {
             //clear memory and update memory log
             _Memory.init();
             _MemoryManager.clearMemoryLog();
+
 
         }
 

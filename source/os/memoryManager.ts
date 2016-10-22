@@ -14,7 +14,7 @@ module TSOS {
                   programInput = _ProgramInput.replace(/[\s]/g, "");
                   var j = _Base;
 
-                  if ((programInput.length -1) < _ProgramSize){
+                  if ((programInput.length/2) < 256){
                   for (var i = 0; i < programInput.length; i++) {
                               _MemoryArray[j] = programInput[i] + programInput[i + 1];
                               j++;
