@@ -35,6 +35,7 @@ var TSOS;
             this.isExecuting = isExecuting;
         }
         Cpu.prototype.init = function () {
+            this.startIndex = _BaseProgram;
             this.PC = 0;
             this.IR = _IR;
             this.Acc = 0;
@@ -44,69 +45,91 @@ var TSOS;
             this.isExecuting = false;
         };
         //Decode Instructions
-        Cpu.prototype.loadAcc = function () {
-            //Load the accumulator with constant
-            //Get Next byte from memory
-            var memAddress = _MemoryManager.fetch(++this.PC);
-            //convert constant from hex to base 10 and set it to accumulator
-            this.Acc = parseInt(memAddress, 16);
-            _Acc = this.Acc;
-        };
         Cpu.prototype.executeProgram = function (opCode) {
             if (opCode == "A9") {
                 _IR = opCode;
-                //load the accumulator with a constant
-                this.Acc = parseInt(_MemoryManager.fetch(++this.PC), 16);
+                //Load the accumulator with constant
+                //Get Next byte from memory
+                this.PC++;
+                var memAddress = _MemoryManager.fetch(++this.startIndex);
+                //convert constant from hex to base 10 and set it to accumulator
+                this.Acc = parseInt(memAddress, 16);
+                _Acc = this.Acc;
             }
             else if (opCode == "AD") {
                 _IR = opCode;
-                //load the accumulator from memory
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
+                // Load the acccumulator from memeory
+                // Load the the next two bytes and switch them
+                this.PC += 2;
+                var memAddress = _MemoryManager.fetch(++this.startIndex);
+                memAddress = _MemoryManager.fetch(++this.startIndex) + memAddress;
                 var getAcc = _MemoryManager.fetch(parseInt(memAddress, 16));
                 this.Acc = parseInt(getAcc, 16);
+                _Acc = parseInt(getAcc, 16);
             }
             else if (opCode == "8D") {
                 _IR = opCode;
-                // Store the accumulator in memory
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
-                var decAddress = parseInt(memAddress, 16);
-                _MemoryArray[decAddress] = this.Acc.toString(16);
+                //Store accumulator in memory
+                // Load the the next two bytes 
+                this.PC += 2;
+                var memAddress = _MemoryManager.fetch(++this.startIndex);
+                memAddress = _MemoryManager.fetch(++this.startIndex) + memAddress;
+                var destAddress = parseInt(memAddress, 16);
+                //alert("8D " + _Base)
+                if (destAddress <= _CurrentProgram.limit) {
+                    _MemoryArray[destAddress] = this.Acc.toString(16);
+                }
             }
             else if (opCode == "6D") {
                 _IR = opCode;
-                // Add with carry
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
+                //Add with carry
+                // Load the the next two bytes 
+                this.PC += 2;
+                var memAddress = _MemoryManager.fetch(++this.startIndex);
+                memAddress = _MemoryManager.fetch(++this.startIndex) + memAddress;
                 var value = _MemoryManager.fetch(parseInt(memAddress, 16));
-                this.Acc += parseInt(value, 16);
+                this.Acc = this.Acc + parseInt(value, 16);
+                _Acc = this.Acc + parseInt(value, 16);
             }
             else if (opCode == "A2") {
                 _IR = opCode;
-                // Load the X register with a constant
-                this.Xreg = parseInt(_MemoryManager.fetch(++this.PC), 16);
+                //Load the X resgister with a constant
+                // Load the the next byte 
+                this.PC++;
+                var numValue = _MemoryManager.fetch(++this.startIndex);
+                this.Xreg = parseInt(numValue, 16);
+                _Xreg = parseInt(numValue, 16);
             }
             else if (opCode == "AE") {
                 _IR = opCode;
-                // Load the X register from memory
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
+                //Load the X register from memory
+                // Load the the next two bytes
+                this.PC += 2;
+                var memAddress = _MemoryManager.fetch(++this.startIndex);
+                memAddress = _MemoryManager.fetch(++this.startIndex) + memAddress;
                 var value = _MemoryManager.fetch(parseInt(memAddress, 16));
                 this.Xreg = parseInt(value, 16);
+                _Xreg = parseInt(value, 16);
             }
             else if (opCode == "A0") {
                 _IR = opCode;
-                // Load the Y register with a constant
-                this.Yreg = parseInt(_MemoryManager.fetch(++this.PC), 16);
+                //Load Y register with a constant 
+                // Load the the next byte 
+                this.PC++;
+                var numValue = _MemoryManager.fetch(++this.startIndex);
+                this.Yreg = parseInt(numValue, 16);
+                _Yreg = parseInt(numValue, 16);
             }
             else if (opCode == "AC") {
                 _IR = opCode;
-                // Load the Y register from memory
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
+                //Load Y register from memory 
+                // Load the the next two bytes
+                this.PC += 2;
+                var memAddress = _MemoryManager.fetch(++this.startIndex);
+                memAddress = _MemoryManager.fetch(++this.startIndex) + memAddress;
                 var value = _MemoryManager.fetch(parseInt(memAddress, 16));
                 this.Yreg = parseInt(value, 16);
+                _Yreg = parseInt(value, 16);
             }
             else if (opCode == "EA") {
                 _IR = opCode;
@@ -114,6 +137,7 @@ var TSOS;
             else if (opCode == "00") {
                 _IR = opCode;
                 //Break
+                _CurrentProgram.startIndex = this.startIndex;
                 _CurrentProgram.PC = this.PC;
                 _CurrentProgram.Acc = this.Acc;
                 _CurrentProgram.Xreg = this.Xreg;
@@ -122,41 +146,55 @@ var TSOS;
             }
             else if (opCode == "EC") {
                 _IR = opCode;
-                // Compare a byte in memory to the X register
-                // Sets Zflag if equal
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
+                //Compare a byte in memory to the X register
+                //Set the Z flag if equal
+                // Load the the next two bytes 
+                this.PC += 2;
+                var memAddress = _MemoryManager.fetch(++this.startIndex);
+                memAddress = _MemoryManager.fetch(++this.startIndex) + memAddress;
                 var value = _MemoryManager.fetch(parseInt(memAddress, 16));
-                if (parseInt(value, 16) == this.Xreg) {
+                var newV = _MemoryManager.fetch(parseInt(memAddress, 16));
+                var xValue = parseInt(value, 16);
+                if (xValue == this.Xreg) {
                     this.Zflag = 1;
+                    _Zflag = 1;
                 }
                 else {
                     this.Zflag = 0;
+                    _Zflag = 0;
                 }
             }
             else if (opCode == "D0") {
                 _IR = opCode;
-                // Branch n bytes if Zflag = 0
-                var jump = parseInt(_MemoryManager.fetch(++this.PC), 16);
-                if (!this.Zflag) {
-                    // If the jump + the current program couter is more than the memory limit,
-                    // we loop around and go up the remainder from 0
-                    var memAdd = this.PC + jump;
-                    if (memAdd > _ProgramSize) {
-                        memAdd = memAdd - _ProgramSize;
+                //Branch n bytes if Z flag is zero
+                if (this.Zflag == 0) {
+                    this.PC++;
+                    var jump = parseInt(_MemoryManager.fetch(++this.startIndex), 16);
+                    // Fetch the next byte and Branch
+                    var nextAddress = this.startIndex + jump;
+                    if (nextAddress > _CurrentProgram.limit) {
+                        nextAddress = nextAddress - (_CurrentProgram.limit + 1);
                     }
-                    this.PC = memAdd;
+                    this.startIndex = nextAddress;
+                    this.PC = nextAddress;
+                }
+                else {
+                    this.startIndex++;
+                    this.PC++;
                 }
             }
             else if (opCode == "EE") {
                 _IR = opCode;
-                // Increment the value of a byte
-                var memAddress = _MemoryManager.fetch(++this.PC);
-                memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
-                var decAddress = parseInt(memAddress, 16);
-                var value = _MemoryManager.fetch(decAddress);
-                //JustMemoryThings.storeOp((parseInt(value, 16) + 1).toString(16), decAddress);
-                _MemoryArray[decAddress] = (parseInt(value, 16) + 1).toString(16);
+                //Increament the value of a byte
+                this.PC += 2;
+                var memAddress = _MemoryManager.fetch(++this.startIndex);
+                memAddress = _MemoryManager.fetch(++this.startIndex) + memAddress;
+                var address = parseInt(memAddress, 16);
+                var value = _MemoryArray[address];
+                var newValue = parseInt(value, 16) + 1;
+                if (address <= _CurrentProgram.limit) {
+                    value = newValue.toString(16);
+                }
             }
             else if (opCode == "FF") {
                 _IR = opCode;
@@ -175,8 +213,13 @@ var TSOS;
                 }
             }
             else {
+                //Stop process
+                //_CurrentProgram.state = PS_Terminated;
+                //_MemoryManager.updateCpuTable();
+                _StdOut.putText("NOT VALID PROGRAM");
             }
             this.PC++;
+            this.startIndex++;
         };
         Cpu.prototype.cycle = function () {
             _Kernel.krnTrace('CPU cycle');
@@ -190,8 +233,8 @@ var TSOS;
                 CPU_CLOCK_INTERVAL = 100;
             }*/
             //var program = _ProgramInput.replace(/[\s]/g, "");
-            if (_MemoryManager.fetch(this.PC) != "00") {
-                this.executeProgram(_MemoryManager.fetch(this.PC));
+            if (_MemoryManager.fetch(this.startIndex) != "00") {
+                this.executeProgram(_MemoryManager.fetch(this.startIndex));
                 _CurrentProgram.state = PS_Running;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 _MemoryManager.updateCpuTable();
