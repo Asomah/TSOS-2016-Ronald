@@ -430,7 +430,7 @@ var TSOS;
                 }
             }
             else {
-                _StdOut.putText("No loaded programs to run... Please load a program to run.");
+                _StdOut.putText("Please load in a process to initiate runall.");
             }
         };
         Shell.prototype.shellClearAll = function (args) {

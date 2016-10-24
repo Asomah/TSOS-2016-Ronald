@@ -67,7 +67,8 @@ module TSOS {
                 //load the accumulator from memory
                 var memAddress = _MemoryManager.fetch(++this.PC);
                 memAddress = _MemoryManager.fetch(++this.PC) + memAddress;
-                this.Acc = parseInt(memAddress, 16);
+                var getAcc = _MemoryManager.fetch(parseInt(memAddress, 16));
+                this.Acc = parseInt(getAcc, 16);
 
             }
             else if (opCode == "8D") {
@@ -240,9 +241,7 @@ module TSOS {
             } else {
                 this.isExecuting = false;
                 //set the next program to execute
-                alert(_BaseProgram + "First")
                 _BaseProgram = _BaseProgram + 256;
-                 alert(_BaseProgram + "Second")
                 _CurrentProgram.state = PS_Terminated;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 //this.PC = _Pcb.startIndex;
