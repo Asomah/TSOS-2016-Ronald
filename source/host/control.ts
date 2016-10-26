@@ -176,7 +176,6 @@ module TSOS {
         public static hostBtnExecStepOS_click(btn): void {
             if (_CPU.startIndex > 0) {
                 if (_MemoryManager.fetch(_CPU.startIndex) != "00") {
-                    _StdOut.putText(_MemoryManager.fetch(_CPU.startIndex) + " ");
                     _CPU.cycle();
                 } else {
                     _CPU.cycle();

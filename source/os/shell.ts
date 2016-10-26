@@ -132,6 +132,12 @@ module TSOS {
                 "Runs all loaded programs in memory.");
             this.commandList[this.commandList.length] = sc;
 
+            //Quantum
+            sc = new ShellCommand(this.shellQuantum,
+                "quantum",
+                "<int> - sets the quantum for round robin.");
+            this.commandList[this.commandList.length] = sc;
+
 
 
             // ps  - list the running processes and their IDs
@@ -342,6 +348,9 @@ module TSOS {
                     case "runall":
                         _StdOut.putText("Runs all loaded programs in memory");
                         break;
+                    case "quantum":
+                        _StdOut.putText("Sets the quantum number for Round Robin");
+                        break;
 
 
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
@@ -436,8 +445,14 @@ module TSOS {
                 //load Program into Memory
                 //Create a new PCB
                 //Update Memory Table
+                var programInput = _ProgramInput.replace(/[\s]/g, "");
+                  if ((programInput.length/2) < 256 && _MemoryArray[_Base] == "00"){
                 _MemoryManager = new MemoryManager();
                 _MemoryManager.updateMemTable();
+                  }else{
+                        //Error if program is greater than or equal to 256
+                        _StdOut.putText("Program too Large.. ");
+                  }
 
             } else {
                 _StdOut.putText('INVALID HEX');
@@ -453,6 +468,9 @@ module TSOS {
             compare arg with all pids in resident Queue
             if arg equals any pid, run that job else display an error message
             */
+
+            //set Runall to false if running a specific program
+            _RunAll = false;
             if (args.length == 0) {
                 _StdOut.putText('Empty PID... Please enter PID');
             }
@@ -477,7 +495,6 @@ module TSOS {
                         _MemoryManager.updatePcbTable(_CurrentProgram);
                         break;
                     }
-
 
                 }
 
@@ -508,17 +525,30 @@ module TSOS {
 
         public shellRunAll(args) {
             //run all programs in resident queue if not empty
-           
-                if (_ResidentQueue.length > 0) {
-                for (var i = 0; i < _ResidentQueue.length; i++) {
-                    if (_ResidentQueue[i] !== undefined
-                        && _ResidentQueue[i].state !== PS_Terminated) {
-                        _CurrentProgram = _ResidentQueue[i];
-                        _CurrentProgram.state = PS_Ready;
-                        _ReadyQueue.push(_CurrentProgram);
-                        _MemoryManager.updatePcbTable(_CurrentProgram);
-                    }
+            _RunAll = true;
+
+            if (_ResidentQueue.length > 0) {
+                var resLength = _ResidentQueue.length;
+                for (var i = resLength; i > 0; i--) {
+                    //remove process from resident queue and push it to ready queue
+                    _ResidentQueue[0].state = PS_Ready;
+                    _CurrentProgram = _ResidentQueue[0];
+                    alert(_CurrentProgram.state);
+                    _ResidentQueue.splice(0, 1);
+
+                    //push pcb to ready queue
+                    _ReadyQueue.push(_CurrentProgram);
+
+                    //update pcb table
+                    _MemoryManager.updatePcbTable(_CurrentProgram);
+
                 }
+                alert(_ResidentQueue.length);
+                alert(_ReadyQueue.length);
+
+                _CurrentProgram = _ReadyQueue[0];
+
+
                 if (_CurrentProgram.state != PS_Terminated) {
                     //alert(pid);
                     _StdOut.putText('Running PID ' + _CurrentProgram.PID);
@@ -532,9 +562,9 @@ module TSOS {
 
                 }
             } else {
-                _StdOut.putText("Please load in a process to initiate runall.");
+                _StdOut.putText("No programs loaded... Load program(s) to before using this command");
             }
-           
+
 
 
         }
@@ -542,11 +572,26 @@ module TSOS {
 
         public shellClearAll(args) {
             //clear memory and update memory log
+            _Base = 0;
+            _BaseProgram = 0;
+            _ResidentQueue = [];
+            _ReadyQueue = [];
+            _RowNumber = 0;
             _Memory.init();
             _MemoryManager.clearMemoryLog();
 
 
         }
+
+        public shellQuantum(args) {
+            //Sets quantum number for round robin
+
+            if (args == parseInt(args, 10))
+                _Quantum = args
+            else
+                _StdOut.putText("Please enter an inter");
+        }
+
 
 
     }

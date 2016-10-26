@@ -172,8 +172,8 @@ var TSOS;
                     var jump = parseInt(_MemoryManager.fetch(++this.startIndex), 16);
                     // Fetch the next byte and Branch
                     var nextAddress = this.startIndex + jump;
-                    if (nextAddress > _CurrentProgram.limit) {
-                        nextAddress = nextAddress - (_CurrentProgram.limit + 1);
+                    if (nextAddress >= _ProgramSize) {
+                        nextAddress = nextAddress - _ProgramSize;
                     }
                     this.startIndex = nextAddress;
                     this.PC = nextAddress;
@@ -239,12 +239,29 @@ var TSOS;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 _MemoryManager.updateCpuTable();
             }
-            else {
+            else if (_MemoryManager.fetch(this.startIndex) == "00") {
+                if (_BaseProgram != 512) {
+                    _BaseProgram = _BaseProgram + 256;
+                    this.startIndex = _BaseProgram;
+                }
                 this.isExecuting = false;
                 //set the next program to execute
-                _BaseProgram = _BaseProgram + 256;
                 _CurrentProgram.state = PS_Terminated;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
+                //this.startIndex = _CurrentProgram.startIndex;
+                if (_MemoryManager.fetch(this.startIndex) != "00" && _RunAll == true) {
+                    this.isExecuting = true;
+                    for (var i = 0; i < _ReadyQueue.length; i++) {
+                        if (_ReadyQueue[i].state != PS_Terminated) {
+                            _CurrentProgram = _ReadyQueue[i];
+                            _CurrentProgram.state = PS_Running;
+                            this.cycle();
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
             }
         };
         return Cpu;

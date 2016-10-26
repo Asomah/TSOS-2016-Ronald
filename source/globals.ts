@@ -49,6 +49,8 @@ var _Xreg: number = 0;
 var _Yreg: number = 0;
 var _Zflag: number = 0;
 
+var _Quantum: number = 0;         //Quantum number
+
 // states of process for PCB.. Make constants to represent different states.
 var PS_New: string = "New";
 var PS_Ready: string = "Ready";
@@ -56,6 +58,8 @@ var PS_Running: string = "Running";
 var PS_Waiting: string = "Waiting";
 var PS_Terminated: string = "Terminated";
 
+
+var _RunAll: Boolean = false;
 
 var _RowNumber: number = 0;         //row number for each program
 

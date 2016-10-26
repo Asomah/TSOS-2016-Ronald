@@ -13,84 +13,81 @@ var TSOS;
             */
             programInput = _ProgramInput.replace(/[\s]/g, "");
             var j = _Base;
-            if ((programInput.length / 2) < 256) {
-                for (var i = 0; i < programInput.length; i++) {
-                    _MemoryArray[j] = programInput[i] + programInput[i + 1];
-                    j++;
-                    i++;
-                }
-                //Increase current memory index by 2 so that new process starts by 2 bytes offset
-                //_CurrMemIndex = (_Base - j) + j;
-                _PID++;
-                _CurrentProgram = new TSOS.Pcb();
-                _CurrentProgram.pcbProgram = programInput;
-                _CurrentProgram.state = PS_New;
-                _ResidentQueue.push(_CurrentProgram);
-                _StdOut.putText("PID " + _PID + " Loaded");
-                //Create row and insert into PCB table
-                var myTable = document.getElementById("pcbTable");
-                var newRow = myTable.insertRow(myTable.rows.length);
-                //myTable.insertRow(myTable.rows.length);
-                // Insert a cell in the row at index 0
-                var newCell1 = newRow.insertCell(0);
-                // Append a text node to the cell
-                var newText = document.createTextNode(_CurrentProgram.PID + "");
-                newCell1.appendChild(newText);
-                // Insert a cell in the row at index 1
-                var newCell2 = newRow.insertCell(1);
-                // Append a text node to the cell
-                var newText = document.createTextNode(_CPU.PC + "");
-                newCell2.appendChild(newText);
-                // Insert a cell in the row at index 2
-                var newCell3 = newRow.insertCell(2);
-                // Append a text node to the cell
-                var newText = document.createTextNode(_CurrentProgram.IR + "");
-                newCell3.appendChild(newText);
-                // Insert a cell in the row at index 4
-                var newCell4 = newRow.insertCell(3);
-                // Append a text node to the cell
-                var newText = document.createTextNode(_CurrentProgram.Acc + "");
-                newCell4.appendChild(newText);
-                // Insert a cell in the row at index 5
-                var newCell5 = newRow.insertCell(4);
-                // Append a text node to the cell
-                var newText = document.createTextNode(_CurrentProgram.Xreg + "");
-                newCell5.appendChild(newText);
-                // Insert a cell in the row at index 6
-                var newCell6 = newRow.insertCell(5);
-                // Append a text node to the cell
-                var newText = document.createTextNode(_CurrentProgram.Yreg + "");
-                newCell6.appendChild(newText);
-                // Insert a cell in the row at index 7
-                var newCell7 = newRow.insertCell(6);
-                // Append a text node to the cell
-                var newText = document.createTextNode(_CurrentProgram.Zflag + "");
-                newCell7.appendChild(newText);
-                // Insert a cell in the row at index 8
-                var newCell8 = newRow.insertCell(7);
-                // Append a text node to the cell
-                var newText = document.createTextNode(_CurrentProgram.base + "");
-                newCell8.appendChild(newText);
-                // Insert a cell in the row at index 9
-                var newCell9 = newRow.insertCell(8);
-                // Append a text node to the cell
-                var newText = document.createTextNode(_CurrentProgram.limit + "");
-                newCell9.appendChild(newText);
-                // Insert a cell in the row at index 10
-                var newCell10 = newRow.insertCell(9);
-                // Append a text node to the cell
-                var newText = document.createTextNode(_CurrentProgram.state + "");
-                newCell10.appendChild(newText);
-                //alert(myTable.rows.length)
-                //Ctreate CPU log
-                this.cpuTableLog();
-                //Get new base
+            for (var i = 0; i < programInput.length; i++) {
+                _MemoryArray[j] = programInput[i] + programInput[i + 1];
+                j++;
+                i++;
+            }
+            //Increase current memory index by 2 so that new process starts by 2 bytes offset
+            //_CurrMemIndex = (_Base - j) + j;
+            _PID++;
+            _CurrentProgram = new TSOS.Pcb();
+            _CurrentProgram.pcbProgram = programInput;
+            _CurrentProgram.state = PS_New;
+            _ResidentQueue.push(_CurrentProgram);
+            _StdOut.putText("PID " + _PID + " Loaded");
+            //Create row and insert into PCB table
+            var myTable = document.getElementById("pcbTable");
+            var newRow = myTable.insertRow(myTable.rows.length);
+            //myTable.insertRow(myTable.rows.length);
+            // Insert a cell in the row at index 0
+            var newCell1 = newRow.insertCell(0);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_CurrentProgram.PID + "");
+            newCell1.appendChild(newText);
+            // Insert a cell in the row at index 1
+            var newCell2 = newRow.insertCell(1);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_CPU.PC + "");
+            newCell2.appendChild(newText);
+            // Insert a cell in the row at index 2
+            var newCell3 = newRow.insertCell(2);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_CurrentProgram.IR + "");
+            newCell3.appendChild(newText);
+            // Insert a cell in the row at index 4
+            var newCell4 = newRow.insertCell(3);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_CurrentProgram.Acc + "");
+            newCell4.appendChild(newText);
+            // Insert a cell in the row at index 5
+            var newCell5 = newRow.insertCell(4);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_CurrentProgram.Xreg + "");
+            newCell5.appendChild(newText);
+            // Insert a cell in the row at index 6
+            var newCell6 = newRow.insertCell(5);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_CurrentProgram.Yreg + "");
+            newCell6.appendChild(newText);
+            // Insert a cell in the row at index 7
+            var newCell7 = newRow.insertCell(6);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_CurrentProgram.Zflag + "");
+            newCell7.appendChild(newText);
+            // Insert a cell in the row at index 8
+            var newCell8 = newRow.insertCell(7);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_CurrentProgram.base + "");
+            newCell8.appendChild(newText);
+            // Insert a cell in the row at index 9
+            var newCell9 = newRow.insertCell(8);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_CurrentProgram.limit + "");
+            newCell9.appendChild(newText);
+            // Insert a cell in the row at index 10
+            var newCell10 = newRow.insertCell(9);
+            // Append a text node to the cell
+            var newText = document.createTextNode(_CurrentProgram.state + "");
+            newCell10.appendChild(newText);
+            //alert(myTable.rows.length)
+            //Ctreate CPU log
+            this.cpuTableLog();
+            //Get new base
+            if (_Base != 512) {
                 _Base = _Base + 256;
             }
-            else {
-                //Error if program is greater than or equal to 256
-                _StdOut.putText("Program too Large.. ");
-            }
+            alert("Base " + _Base);
         };
         MemoryManager.prototype.updateMemTable = function () {
             //load program to memory

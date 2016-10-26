@@ -14,7 +14,6 @@ module TSOS {
                   programInput = _ProgramInput.replace(/[\s]/g, "");
                   var j = _Base;
 
-                  if ((programInput.length/2) < 256){
                   for (var i = 0; i < programInput.length; i++) {
                               _MemoryArray[j] = programInput[i] + programInput[i + 1];
                               j++;
@@ -108,12 +107,12 @@ module TSOS {
                   this.cpuTableLog();
 
                   //Get new base
-                  _Base = _Base + 256;
-
-                  }else{
-                        //Error if program is greater than or equal to 256
-                        _StdOut.putText("Program too Large.. ");
+                  if (_Base != 512){
+                      _Base = _Base + 256;
                   }
+                 
+             alert("Base " + _Base);
+                  
                   
 
             }
