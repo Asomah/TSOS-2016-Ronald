@@ -10,7 +10,7 @@ module TSOS {
                 public Yreg: number = _Yreg,
                 public Zflag: number = _Zflag,
                 public PID: number = _PID,
-                public base: number = _Base,
+                public base: number = 0,
                 public limit: number = (_Base + _ProgramSize - 1),
                 public state: string = PS_New,
                 public startIndex: number = 0,

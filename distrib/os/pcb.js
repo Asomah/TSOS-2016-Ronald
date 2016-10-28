@@ -10,7 +10,7 @@ var TSOS;
             if (Yreg === void 0) { Yreg = _Yreg; }
             if (Zflag === void 0) { Zflag = _Zflag; }
             if (PID === void 0) { PID = _PID; }
-            if (base === void 0) { base = _Base; }
+            if (base === void 0) { base = 0; }
             if (limit === void 0) { limit = (_Base + _ProgramSize - 1); }
             if (state === void 0) { state = PS_New; }
             if (startIndex === void 0) { startIndex = 0; }

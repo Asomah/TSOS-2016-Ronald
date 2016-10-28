@@ -17,7 +17,7 @@ var TSOS;
 (function (TSOS) {
     var Cpu = (function () {
         function Cpu(startIndex, PC, IR, Acc, Xreg, Yreg, Zflag, isExecuting) {
-            if (startIndex === void 0) { startIndex = _BaseProgram; }
+            if (startIndex === void 0) { startIndex = 0; }
             if (PC === void 0) { PC = 0; }
             if (IR === void 0) { IR = _IR; }
             if (Acc === void 0) { Acc = 0; }
@@ -35,7 +35,6 @@ var TSOS;
             this.isExecuting = isExecuting;
         }
         Cpu.prototype.init = function () {
-            this.startIndex = _BaseProgram;
             this.PC = 0;
             this.IR = _IR;
             this.Acc = 0;
@@ -225,43 +224,49 @@ var TSOS;
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
-            //increase clock cycle if program is executiing 
-            /*if (this.isExecuting == true){
-                CPU_CLOCK_INTERVAL = 500;
-            }
-            else{
-                CPU_CLOCK_INTERVAL = 100;
-            }*/
-            //var program = _ProgramInput.replace(/[\s]/g, "");
             if (_MemoryManager.fetch(this.startIndex) != "00") {
                 this.executeProgram(_MemoryManager.fetch(this.startIndex));
                 _CurrentProgram.state = PS_Running;
+                //alert("Updating PCBTABLE");
                 _MemoryManager.updatePcbTable(_CurrentProgram);
+                // alert("Updating PCTABLE");
                 _MemoryManager.updateCpuTable();
             }
-            else if (_MemoryManager.fetch(this.startIndex) == "00") {
-                if (_BaseProgram != 512) {
+            else {
+                /*if (_BaseProgram != 512) {
                     _BaseProgram = _BaseProgram + 256;
                     this.startIndex = _BaseProgram;
-                }
+                }*/
                 this.isExecuting = false;
                 //set the next program to execute
                 _CurrentProgram.state = PS_Terminated;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
-                //this.startIndex = _CurrentProgram.startIndex;
-                if (_MemoryManager.fetch(this.startIndex) != "00" && _RunAll == true) {
+                //TO DO :: Clear memory after each process
+                //Restore memory after program finishes running and update memory table
+                //_MemoryManager.resetMem();
+                //_MemoryManager.clearMemoryLog();
+                //remove program from ready queue
+                for (var i = 0; i < _ReadyQueue.length; i++) {
+                    if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
+                        _ReadyQueue.splice(i, 1);
+                        _MemoryManager.deleteRowPcb(_CurrentProgram);
+                        break;
+                    }
+                }
+                if (_RunAll == true) {
                     this.isExecuting = true;
                     for (var i = 0; i < _ReadyQueue.length; i++) {
                         if (_ReadyQueue[i].state != PS_Terminated) {
                             _CurrentProgram = _ReadyQueue[i];
-                            _CurrentProgram.state = PS_Running;
-                            this.cycle();
-                            break;
+                            this.startIndex = _CurrentProgram.base;
+                            if (_MemoryManager.fetch(this.startIndex) != "00") {
+                                _CurrentProgram.state = PS_Running;
+                                this.cycle();
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            else {
             }
         };
         return Cpu;

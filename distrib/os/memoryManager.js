@@ -23,6 +23,7 @@ var TSOS;
             _PID++;
             _CurrentProgram = new TSOS.Pcb();
             _CurrentProgram.pcbProgram = programInput;
+            _CurrentProgram.base = _Base;
             _CurrentProgram.state = PS_New;
             _ResidentQueue.push(_CurrentProgram);
             _StdOut.putText("PID " + _PID + " Loaded");
@@ -87,7 +88,6 @@ var TSOS;
             if (_Base != 512) {
                 _Base = _Base + 256;
             }
-            alert("Base " + _Base);
         };
         MemoryManager.prototype.updateMemTable = function () {
             //load program to memory
@@ -111,6 +111,7 @@ var TSOS;
                 }
             }
         };
+        //Update memory table when memory is cleared
         MemoryManager.prototype.clearMemoryLog = function () {
             var memoryTable = document.getElementById("memoryTable");
             var rows = memoryTable.getElementsByTagName("tr");
@@ -179,7 +180,7 @@ var TSOS;
             var rows = pcbTable.getElementsByTagName("tr");
             for (var i = 1; i < rows.length; i++) {
                 var cells = rows[i].cells;
-                if (pcb.state == PS_Running && rows[i].cells[0].innerHTML == pcb.PID) {
+                if (rows[i].cells[0].innerHTML == pcb.PID) {
                     rows[i].cells[0].innerHTML = pcb.PID + "";
                     rows[i].cells[1].innerHTML = _CPU.PC + "";
                     rows[i].cells[2].innerHTML = _IR;
@@ -192,10 +193,29 @@ var TSOS;
                     rows[i].cells[9].innerHTML = pcb.state;
                     break;
                 }
-                if (pcb.state == PS_Terminated && rows[i].cells[0].innerHTML == pcb.PID) {
-                    rows[i].cells[9].innerHTML = pcb.state;
+            }
+        };
+        MemoryManager.prototype.deleteRowPcb = function (pcb) {
+            //load program to memory
+            //this.loadProgToMem();
+            //get Memory table and upadte memory cells
+            var pcbTable = document.getElementById("pcbTable");
+            var rows = pcbTable.getElementsByTagName("tr");
+            for (var i = 1; i < rows.length; i++) {
+                var cells = rows[i].cells;
+                if (rows[i].cells[0].innerHTML == pcb.PID) {
+                    rows[i].remove();
                     break;
                 }
+            }
+        };
+        //Clear a section of memory
+        MemoryManager.prototype.resetMem = function () {
+            var index = _CurrentProgram.base;
+            alert("Index " + index);
+            for (var i = 0; i < _ProgramSize; i++) {
+                _MemoryArray[index] = "00";
+                index++;
             }
         };
         // Fetch opcode

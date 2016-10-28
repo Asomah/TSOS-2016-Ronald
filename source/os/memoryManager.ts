@@ -29,6 +29,7 @@ module TSOS {
                   _PID++;
                   _CurrentProgram = new Pcb();
                   _CurrentProgram.pcbProgram = programInput;
+                  _CurrentProgram.base = _Base;
                   _CurrentProgram.state = PS_New;
                   _ResidentQueue.push(_CurrentProgram);
 
@@ -111,7 +112,6 @@ module TSOS {
                       _Base = _Base + 256;
                   }
                  
-             alert("Base " + _Base);
                   
                   
 
@@ -150,6 +150,7 @@ module TSOS {
 
             }
 
+            //Update memory table when memory is cleared
            public clearMemoryLog() {
                  var memoryTable: HTMLTableElement = <HTMLTableElement>document.getElementById("memoryTable");
                   var rows = memoryTable.getElementsByTagName("tr");
@@ -244,7 +245,7 @@ module TSOS {
 
                         var cells = rows[i].cells;
 
-                              if (pcb.state == PS_Running && rows[i].cells[0].innerHTML == pcb.PID) {
+                              if (rows[i].cells[0].innerHTML == pcb.PID) {
                                     rows[i].cells[0].innerHTML = pcb.PID + "";
                                     rows[i].cells[1].innerHTML = _CPU.PC + "";
                                     rows[i].cells[2].innerHTML = _IR;
@@ -257,15 +258,43 @@ module TSOS {
                                     rows[i].cells[9].innerHTML = pcb.state;
                                     break;
                               }
-                              if (pcb.state == PS_Terminated && rows[i].cells[0].innerHTML == pcb.PID) {
-                                    rows[i].cells[9].innerHTML = pcb.state;
-                                    break;
-                              }
 
 
                         
                   }
 
+            }
+            public deleteRowPcb(pcb): void {
+                  //load program to memory
+                  //this.loadProgToMem();
+
+                  //get Memory table and upadte memory cells
+                  var pcbTable: HTMLTableElement = <HTMLTableElement>document.getElementById("pcbTable");
+                  var rows = pcbTable.getElementsByTagName("tr");
+
+                  for (var i = 1; i < rows.length; i++) {
+                        var cells = rows[i].cells;
+
+                              if (rows[i].cells[0].innerHTML == pcb.PID) {
+                                    rows[i].remove();
+                                    break;
+
+                              }
+                        
+
+                  }
+            }
+
+
+            //Clear a section of memory
+            public resetMem(){
+                  var index = _CurrentProgram.base;
+                  alert("Index " + index);
+
+                  for(var i = 0 ; i<_ProgramSize; i++){
+                       _MemoryArray[index] = "00";
+                       index++;
+                  }
             }
 
             // Fetch opcode

@@ -138,6 +138,12 @@ module TSOS {
                 "<int> - sets the quantum for round robin.");
             this.commandList[this.commandList.length] = sc;
 
+            //Active pids
+            sc = new ShellCommand(this.shellActivePids,
+                "ps",
+                "Displays all acive pids.");
+            this.commandList[this.commandList.length] = sc;
+
 
 
             // ps  - list the running processes and their IDs
@@ -351,6 +357,9 @@ module TSOS {
                     case "quantum":
                         _StdOut.putText("Sets the quantum number for Round Robin");
                         break;
+                    case "ps":
+                        _StdOut.putText("Displys all active pids");
+                        break;                
 
 
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
@@ -446,7 +455,7 @@ module TSOS {
                 //Create a new PCB
                 //Update Memory Table
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
-                  if ((programInput.length/2) < 256 && _MemoryArray[_Base] == "00"){
+                  if ((programInput.length/2) < _ProgramSize && _MemoryArray[_Base] == "00"){
                 _MemoryManager = new MemoryManager();
                 _MemoryManager.updateMemTable();
                   }else{
@@ -501,6 +510,8 @@ module TSOS {
 
                 if (_CurrentProgram.state != PS_Terminated) {
                     //alert(pid);
+                    //base to start running program
+                    _CPU.startIndex = _CurrentProgram.base;
                     _StdOut.putText('Running PID ' + pid);
                     if ((<HTMLButtonElement>document.getElementById("singleStep")).disabled == true) {
                         _CPU.cycle();
@@ -533,7 +544,6 @@ module TSOS {
                     //remove process from resident queue and push it to ready queue
                     _ResidentQueue[0].state = PS_Ready;
                     _CurrentProgram = _ResidentQueue[0];
-                    alert(_CurrentProgram.state);
                     _ResidentQueue.splice(0, 1);
 
                     //push pcb to ready queue
@@ -543,15 +553,13 @@ module TSOS {
                     _MemoryManager.updatePcbTable(_CurrentProgram);
 
                 }
-                alert(_ResidentQueue.length);
-                alert(_ReadyQueue.length);
 
                 _CurrentProgram = _ReadyQueue[0];
-
+                 _CPU.startIndex = _CurrentProgram.base;
 
                 if (_CurrentProgram.state != PS_Terminated) {
                     //alert(pid);
-                    _StdOut.putText('Running PID ' + _CurrentProgram.PID);
+                    _StdOut.putText('Running all Programs ... ');
                     if ((<HTMLButtonElement>document.getElementById("singleStep")).disabled == true) {
                         _CPU.cycle();
                     }
@@ -592,7 +600,20 @@ module TSOS {
                 _StdOut.putText("Please enter an inter");
         }
 
+       public shellActivePids(args) {
+            if (_ReadyQueue.length != 0){
+                alert("ReadyQueue " + _ReadyQueue.length)
+                for (var i = 0; i<_ReadyQueue.length; i++){
+                     _StdOut.putText("Active PID :: " + _ReadyQueue[i].PID);
+                     _StdOut.advanceLine();
+                }
 
+            }
+            else{
+                 _StdOut.putText("There are no active pids");
+            }
+
+       }
 
     }
 }

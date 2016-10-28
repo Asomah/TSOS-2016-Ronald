@@ -20,7 +20,7 @@ module TSOS {
     export class Cpu {
 
         constructor(
-            public startIndex = _BaseProgram,
+            public startIndex = 0,
             public PC: number = 0,
             public IR: string = _IR,
             public Acc: number = 0,
@@ -32,7 +32,6 @@ module TSOS {
         }
 
         public init(): void {
-            this.startIndex = _BaseProgram;
             this.PC = 0;
             this.IR = _IR;
             this.Acc = 0;
@@ -49,16 +48,16 @@ module TSOS {
 
             if (opCode == "A9") {
                 _IR = opCode;
-                 
-                  //Load the accumulator with constant
-            //Get Next byte from memory
-            this.PC++;
-            var memAddress = _MemoryManager.fetch(++this.startIndex);
-            //convert constant from hex to base 10 and set it to accumulator
-            this.Acc = parseInt(memAddress, 16);
-            _Acc = this.Acc;
-            
-                 }
+
+                //Load the accumulator with constant
+                //Get Next byte from memory
+                this.PC++;
+                var memAddress = _MemoryManager.fetch(++this.startIndex);
+                //convert constant from hex to base 10 and set it to accumulator
+                this.Acc = parseInt(memAddress, 16);
+                _Acc = this.Acc;
+
+            }
             else if (opCode == "AD") {
                 _IR = opCode;
                 // Load the acccumulator from memeory
@@ -72,7 +71,7 @@ module TSOS {
 
             }
             else if (opCode == "8D") {
-                
+
                 _IR = opCode;
                 //Store accumulator in memory
                 // Load the the next two bytes 
@@ -109,7 +108,7 @@ module TSOS {
 
             }
             else if (opCode == "AE") {
-                 _IR = opCode;
+                _IR = opCode;
                 //Load the X register from memory
                 // Load the the next two bytes
                 this.PC += 2;
@@ -172,7 +171,7 @@ module TSOS {
                 var value = _MemoryManager.fetch(parseInt(memAddress, 16));
                 var newV = _MemoryManager.fetch(parseInt(memAddress, 16));
                 var xValue = parseInt(value, 16);
-    
+
                 if (xValue == this.Xreg) {
                     this.Zflag = 1;
                     _Zflag = 1;
@@ -184,12 +183,12 @@ module TSOS {
 
             }
             else if (opCode == "D0") {
-               _IR = opCode;
-              
+                _IR = opCode;
+
                 //Branch n bytes if Z flag is zero
                 if (this.Zflag == 0) {
-                     this.PC++;
-                     var jump = parseInt(_MemoryManager.fetch(++this.startIndex), 16);
+                    this.PC++;
+                    var jump = parseInt(_MemoryManager.fetch(++this.startIndex), 16);
                     // Fetch the next byte and Branch
                     var nextAddress = this.startIndex + jump;
                     if (nextAddress >= _ProgramSize) {
@@ -197,7 +196,7 @@ module TSOS {
                     }
                     this.startIndex = nextAddress;
                     this.PC = nextAddress;
-                }else{
+                } else {
                     this.startIndex++;
                     this.PC++;
                 }
@@ -252,56 +251,62 @@ module TSOS {
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
 
-            //increase clock cycle if program is executiing 
-            /*if (this.isExecuting == true){
-                CPU_CLOCK_INTERVAL = 500;
-            }
-            else{
-                CPU_CLOCK_INTERVAL = 100;
-            }*/
-
-            //var program = _ProgramInput.replace(/[\s]/g, "");
-
             if (_MemoryManager.fetch(this.startIndex) != "00") {
 
                 this.executeProgram(_MemoryManager.fetch(this.startIndex));
                 _CurrentProgram.state = PS_Running;
+                //alert("Updating PCBTABLE");
                 _MemoryManager.updatePcbTable(_CurrentProgram);
+                // alert("Updating PCTABLE");
                 _MemoryManager.updateCpuTable();
 
-            } else if (_MemoryManager.fetch(this.startIndex) == "00") {
+            } else {
 
-                if (_BaseProgram != 512){
-                _BaseProgram = _BaseProgram + 256;
-                this.startIndex = _BaseProgram;
-                }
+                /*if (_BaseProgram != 512) {
+                    _BaseProgram = _BaseProgram + 256;
+                    this.startIndex = _BaseProgram;
+                }*/
                 this.isExecuting = false;
                 //set the next program to execute
                 _CurrentProgram.state = PS_Terminated;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
-                //this.startIndex = _CurrentProgram.startIndex;
 
-                if (_MemoryManager.fetch(this.startIndex) != "00" && _RunAll == true){
-                    this.isExecuting = true;
-                for (var i =0; i < _ReadyQueue.length; i++){
-                    if (_ReadyQueue[i].state != PS_Terminated){
-                         _CurrentProgram = _ReadyQueue[i];
-                         _CurrentProgram.state = PS_Running;
-                         this.cycle();
-                         break;
+                //TO DO :: Clear memory after each process
+                //Restore memory after program finishes running and update memory table
+                //_MemoryManager.resetMem();
+                //_MemoryManager.clearMemoryLog();
+
+                //remove program from ready queue
+                for (var i = 0; i < _ReadyQueue.length; i++) {
+                    if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
+                        _ReadyQueue.splice(i, 1);
+
+                        _MemoryManager.deleteRowPcb(_CurrentProgram);
+                        break
                     }
-                   
+                }
+
+
+                if (_RunAll == true) {
+                    this.isExecuting = true;
+                    for (var i = 0; i < _ReadyQueue.length; i++) {
+                        if (_ReadyQueue[i].state != PS_Terminated) {
+                            _CurrentProgram = _ReadyQueue[i];
+                            this.startIndex = _CurrentProgram.base;
+                            if (_MemoryManager.fetch(this.startIndex) != "00"){
+                            _CurrentProgram.state = PS_Running;
+                            this.cycle();
+                            break;
+                            }
+                        }
+
+
+                    }
 
                 }
 
-                }
-                
-
-            }else{
-                //Do nothing for now
             }
 
-       
-    }
+        }
     }
 }
