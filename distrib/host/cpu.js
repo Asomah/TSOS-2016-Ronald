@@ -231,12 +231,10 @@ var TSOS;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 // alert("Updating PCTABLE");
                 _MemoryManager.updateCpuTable();
+                alert("Starting ...");
+                _CpuScheduler.roundRobin();
             }
             else {
-                /*if (_BaseProgram != 512) {
-                    _BaseProgram = _BaseProgram + 256;
-                    this.startIndex = _BaseProgram;
-                }*/
                 this.isExecuting = false;
                 //set the next program to execute
                 _CurrentProgram.state = PS_Terminated;
@@ -244,8 +242,6 @@ var TSOS;
                 //TO DO :: Clear memory after each process
                 //Restore memory after program finishes running and update memory table
                 //_MemoryManager.resetMem();
-                //_MemoryManager.updateMemTable();
-                //_MemoryManager.clearMemoryLog();
                 //remove program from ready queue
                 for (var i = 0; i < _ReadyQueue.length; i++) {
                     if (_ReadyQueue[i].PID == _CurrentProgram.PID) {

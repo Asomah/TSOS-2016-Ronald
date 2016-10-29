@@ -5,10 +5,10 @@ var TSOS;
         function Pcb(PC, IR, Acc, Xreg, Yreg, Zflag, PID, base, limit, state, startIndex, pcbProgram) {
             if (PC === void 0) { PC = 0; }
             if (IR === void 0) { IR = _IR; }
-            if (Acc === void 0) { Acc = _Acc; }
-            if (Xreg === void 0) { Xreg = _Xreg; }
-            if (Yreg === void 0) { Yreg = _Yreg; }
-            if (Zflag === void 0) { Zflag = _Zflag; }
+            if (Acc === void 0) { Acc = 0; }
+            if (Xreg === void 0) { Xreg = 0; }
+            if (Yreg === void 0) { Yreg = 0; }
+            if (Zflag === void 0) { Zflag = 0; }
             if (PID === void 0) { PID = _PID; }
             if (base === void 0) { base = 0; }
             if (limit === void 0) { limit = (_Base + _ProgramSize - 1); }
@@ -28,6 +28,10 @@ var TSOS;
             this.startIndex = startIndex;
             this.pcbProgram = pcbProgram;
         }
+        Pcb.prototype.init = function () {
+            this.PC = 0;
+            this.IR = "NA";
+        };
         return Pcb;
     }());
     TSOS.Pcb = Pcb;

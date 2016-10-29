@@ -12,6 +12,13 @@ var TSOS;
             Increase PID by one, Create a new instance of PCB by one and push cusrrent PCB to Resident queue
             */
             programInput = _ProgramInput.replace(/[\s]/g, "");
+            //get new base
+            for (var i = 0; i <= 512; i += 256) {
+                if (_MemoryArray[i] == "00") {
+                    _Base = i;
+                    break;
+                }
+            }
             var j = _Base;
             for (var i = 0; i < programInput.length; i++) {
                 _MemoryArray[j] = programInput[i] + programInput[i + 1];
@@ -22,6 +29,7 @@ var TSOS;
             //_CurrMemIndex = (_Base - j) + j;
             _PID++;
             _CurrentProgram = new TSOS.Pcb();
+            _CurrentProgram.init();
             _CurrentProgram.pcbProgram = programInput;
             _CurrentProgram.base = _Base;
             _CurrentProgram.state = PS_New;
@@ -39,7 +47,7 @@ var TSOS;
             // Insert a cell in the row at index 1
             var newCell2 = newRow.insertCell(1);
             // Append a text node to the cell
-            var newText = document.createTextNode(_CPU.PC + "");
+            var newText = document.createTextNode(_CurrentProgram.PC + "");
             newCell2.appendChild(newText);
             // Insert a cell in the row at index 2
             var newCell3 = newRow.insertCell(2);
@@ -84,10 +92,10 @@ var TSOS;
             //alert(myTable.rows.length)
             //Ctreate CPU log
             this.cpuTableLog();
-            //Get new base
-            if (_Base != 512) {
+            /*Get new base
+            if (_Base != 512){
                 _Base = _Base + 256;
-            }
+            }*/
         };
         MemoryManager.prototype.updateMemTable = function () {
             //load program to memory
@@ -95,15 +103,24 @@ var TSOS;
             //get Memory table and upadte memory cells
             var memoryTable = document.getElementById("memoryTable");
             var rows = memoryTable.getElementsByTagName("tr");
-            var prevBase = _Base - 256;
-            var startRowIndex = 0;
-            if (_MemoryArray[prevBase] != "00") {
-                startRowIndex = _RowNumber;
-                _RowNumber = _RowNumber + 32;
+            //var prevBase = _Base;
+            var startRow = 0;
+            var endRow = 0;
+            if (_Base == 0) {
+                startRow = 0;
+                endRow = startRow + 32;
+            }
+            else if (_Base == 256) {
+                startRow = 32;
+                endRow = startRow + 32;
+            }
+            else {
+                startRow = 64;
+                endRow = startRow + 32;
             }
             //To DO : Error if Base is greater than 512
-            var memIndex = prevBase;
-            for (var i = startRowIndex; i < _RowNumber; i++) {
+            var memIndex = _Base;
+            for (var i = startRow; i < endRow; i++) {
                 var cells = rows[i].cells;
                 for (var j = 1; j < cells.length; j++) {
                     rows[i].cells[j].innerHTML = _MemoryArray[memIndex];
@@ -212,7 +229,6 @@ var TSOS;
         //Clear a section of memory
         MemoryManager.prototype.resetMem = function () {
             var index = _CurrentProgram.base;
-            alert("Index " + index);
             for (var i = 0; i < _ProgramSize; i++) {
                 _MemoryArray[index] = "00";
                 index++;

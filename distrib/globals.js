@@ -30,7 +30,7 @@ var _ProgramSize = 256; //Allocate 256 bytes for program
 var _MemorySize = _ProgramSize * 3; // Memory size 
 var _MemoryArray = [];
 var _PID = -1; //PID for PCB
-var _IR = "0";
+var _IR = "NA";
 var _Acc = 0;
 var _PC = 0;
 var _Xreg = 0;
@@ -43,6 +43,8 @@ var PS_Ready = "Ready";
 var PS_Running = "Running";
 var PS_Waiting = "Waiting";
 var PS_Terminated = "Terminated";
+var _Quantum = 6; //default quantum number
+var _ClockTicks = 0; //number of clock ticks 
 var _RunAll = false;
 var _ResetMem = false;
 var _RowNumber = 0; //row number for each program
@@ -59,6 +61,7 @@ var _Trace = true; // Default the OS trace to be on.
 var _CurrentProgram;
 var _Memory;
 var _MemoryManager;
+var _CpuScheduler;
 var _BaseProgram = 0; //start index for each program
 var _ProgramInput = ""; //Program input
 // The OS Kernel and its queues.

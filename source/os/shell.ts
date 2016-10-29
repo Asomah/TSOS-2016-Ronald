@@ -464,7 +464,7 @@ module TSOS {
                 //Create a new PCB
                 //Update Memory Table
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
-                  if ((programInput.length/2) < _ProgramSize && _MemoryArray[_Base] == "00"){
+                  if ((programInput.length/2) < _ProgramSize){
                 _MemoryManager = new MemoryManager();
                 _MemoryManager.updateMemTable();
                   }else{
@@ -571,6 +571,7 @@ module TSOS {
                     _StdOut.putText('Running all Programs ... ');
                     if ((<HTMLButtonElement>document.getElementById("singleStep")).disabled == true) {
                         _CPU.cycle();
+                        _ClockTicks++;
                     }
                     else {
                         _CPU.init();
@@ -604,7 +605,7 @@ module TSOS {
             //Sets quantum number for round robin
 
             if (args == parseInt(args, 10))
-                _Quantum = args
+                _Quantum = args;
             else
                 _StdOut.putText("Please enter an inter");
         }

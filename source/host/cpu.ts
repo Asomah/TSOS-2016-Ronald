@@ -139,8 +139,6 @@ module TSOS {
                 this.Yreg = parseInt(value, 16);
                 _Yreg = parseInt(value, 16);
 
-
-
             }
             else if (opCode == "EA") {
                 _IR = opCode;
@@ -252,20 +250,16 @@ module TSOS {
             // Do the real work here. Be sure to set this.isExecuting appropriately.
 
             if (_MemoryManager.fetch(this.startIndex) != "00") {
-
                 this.executeProgram(_MemoryManager.fetch(this.startIndex));
                 _CurrentProgram.state = PS_Running;
                 //alert("Updating PCBTABLE");
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 // alert("Updating PCTABLE");
                 _MemoryManager.updateCpuTable();
+            _CpuScheduler.roundRobin();
 
             } else {
 
-                /*if (_BaseProgram != 512) {
-                    _BaseProgram = _BaseProgram + 256;
-                    this.startIndex = _BaseProgram;
-                }*/
                 this.isExecuting = false;
                 //set the next program to execute
                 _CurrentProgram.state = PS_Terminated;
@@ -274,8 +268,6 @@ module TSOS {
                 //TO DO :: Clear memory after each process
                 //Restore memory after program finishes running and update memory table
                 //_MemoryManager.resetMem();
-                //_MemoryManager.updateMemTable();
-                //_MemoryManager.clearMemoryLog();
 
                 //remove program from ready queue
                 for (var i = 0; i < _ReadyQueue.length; i++) {
@@ -294,10 +286,10 @@ module TSOS {
                         if (_ReadyQueue[i].state != PS_Terminated) {
                             _CurrentProgram = _ReadyQueue[i];
                             this.startIndex = _CurrentProgram.base;
-                            if (_MemoryManager.fetch(this.startIndex) != "00"){
-                            _CurrentProgram.state = PS_Running;
-                            this.cycle();
-                            break;
+                            if (_MemoryManager.fetch(this.startIndex) != "00") {
+                                _CurrentProgram.state = PS_Running;
+                                this.cycle();
+                                break;
                             }
                         }
 

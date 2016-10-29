@@ -42,7 +42,7 @@ var _MemorySize: number = _ProgramSize * 3 ; // Memory size
 var _MemoryArray = [];
 
 var _PID: number = -1;             //PID for PCB
-var _IR: string = "0";
+var _IR: string = "NA";
 var _Acc: number = 0;
 var _PC: number = 0;
 var _Xreg: number = 0;
@@ -57,6 +57,9 @@ var PS_Ready: string = "Ready";
 var PS_Running: string = "Running";
 var PS_Waiting: string = "Waiting";
 var PS_Terminated: string = "Terminated";
+
+var _Quantum: number = 6;        //default quantum number
+var _ClockTicks: number = 0;     //number of clock ticks 
 
 
 var _RunAll: Boolean = false;
@@ -83,6 +86,8 @@ var _Trace: boolean = true;  // Default the OS trace to be on.
 var _CurrentProgram: TSOS.Pcb;
 var _Memory: TSOS.Memory;
 var _MemoryManager: TSOS.MemoryManager; 
+
+var _CpuScheduler: TSOS.CpuScheduler; 
 
 var _BaseProgram: number = 0; //start index for each program
 

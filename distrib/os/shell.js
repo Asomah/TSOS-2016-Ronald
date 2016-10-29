@@ -374,7 +374,7 @@ var TSOS;
                 //Create a new PCB
                 //Update Memory Table
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
-                if ((programInput.length / 2) < _ProgramSize && _MemoryArray[_Base] == "00") {
+                if ((programInput.length / 2) < _ProgramSize) {
                     _MemoryManager = new TSOS.MemoryManager();
                     _MemoryManager.updateMemTable();
                 }
@@ -456,6 +456,7 @@ var TSOS;
                     _StdOut.putText('Running all Programs ... ');
                     if (document.getElementById("singleStep").disabled == true) {
                         _CPU.cycle();
+                        _ClockTicks++;
                     }
                     else {
                         _CPU.init();
