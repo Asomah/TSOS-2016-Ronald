@@ -60,6 +60,7 @@ var PS_Terminated: string = "Terminated";
 
 
 var _RunAll: Boolean = false;
+var _ResetMem: Boolean = false;
 
 var _RowNumber: number = 0;         //row number for each program
 

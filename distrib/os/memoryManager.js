@@ -111,7 +111,7 @@ var TSOS;
                 }
             }
         };
-        //Update memory table when memory is cleared
+        //Update memory table when memory is erased
         MemoryManager.prototype.clearMemoryLog = function () {
             var memoryTable = document.getElementById("memoryTable");
             var rows = memoryTable.getElementsByTagName("tr");

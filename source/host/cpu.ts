@@ -274,6 +274,7 @@ module TSOS {
                 //TO DO :: Clear memory after each process
                 //Restore memory after program finishes running and update memory table
                 //_MemoryManager.resetMem();
+                //_MemoryManager.updateMemTable();
                 //_MemoryManager.clearMemoryLog();
 
                 //remove program from ready queue

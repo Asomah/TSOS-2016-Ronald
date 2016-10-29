@@ -150,7 +150,7 @@ module TSOS {
 
             }
 
-            //Update memory table when memory is cleared
+            //Update memory table when memory is erased
            public clearMemoryLog() {
                  var memoryTable: HTMLTableElement = <HTMLTableElement>document.getElementById("memoryTable");
                   var rows = memoryTable.getElementsByTagName("tr");

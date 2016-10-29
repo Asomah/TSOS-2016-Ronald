@@ -82,6 +82,9 @@ var TSOS;
             //Active pids
             sc = new TSOS.ShellCommand(this.shellActivePids, "ps", "Displays all acive pids.");
             this.commandList[this.commandList.length] = sc;
+            //kill a process
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "<pid> to kill a specific process.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -281,6 +284,9 @@ var TSOS;
                         break;
                     case "ps":
                         _StdOut.putText("Displys all active pids");
+                        break;
+                    case "kill":
+                        _StdOut.putText("Kills a specified process");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
@@ -482,12 +488,36 @@ var TSOS;
             if (_ReadyQueue.length != 0) {
                 alert("ReadyQueue " + _ReadyQueue.length);
                 for (var i = 0; i < _ReadyQueue.length; i++) {
-                    _StdOut.putText("Active PID ::" + _ReadyQueue[i].PID);
+                    _StdOut.putText("Active PID :: " + _ReadyQueue[i].PID);
                     _StdOut.advanceLine();
                 }
             }
             else {
                 _StdOut.putText("There are no active pids");
+            }
+        };
+        Shell.prototype.shellKill = function (args) {
+            var pid = -1;
+            if (args.length == 0) {
+                _StdOut.putText('Empty PID... Please enter PID');
+            }
+            else {
+                for (var i = 0; i < _ReadyQueue.length; i++) {
+                    if (args == _ReadyQueue[i].PID) {
+                        pid = _ReadyQueue[i].PID;
+                        //remove process from ready queue
+                        _CurrentProgram = _ReadyQueue[i];
+                        _CurrentProgram.state = PS_Terminated;
+                        _ReadyQueue.splice(i, 1);
+                        _CPU.isExecuting = false;
+                        //update pcb table
+                        _MemoryManager.deleteRowPcb(_CurrentProgram);
+                        break;
+                    }
+                }
+                if (pid == (-1)) {
+                    _StdOut.putText('INVALID PID ... The pid you entered is not active to be killed');
+                }
             }
         };
         return Shell;

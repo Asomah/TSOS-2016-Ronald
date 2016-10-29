@@ -44,6 +44,7 @@ var PS_Running = "Running";
 var PS_Waiting = "Waiting";
 var PS_Terminated = "Terminated";
 var _RunAll = false;
+var _ResetMem = false;
 var _RowNumber = 0; //row number for each program
 var _CurrMemIndex = 0;
 var _Base = 0; //defualt base of memory
