@@ -31,6 +31,7 @@ var TSOS;
             _CurrentProgram = new TSOS.Pcb();
             _CurrentProgram.init();
             _CurrentProgram.pcbProgram = programInput;
+            _CurrentProgram.startIndex = _Base;
             _CurrentProgram.base = _Base;
             _CurrentProgram.state = PS_New;
             _ResidentQueue.push(_CurrentProgram);

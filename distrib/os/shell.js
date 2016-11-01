@@ -455,11 +455,12 @@ var TSOS;
                     //alert(pid);
                     _StdOut.putText('Running all Programs ... ');
                     if (document.getElementById("singleStep").disabled == true) {
-                        _CPU.cycle();
                         _ClockTicks++;
+                        _CPU.cycle();
                     }
                     else {
                         _CPU.init();
+                        _ClockTicks++;
                         _CPU.isExecuting = true;
                     }
                 }
