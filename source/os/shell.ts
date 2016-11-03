@@ -365,10 +365,10 @@ module TSOS {
                         break;
                     case "ps":
                         _StdOut.putText("Displys all active pids");
-                        break;    
+                        break;
                     case "kill":
                         _StdOut.putText("Kills a specified process");
-                        break;                
+                        break;
 
 
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
@@ -464,13 +464,13 @@ module TSOS {
                 //Create a new PCB
                 //Update Memory Table
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
-                  if ((programInput.length/2) < _ProgramSize){
-                _MemoryManager = new MemoryManager();
-                _MemoryManager.updateMemTable();
-                  }else{
-                        //Error if program is greater than or equal to 256
-                        _StdOut.putText("Program too Large.. ");
-                  }
+                if ((programInput.length / 2) < _ProgramSize) {
+                    _MemoryManager = new MemoryManager();
+                    _MemoryManager.updateMemTable();
+                } else {
+                    //Error if program is greater than or equal to 256
+                    _StdOut.putText("Program too Large.. ");
+                }
 
             } else {
                 _StdOut.putText('INVALID HEX');
@@ -488,6 +488,8 @@ module TSOS {
             */
 
             //set Runall to false if running a specific program
+
+            _DONE = false;
             _RunAll = false;
             if (args.length == 0) {
                 _StdOut.putText('Empty PID... Please enter PID');
@@ -546,6 +548,8 @@ module TSOS {
         public shellRunAll(args) {
             //run all programs in resident queue if not empty
             _RunAll = true;
+            _DONE = false;
+            _ClockTicks = 0;
 
             if (_ResidentQueue.length > 0) {
                 var resLength = _ResidentQueue.length;
@@ -564,7 +568,7 @@ module TSOS {
                 }
 
                 _CurrentProgram = _ReadyQueue[0];
-                 _CPU.startIndex = _CurrentProgram.base;
+                _CPU.startIndex = _CurrentProgram.base;
 
                 if (_CurrentProgram.state != PS_Terminated) {
                     //alert(pid);
@@ -572,11 +576,11 @@ module TSOS {
                     if ((<HTMLButtonElement>document.getElementById("singleStep")).disabled == true) {
                         _ClockTicks++;
                         _CPU.cycle();
-                        
+
                     }
                     else {
                         _CPU.init();
-                         _ClockTicks++;
+                        _ClockTicks++;
                         _CPU.isExecuting = true;
                     }
 
@@ -612,54 +616,79 @@ module TSOS {
                 _StdOut.putText("Please enter an inter");
         }
 
-       public shellActivePids(args) {
-            if (_ReadyQueue.length != 0){
+        public shellActivePids(args) {
+            if (_ReadyQueue.length != 0) {
                 alert("ReadyQueue " + _ReadyQueue.length)
-                for (var i = 0; i<_ReadyQueue.length; i++){
-                     _StdOut.putText("Active PID :: " + _ReadyQueue[i].PID);
-                     _StdOut.advanceLine();
+                for (var i = 0; i < _ReadyQueue.length; i++) {
+                    _StdOut.putText("Active PID :: " + _ReadyQueue[i].PID);
+                    _StdOut.advanceLine();
                 }
             }
-            else{
-                 _StdOut.putText("There are no active pids");
+            else {
+                _StdOut.putText("There are no active pids");
             }
 
-       }
+        }
 
-       public shellKill(args) {
-           var pid = -1;
+        public shellKill(args) {
+            _CPU.isExecuting = false;
+            var deadProg = new Pcb();
+            var pid = -1;
             if (args.length == 0) {
                 _StdOut.putText('Empty PID... Please enter PID');
             }
             else {
-             
-                for (var i = 0; i < _ReadyQueue.length; i++) {
-                    if (args == _ReadyQueue[i].PID) {
-                        pid = _ReadyQueue[i].PID;
+                if (_ReadyQueue.length == 0) {
+                    _StdOut.putText('There are no active PIDs to Kill');
+                }
+                else {
+                    for (var i = 0; i < _ReadyQueue.length; i++) {
+                        if (args == _ReadyQueue[i].PID) {
+                            pid = _ReadyQueue[i].PID;
 
 
-                        //remove process from ready queue
-                         _CurrentProgram = _ReadyQueue[i];
-                        _CurrentProgram.state = PS_Terminated;
-                        _ReadyQueue.splice(i, 1);
+                            //remove process from ready queue
+                            if (_ReadyQueue.length > 1) {
+                                deadProg = _ReadyQueue[i];
+                                deadProg.state = PS_Terminated;
 
-                        _CPU.isExecuting = false;
+                                if (i == _ReadyQueue.length - 1) {
+                                    _CurrentProgram = _ReadyQueue[0];
+                                }
+                                else {
+                                    _CurrentProgram = _ReadyQueue[i + 1];
+                                }
 
-                        //update pcb table
-                        _MemoryManager.deleteRowPcb(_CurrentProgram);
-                        break;
+                                _ReadyQueue.splice(i, 1);
+                                _CPU.isExecuting = true;
+                                _CPU.cycle();
+
+                            }
+                            else {
+                                deadProg = _ReadyQueue[i];
+                                deadProg.state = PS_Terminated;
+                                _ReadyQueue.splice(i, 1);
+
+                            }
+
+                            //_CPU.isExecuting = false;
+
+                            //update pcb table
+                            _MemoryManager.deleteRowPcb(deadProg);
+                            break;
+                        }
+
                     }
-
                 }
 
-                if (pid == (-1)){
+                if (pid == (-1)) {
                     _StdOut.putText('INVALID PID ... The pid you entered is not active to be killed');
                 }
 
 
             }
 
-       }
+        }
 
     }
 }

@@ -49,6 +49,8 @@ var _Xreg: number = 0;
 var _Yreg: number = 0;
 var _Zflag: number = 0;
 
+var _DONE:boolean = false;
+
 var _Quantum: number = 0;         //Quantum number
 
 // states of process for PCB.. Make constants to represent different states.

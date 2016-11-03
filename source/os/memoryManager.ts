@@ -304,12 +304,19 @@ module TSOS {
                   }
             }
 
+             public deleteRowCpu(): void {
+                  
+                  var cpuTable: HTMLTableElement = <HTMLTableElement>document.getElementById("cpuTable");
+                  var row = cpuTable.getElementsByTagName("tr")[1];
+
+                  row.remove();
+             }
 
             //Clear a section of memory
             public resetMem(){
                   var index = _CurrentProgram.base;
 
-                  for(var i = 0 ; i<_ProgramSize; i++){
+                  for(var i = 0 ; i < _ProgramSize; i++){
                        _MemoryArray[index] = "00";
                        index++;
                   }

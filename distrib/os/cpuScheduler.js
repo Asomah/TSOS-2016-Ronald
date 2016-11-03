@@ -4,6 +4,9 @@ var TSOS;
     var CpuScheduler = (function () {
         function CpuScheduler() {
         }
+        CpuScheduler.prototype.yell = function () {
+            alert("NEED TO WORK AAAAAAAAAAAAAAAAAAAAA");
+        };
         CpuScheduler.prototype.roundRobin = function () {
             alert("Checking Round Robin");
             if (_ClockTicks == _Quantum) {

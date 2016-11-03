@@ -4,6 +4,10 @@ module TSOS {
   
   export class CpuScheduler {
 
+      public yell(){
+
+          alert("NEED TO WORK AAAAAAAAAAAAAAAAAAAAA");
+      }
       public roundRobin(){
           alert ("Checking Round Robin");
           if (_ClockTicks == _Quantum){

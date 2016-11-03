@@ -36,6 +36,7 @@ var _PC = 0;
 var _Xreg = 0;
 var _Yreg = 0;
 var _Zflag = 0;
+var _DONE = false;
 var _Quantum = 0; //Quantum number
 // states of process for PCB.. Make constants to represent different states.
 var PS_New = "New";

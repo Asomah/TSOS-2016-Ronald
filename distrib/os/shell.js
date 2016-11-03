@@ -395,6 +395,7 @@ var TSOS;
             if arg equals any pid, run that job else display an error message
             */
             //set Runall to false if running a specific program
+            _DONE = false;
             _RunAll = false;
             if (args.length == 0) {
                 _StdOut.putText('Empty PID... Please enter PID');
@@ -437,6 +438,8 @@ var TSOS;
         Shell.prototype.shellRunAll = function (args) {
             //run all programs in resident queue if not empty
             _RunAll = true;
+            _DONE = false;
+            _ClockTicks = 0;
             if (_ResidentQueue.length > 0) {
                 var resLength = _ResidentQueue.length;
                 for (var i = resLength; i > 0; i--) {
@@ -499,22 +502,44 @@ var TSOS;
             }
         };
         Shell.prototype.shellKill = function (args) {
+            _CPU.isExecuting = false;
+            var deadProg = new TSOS.Pcb();
             var pid = -1;
             if (args.length == 0) {
                 _StdOut.putText('Empty PID... Please enter PID');
             }
             else {
-                for (var i = 0; i < _ReadyQueue.length; i++) {
-                    if (args == _ReadyQueue[i].PID) {
-                        pid = _ReadyQueue[i].PID;
-                        //remove process from ready queue
-                        _CurrentProgram = _ReadyQueue[i];
-                        _CurrentProgram.state = PS_Terminated;
-                        _ReadyQueue.splice(i, 1);
-                        _CPU.isExecuting = false;
-                        //update pcb table
-                        _MemoryManager.deleteRowPcb(_CurrentProgram);
-                        break;
+                if (_ReadyQueue.length == 0) {
+                    _StdOut.putText('There are no active PIDs to Kill');
+                }
+                else {
+                    for (var i = 0; i < _ReadyQueue.length; i++) {
+                        if (args == _ReadyQueue[i].PID) {
+                            pid = _ReadyQueue[i].PID;
+                            //remove process from ready queue
+                            if (_ReadyQueue.length > 1) {
+                                deadProg = _ReadyQueue[i];
+                                deadProg.state = PS_Terminated;
+                                if (i == _ReadyQueue.length - 1) {
+                                    _CurrentProgram = _ReadyQueue[0];
+                                }
+                                else {
+                                    _CurrentProgram = _ReadyQueue[i + 1];
+                                }
+                                _ReadyQueue.splice(i, 1);
+                                _CPU.isExecuting = true;
+                                _CPU.cycle();
+                            }
+                            else {
+                                deadProg = _ReadyQueue[i];
+                                deadProg.state = PS_Terminated;
+                                _ReadyQueue.splice(i, 1);
+                            }
+                            //_CPU.isExecuting = false;
+                            //update pcb table
+                            _MemoryManager.deleteRowPcb(deadProg);
+                            break;
+                        }
                     }
                 }
                 if (pid == (-1)) {

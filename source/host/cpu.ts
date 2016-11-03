@@ -95,7 +95,7 @@ module TSOS {
                 //alert("8D " + _Base)
                 if (destAddress <= _CurrentProgram.limit) {
                     _MemoryArray[destAddress] = this.Acc.toString(16);
-                    alert("Memory=" + _MemoryArray[destAddress] + " Acc =" + this.Acc.toString(16) + " destAddress=" + destAddress);
+                    //alert("Memory=" + _MemoryArray[destAddress] + " Acc =" + this.Acc.toString(16) + " destAddress=" + destAddress);
                 }
             }
             else if (opCode == "6D") {
@@ -145,7 +145,7 @@ module TSOS {
                 var value = _MemoryManager.fetch(address);
                 this.Xreg = parseInt(value, 16);
                 _Xreg = parseInt(value, 16);
-                alert("AE -- Xreg" + this.Xreg + " Location =" + value + " Address =" + address);
+                //alert("AE -- Xreg" + this.Xreg + " Location =" + value + " Address =" + address);
 
             }
             else if (opCode == "A0") {
@@ -213,7 +213,7 @@ module TSOS {
                 //var newV = _MemoryManager.fetch(parseInt(memAddress, 16));
                 var xValue = parseInt(value, 16);
 
-                alert("PrevX =" + xValue + " currentX =" + this.Xreg);
+                //alert("PrevX =" + xValue + " currentX =" + this.Xreg);
 
                 if (xValue == this.Xreg) {
                     this.Zflag = 1;
@@ -227,18 +227,18 @@ module TSOS {
             }
             else if (opCode == "D0") {
                 _IR = opCode;
-                alert("Zflag = " + this.Zflag);
+                //alert("Zflag = " + this.Zflag);
                 //Branch n bytes if Z flag is zero
                 if (this.Zflag == 0) {
                     this.PC++;
 
                     var jump = parseInt(_MemoryManager.fetch(++this.startIndex), 16);
-                    alert("Mem Elem =" + _MemoryManager.fetch(this.startIndex));
-                    alert("Start Index =" + this.startIndex + " jump =" + jump);
+                    //alert("Mem Elem =" + _MemoryManager.fetch(this.startIndex));
+                    //alert("Start Index =" + this.startIndex + " jump =" + jump);
                     // Fetch the next byte and Branch
                     var nextAddress = this.startIndex + jump;
                     var pc = this.startIndex + jump;
-                    alert("Next Address" + nextAddress);
+                    //alert("Next Address" + nextAddress);
                     if (nextAddress >= (_CurrentProgram.limit + 1)) {
                         nextAddress = nextAddress - _ProgramSize;
 
@@ -260,7 +260,7 @@ module TSOS {
                     this.PC++;
                 }
 
-                alert(opCode + " :: This.PC=" + this.PC + " This.startIndex =" + this.startIndex);
+                //alert(opCode + " :: This.PC=" + this.PC + " This.startIndex =" + this.startIndex);
 
 
             }
@@ -290,7 +290,7 @@ module TSOS {
                     _StdOut.putText(_CPU.Yreg.toString());
                 } else if (this.Xreg == 2) {
                     var currAddr = _CPU.Yreg;
-                    alert("FF currAddres =" + currAddr);
+                    //alert("FF currAddres =" + currAddr);
                     var str = "";
                     while (_MemoryManager.fetch(currAddr) !== "00") {
                         var charAscii = parseInt(_MemoryManager.fetch(currAddr), 16);
@@ -310,100 +310,123 @@ module TSOS {
 
             this.PC++;
             this.startIndex++;
-            alert("Opcode =" + opCode + " Counter =" + this.startIndex);
+            //alert("Opcode =" + opCode + " State =" + _CurrentProgram.state + " Counter =" + this.startIndex + " PC=" +this.PC);
 
 
 
         }
 
         public roundRobin() {
-            //alert ("Checking Round Robin");
-            if (_ClockTicks < _Quantum) {
-                _ClockTicks++;
-                // alert("1Clock Ticks " + _ClockTicks);
+            if (_CurrentProgram.state != PS_Terminated) {
+                if (_ClockTicks < _Quantum) {
+                    _ClockTicks++;
+                    // alert("1Clock Ticks " + _ClockTicks);
+                }
+                else {
 
+                    //set clockTicks to 1
+                    _ClockTicks = 1;
+                    // alert("2Clock Ticks " + _ClockTicks);
+                    this.contextSwitch();
 
+                }
             }
             else {
-
-                //set clockTicks to 1
-                _ClockTicks = 1;
-                // alert("2Clock Ticks " + _ClockTicks);
-                //perform context switching
                 this.contextSwitch();
-
-
             }
-
 
         }
 
         //Context switch 
         public contextSwitch() {
             //break and save all instances of current program 
-            //this.executeProgram("00");
-            //_IR = "00";
+            var nextProgram = new Pcb();
+            nextProgram = this.getNextprogram();
 
-            _CurrentProgram.startIndex = this.startIndex;
-            _CurrentProgram.PC = this.PC;
-            _CurrentProgram.Acc = this.Acc;
-            _CurrentProgram.Xreg = this.Xreg;
-            _CurrentProgram.Yreg = this.Yreg;
-            _CurrentProgram.Zflag = this.Zflag;
-            //_CurrentProgram.state = PS_Ready;
+            if (_CurrentProgram.state == PS_Terminated) {
+                if (_ReadyQueue.length == 1) {
+                    _ReadyQueue.splice(0, 1);
+                    _MemoryManager.deleteRowPcb(_CurrentProgram);
 
-            //alert("1. Xreg=" + _CurrentProgram.Xreg + " YReg=" + _CurrentProgram.Yreg + " Acc=" + _CurrentProgram.Acc + " zFlag=" + _CurrentProgram.Zflag);
+                    this.init();
+                    _MemoryManager.updateCpuTable();
+                    _DONE = true;
+
+                }
+                else if (_ReadyQueue.length > 1) {
+
+                    _CurrentProgram.state = PS_Terminated;
+                    _MemoryManager.updatePcbTable(_CurrentProgram);
+
+                    for (var i = 0; i < _ReadyQueue.length; i++) {
+                        if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
+                            _ReadyQueue.splice(i, 1);
+                            _MemoryManager.deleteRowPcb(_CurrentProgram);
+                            break;
+                        }
+
+                    }
+
+                    nextProgram.state = PS_Ready;
+                    _MemoryManager.updatePcbTable(nextProgram);
+
+                }
+            }
+            else {
+
+                _CurrentProgram.startIndex = this.startIndex;
+                _CurrentProgram.PC = this.PC;
+                _CurrentProgram.Acc = this.Acc;
+                _CurrentProgram.Xreg = this.Xreg;
+                _CurrentProgram.Yreg = this.Yreg;
+                _CurrentProgram.Zflag = this.Zflag;
+                _CurrentProgram.state = PS_Ready;
+                _MemoryManager.updatePcbTable(_CurrentProgram);
+            }
 
             //Load all instances of next program
-            _CurrentProgram = this.getNextprogram();
+            _CurrentProgram = nextProgram;
             this.startIndex = _CurrentProgram.startIndex;
             this.PC = _CurrentProgram.PC;
             this.Acc = _CurrentProgram.Acc;
             this.Xreg = _CurrentProgram.Xreg;
             this.Yreg = _CurrentProgram.Yreg;
             this.Zflag = _CurrentProgram.Zflag;
-            //alert("2. Xreg=" + _CurrentProgram.Xreg + " YReg=" + _CurrentProgram.Yreg + " Acc=" + _CurrentProgram.Acc + " zFlag=" + _CurrentProgram.Zflag);
 
-            //this.isExecuting = true;
+            //this.startIndex = _CurrentProgram.startIndex;
+            //if (_MemoryManager.fetch(this.startIndex) != "00") {
+            //   _CurrentProgram.state = PS_Running;
+            //_IR = "NA"
+            //this.cycle();
+            //}
 
-            if (_CurrentProgram.state != PS_Terminated) {
-                //this.startIndex = _CurrentProgram.startIndex;
-                if (_MemoryManager.fetch(this.startIndex) != "00") {
-                    _CurrentProgram.state = PS_Running;
-                    _IR = "NA"
-                    //this.cycle();
-
-
-                }
-            }
-            else {
-                this.isExecuting = false;
-            }
 
         }
         public getNextprogram() {
+
             var nextProgram = new Pcb();
+
             if (_ReadyQueue.length == 1) {
-                nextProgram = _CurrentProgram;
+                if (_MemoryManager.fetch(this.startIndex) != "00") {
+                    nextProgram = _CurrentProgram;
+                }
+                else {
+                    nextProgram.IR = "NA";
+                    nextProgram.startIndex = this.startIndex;
+                }
+
             }
             else {
                 for (var i = 0; i < _ReadyQueue.length; i++) {
                     //Get next program in queue
                     if (_CurrentProgram.PID == _ReadyQueue[i].PID) {
-                        _CurrentProgram.state = PS_Ready;
-                        _MemoryManager.updatePcbTable(_CurrentProgram);
                         //set next program to the program in the begining of the queue if the last program in queue is curreent
                         if (i == _ReadyQueue.length - 1) {
                             nextProgram = _ReadyQueue[0];
-                            //_ReadyQueue[_ReadyQueue.length - 1].state = PS_Ready; 
                         }
                         else {
                             nextProgram = _ReadyQueue[i + 1];
-                            //nextProgram.state = PS_Running;
-                            //_MemoryManager.updatePcbTable(nextProgram);
-                            //_ReadyQueue[i].state = PS_Ready;
                         }
-                        //alert(_CurrentProgram.PID + " " + nextProgram.PID);
                         break;
 
                     }
@@ -419,22 +442,21 @@ module TSOS {
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
 
-
-            if (_MemoryManager.fetch(this.startIndex) != "00") {
-                // alert("before " + this.PC);
+            //debugger;
+            //_CpuScheduler.yell();
+            if (_MemoryManager.fetch(this.startIndex) != "00" && _DONE != true) {
                 this.executeProgram(_MemoryManager.fetch(this.startIndex));
                 _CurrentProgram.state = PS_Running;
 
-                //alert("Updating PCBTABLE");
                 _MemoryManager.updatePcbTable(_CurrentProgram);
-                // alert("Updating PCTABLE");
 
                 _MemoryManager.updateCpuTable();
-                //alert("Starting ...")
 
-                //alert("after " + this.PC);
-                this.roundRobin();
-
+                //Perform round robbin if ready queue is greater than 0
+                if (_ReadyQueue.length > 1) {
+                    this.roundRobin();
+                }
+                //alert(_CurrentProgram.PID + " index = " + this.startIndex);;
 
             }
             else {
@@ -448,34 +470,38 @@ module TSOS {
                 //Restore memory after program finishes running and update memory table
                 //_MemoryManager.resetMem();
 
-                //remove program from ready queue
-                for (var i = 0; i < _ReadyQueue.length; i++) {
-                    if (_ReadyQueue[i].PID == _CurrentProgram.PID && _ReadyQueue[i].state == PS_Terminated) {
-                        _ReadyQueue.splice(i, 1);
 
-                        _MemoryManager.deleteRowPcb(_CurrentProgram);
-                        break
+                if ((_RunAll == true && _DONE != true) || _ReadyQueue.length > 1 ) {
+                    this.roundRobin();
+                    this.startIndex = _CurrentProgram.startIndex;
+
+                    if (_ReadyQueue.lemgth == 0) {
+                        this.isExecuting = false;
                     }
-                }
+                    else {
+                        if (_MemoryManager.fetch(this.startIndex) != "00" && _CurrentProgram.state != PS_Running) {
 
-
-                if (_RunAll == true) {
-                    for (var i = 0; i < _ReadyQueue.length; i++) {
-                        if (_ReadyQueue[i].state != PS_Terminated) {
-                            _CurrentProgram = _ReadyQueue[i];
-                            this.startIndex = _CurrentProgram.base;
-                            if (_MemoryManager.fetch(this.startIndex) != "00") {
-                                _CurrentProgram.state = PS_Running;
-                                this.init();
-                                this.isExecuting = true;
-                                this.cycle();
-                                break;
-                            }
+                            _CurrentProgram.state = PS_Running;
+                            this.isExecuting = true;
                         }
+                        _ClockTicks = 1;
+
 
                     }
+                    this.cycle();
 
 
+                }
+                else {
+                    //remove the only program from ready queue
+                    for (var i = 0; i < _ReadyQueue.length; i++) {
+                        if (_ReadyQueue[i].PID == _CurrentProgram.PID && _ReadyQueue[i].state == PS_Terminated) {
+                            _ReadyQueue.splice(i, 1);
+
+                            _MemoryManager.deleteRowPcb(_CurrentProgram);
+                            break;
+                        }
+                    }
                 }
 
             }

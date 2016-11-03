@@ -227,6 +227,11 @@ var TSOS;
                 }
             }
         };
+        MemoryManager.prototype.deleteRowCpu = function () {
+            var cpuTable = document.getElementById("cpuTable");
+            var row = cpuTable.getElementsByTagName("tr")[1];
+            row.remove();
+        };
         //Clear a section of memory
         MemoryManager.prototype.resetMem = function () {
             var index = _CurrentProgram.base;
