@@ -76,6 +76,7 @@ var TSOS;
                     nextProgram = _CurrentProgram;
                     _RunAll = false;
                     _DONE = true;
+                    _CPU.cycle();
                 }
             }
             else {

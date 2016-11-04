@@ -130,8 +130,21 @@ var TSOS;
             // page from its cache, which is not what we want.
         };
         Control.hostBtnSingleStepOS_click = function (btn) {
-            document.getElementById("execStep").disabled = false;
-            document.getElementById("singleStep").disabled = true;
+            if (document.getElementById("singleStep").value != "Exit") {
+                document.getElementById("execStep").disabled = false;
+                //(<HTMLButtonElement>document.getElementById("singleStep")).disabled = true;
+                document.getElementById("singleStep").style.backgroundColor = "red";
+                document.getElementById("singleStep").value = "Exit";
+                //(<HTMLButtonElement>document.getElementById("execStep")).style.backgroundColor = "blue";
+                //_CPU.cycle();
+                _CPU.isExecuting = false;
+            }
+            else {
+                document.getElementById("execStep").disabled = true;
+                document.getElementById("singleStep").value = "Single Step";
+                _CPU.isExecuting = true;
+                _CPU.cycle();
+            }
         };
         Control.hostBtnExecStepOS_click = function (btn) {
             if (_CPU.startIndex > 0) {
@@ -140,8 +153,11 @@ var TSOS;
                 }
                 else {
                     _CPU.cycle();
-                    document.getElementById("singleStep").disabled = false;
+                    //(<HTMLButtonElement>document.getElementById("singleStep")).disabled = false;
+                    document.getElementById("singleStep").style.backgroundColor = "green";
+                    //(<HTMLButtonElement>document.getElementById("execStep")).style.backgroundColor = "red";
                     document.getElementById("execStep").disabled = true;
+                    document.getElementById("singleStep").value = "Single Step";
                 }
             }
         };

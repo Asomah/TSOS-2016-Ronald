@@ -146,7 +146,42 @@ module TSOS {
                   var rows = memoryTable.getElementsByTagName("tr");
                   var data = memoryTable.getElementsByTagName("td");
 
-                  
+                  var pcb = new Pcb();
+                  pcb = _CurrentProgram;
+
+                  //var prevBase = base;
+                  var startRow = 0;
+                  var endRow = 0;
+                  if (pcb.base == 0) {
+                        startRow = 0;
+                        endRow = startRow + 32;
+                  }
+                  else if (pcb.base == 256) {
+                        startRow = 32;
+                        endRow = startRow + 32;
+                  }
+                  else {
+                        startRow = 64;
+                        endRow = startRow + 32;
+                  }
+
+
+
+                  //To DO : Error if Base is greater than 512
+                  var memIndex = pcb.base;
+
+                  for (var i = startRow; i < endRow; i++) {
+
+                        var cells = rows[i].cells;
+                        for (var j = 1; j < cells.length; j++) {
+                              rows[i].cells[j].innerHTML = _MemoryArray[memIndex];
+                              memIndex++;
+                        }
+                  }
+
+
+
+
                   
 
             }

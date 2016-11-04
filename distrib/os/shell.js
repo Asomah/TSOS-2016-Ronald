@@ -428,19 +428,16 @@ var TSOS;
                 if (_CurrentProgram.state == PS_Ready) {
                     //alert(pid);
                     _StdOut.putText('Running PID ' + pid);
-                    if (document.getElementById("singleStep").disabled == true) {
+                    if (document.getElementById("singleStep").style.backgroundColor == "red") {
                         _CPU.init();
                         _CPU.startIndex = _CurrentProgram.startIndex;
-                        alert("Index " + _CPU.startIndex + " PC =" + _CPU.PC);
-                        alert(_MemoryManager.fetch(_CPU.startIndex));
-                        _CPU.cycle();
                     }
                     else {
                         if (_ReadyQueue.length > 1) {
                             _CurrentProgram = activeProg;
                             //_CPU.startIndex = _CurrentProgram.startIndex;
-                            alert("RR is starting   " + _CurrentProgram.PID);
-                            alert("Run StartIndex =" + _CPU.startIndex + " CPU =" + _CPU.PC);
+                            //alert("RR is starting   " + _CurrentProgram.PID);
+                            //alert("Run StartIndex =" + _CPU.startIndex + " CPU =" + _CPU.PC) ;
                             _ClockTicks++;
                             _RunAll = true;
                             _CPU.isExecuting = true;
@@ -449,14 +446,15 @@ var TSOS;
                             //base to start running program
                             _CPU.init();
                             _CPU.startIndex = _CurrentProgram.startIndex;
-                            alert("Index " + _CPU.startIndex + " PC =" + _CPU.PC);
-                            alert(_MemoryManager.fetch(_CPU.startIndex));
+                            //alert("Index " + _CPU.startIndex + " PC =" + _CPU.PC);
+                            //alert(_MemoryManager.fetch(_CPU.startIndex)); 
                             _CPU.isExecuting = true;
                         }
                     }
                 }
-                else {
-                    _StdOut.putText('PID ' + pid + ' is terminated... You cannot run this procces ');
+                else if (pid == -1) {
+                    pid = args;
+                    _StdOut.putText('PID ' + pid + ' does not exist... please enter a valid pid to run program ');
                 }
             }
         };
@@ -482,7 +480,7 @@ var TSOS;
                 if (_CurrentProgram.state != PS_Terminated) {
                     //alert(pid);
                     _StdOut.putText('Running all Programs ... ');
-                    if (document.getElementById("singleStep").disabled == true) {
+                    if (document.getElementById("singleStep").style.backgroundColor == "red") {
                         _ClockTicks++;
                         _CPU.cycle();
                     }

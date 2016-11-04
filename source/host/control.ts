@@ -171,8 +171,22 @@ module TSOS {
         }
 
         public static hostBtnSingleStepOS_click(btn): void {
-            (<HTMLButtonElement>document.getElementById("execStep")).disabled = false;
-            (<HTMLButtonElement>document.getElementById("singleStep")).disabled = true;
+            if ((<HTMLButtonElement>document.getElementById("singleStep")).value != "Exit") {
+                (<HTMLButtonElement>document.getElementById("execStep")).disabled = false;
+                //(<HTMLButtonElement>document.getElementById("singleStep")).disabled = true;
+                (<HTMLButtonElement>document.getElementById("singleStep")).style.backgroundColor = "red";
+                (<HTMLButtonElement>document.getElementById("singleStep")).value = "Exit";
+                //(<HTMLButtonElement>document.getElementById("execStep")).style.backgroundColor = "blue";
+
+                //_CPU.cycle();
+                 _CPU.isExecuting = false;
+            }
+            else{
+                (<HTMLButtonElement>document.getElementById("execStep")).disabled = true;
+                (<HTMLButtonElement>document.getElementById("singleStep")).value = "Single Step";
+                _CPU.isExecuting = true;
+                _CPU.cycle();
+            }
 
         }
         public static hostBtnExecStepOS_click(btn): void {
@@ -181,8 +195,11 @@ module TSOS {
                     _CPU.cycle();
                 } else {
                     _CPU.cycle();
-                    (<HTMLButtonElement>document.getElementById("singleStep")).disabled = false;
+                    //(<HTMLButtonElement>document.getElementById("singleStep")).disabled = false;
+                    (<HTMLButtonElement>document.getElementById("singleStep")).style.backgroundColor = "green";
+                    //(<HTMLButtonElement>document.getElementById("execStep")).style.backgroundColor = "red";
                     (<HTMLButtonElement>document.getElementById("execStep")).disabled = true;
+                    (<HTMLButtonElement>document.getElementById("singleStep")).value = "Single Step";
                 }
 
             }
