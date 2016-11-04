@@ -1,4 +1,5 @@
 ///<reference path="../globals.ts" />
+///<reference path="../os/cpuScheduler.ts" />
 /* ------------
      CPU.ts
 
@@ -193,7 +194,7 @@ var TSOS;
                     address = address + 512;
                 }
                 var value = _MemoryManager.fetch(address);
-                //var newV = _MemoryManager.fetch(parseInt(memAddress, 16));
+                var newV = _MemoryManager.fetch(parseInt(memAddress, 16));
                 var xValue = parseInt(value, 16);
                 //alert("PrevX =" + xValue + " currentX =" + this.Xreg);
                 if (xValue == this.Xreg) {
@@ -207,17 +208,17 @@ var TSOS;
             }
             else if (opCode == "D0") {
                 _IR = opCode;
-                //alert("Zflag = " + this.Zflag);
+                // alert("Zflag = " + this.Zflag);
                 //Branch n bytes if Z flag is zero
                 if (this.Zflag == 0) {
                     this.PC++;
                     var jump = parseInt(_MemoryManager.fetch(++this.startIndex), 16);
-                    //alert("Mem Elem =" + _MemoryManager.fetch(this.startIndex));
-                    //alert("Start Index =" + this.startIndex + " jump =" + jump);
+                    // alert("Mem Elem =" + _MemoryManager.fetch(this.startIndex));
+                    // alert("Start Index =" + this.startIndex + " jump =" + jump);
                     // Fetch the next byte and Branch
                     var nextAddress = this.startIndex + jump;
                     var pc = this.startIndex + jump;
-                    //alert("Next Address" + nextAddress);
+                    // alert("Next Address" + nextAddress);
                     if (nextAddress >= (_CurrentProgram.limit + 1)) {
                         nextAddress = nextAddress - _ProgramSize;
                     }
@@ -239,7 +240,7 @@ var TSOS;
             }
             else if (opCode == "EE") {
                 _IR = opCode;
-                //Increament the value of a byte
+                //Increament the value of a byte and store to memory
                 this.PC += 2;
                 var memAddress = _MemoryManager.fetch(++this.startIndex);
                 memAddress = _MemoryManager.fetch(++this.startIndex) + memAddress;
@@ -255,6 +256,7 @@ var TSOS;
                 if (address <= _CurrentProgram.limit) {
                     value = newValue.toString(16);
                 }
+                _MemoryManager.storeValue(value, address);
             }
             else if (opCode == "FF") {
                 _IR = opCode;
@@ -262,13 +264,19 @@ var TSOS;
                     _StdOut.putText(_CPU.Yreg.toString());
                 }
                 else if (this.Xreg == 2) {
-                    var currAddr = _CPU.Yreg;
+                    var address = _CPU.Yreg;
+                    if (_CurrentProgram.base == 256) {
+                        address = address + 256;
+                    }
+                    else if (_CurrentProgram.base == 512) {
+                        address = address + 512;
+                    }
                     //alert("FF currAddres =" + currAddr);
                     var str = "";
-                    while (_MemoryManager.fetch(currAddr) !== "00") {
-                        var charAscii = parseInt(_MemoryManager.fetch(currAddr), 16);
+                    while (_MemoryManager.fetch(address) !== "00") {
+                        var charAscii = parseInt(_MemoryManager.fetch(address), 16);
                         str += String.fromCharCode(charAscii);
-                        currAddr++;
+                        address++;
                     }
                     _StdOut.putText(str);
                 }
@@ -281,110 +289,14 @@ var TSOS;
             }
             this.PC++;
             this.startIndex++;
-            //alert("Opcode =" + opCode + " State =" + _CurrentProgram.state + " Counter =" + this.startIndex + " PC=" +this.PC);
-        };
-        Cpu.prototype.roundRobin = function () {
-            if (_CurrentProgram.state != PS_Terminated) {
-                if (_ClockTicks < _Quantum) {
-                    _ClockTicks++;
-                }
-                else {
-                    //set clockTicks to 1
-                    _ClockTicks = 1;
-                    // alert("2Clock Ticks " + _ClockTicks);
-                    this.contextSwitch();
-                }
-            }
-            else {
-                this.contextSwitch();
-            }
-        };
-        //Context switch 
-        Cpu.prototype.contextSwitch = function () {
-            //break and save all instances of current program 
-            var nextProgram = new TSOS.Pcb();
-            nextProgram = this.getNextprogram();
-            if (_CurrentProgram.state == PS_Terminated) {
-                if (_ReadyQueue.length == 1) {
-                    _ReadyQueue.splice(0, 1);
-                    _MemoryManager.deleteRowPcb(_CurrentProgram);
-                    this.init();
-                    _MemoryManager.updateCpuTable();
-                    _DONE = true;
-                }
-                else if (_ReadyQueue.length > 1) {
-                    _CurrentProgram.state = PS_Terminated;
-                    _MemoryManager.updatePcbTable(_CurrentProgram);
-                    for (var i = 0; i < _ReadyQueue.length; i++) {
-                        if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
-                            _ReadyQueue.splice(i, 1);
-                            _MemoryManager.deleteRowPcb(_CurrentProgram);
-                            break;
-                        }
-                    }
-                    nextProgram.state = PS_Ready;
-                    _MemoryManager.updatePcbTable(nextProgram);
-                }
-            }
-            else {
-                _CurrentProgram.startIndex = this.startIndex;
-                _CurrentProgram.PC = this.PC;
-                _CurrentProgram.Acc = this.Acc;
-                _CurrentProgram.Xreg = this.Xreg;
-                _CurrentProgram.Yreg = this.Yreg;
-                _CurrentProgram.Zflag = this.Zflag;
-                _CurrentProgram.state = PS_Ready;
-                _MemoryManager.updatePcbTable(_CurrentProgram);
-            }
-            //Load all instances of next program
-            _CurrentProgram = nextProgram;
-            this.startIndex = _CurrentProgram.startIndex;
-            this.PC = _CurrentProgram.PC;
-            this.Acc = _CurrentProgram.Acc;
-            this.Xreg = _CurrentProgram.Xreg;
-            this.Yreg = _CurrentProgram.Yreg;
-            this.Zflag = _CurrentProgram.Zflag;
-            //this.startIndex = _CurrentProgram.startIndex;
-            //if (_MemoryManager.fetch(this.startIndex) != "00") {
-            //   _CurrentProgram.state = PS_Running;
-            //_IR = "NA"
-            //this.cycle();
-            //}
-        };
-        Cpu.prototype.getNextprogram = function () {
-            var nextProgram = new TSOS.Pcb();
-            if (_ReadyQueue.length == 1) {
-                if (_MemoryManager.fetch(this.startIndex) != "00") {
-                    nextProgram = _CurrentProgram;
-                }
-                else {
-                    nextProgram.IR = "NA";
-                    nextProgram.startIndex = this.startIndex;
-                }
-            }
-            else {
-                for (var i = 0; i < _ReadyQueue.length; i++) {
-                    //Get next program in queue
-                    if (_CurrentProgram.PID == _ReadyQueue[i].PID) {
-                        //set next program to the program in the begining of the queue if the last program in queue is curreent
-                        if (i == _ReadyQueue.length - 1) {
-                            nextProgram = _ReadyQueue[0];
-                        }
-                        else {
-                            nextProgram = _ReadyQueue[i + 1];
-                        }
-                        break;
-                    }
-                }
-            }
-            return nextProgram;
+            //alert("Opcode =" + opCode + " State =" + _CurrentProgram.state + " Counter =" + this.startIndex + " PC=" + this.PC);
         };
         Cpu.prototype.cycle = function () {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             //debugger;
-            //_CpuScheduler.yell();
+            //alert("Before Scheduler");
             if (_MemoryManager.fetch(this.startIndex) != "00" && _DONE != true) {
                 this.executeProgram(_MemoryManager.fetch(this.startIndex));
                 _CurrentProgram.state = PS_Running;
@@ -392,41 +304,48 @@ var TSOS;
                 _MemoryManager.updateCpuTable();
                 //Perform round robbin if ready queue is greater than 0
                 if (_ReadyQueue.length > 1) {
-                    this.roundRobin();
+                    //alert("Doing Round Robin");
+                    TSOS.CpuScheduler.roundRobin();
                 }
             }
             else {
                 this.isExecuting = false;
                 //set the next program to execute
+                //Get current program if ready queue length is 1
+                if (_ReadyQueue.length == 1) {
+                    _CurrentProgram = _ReadyQueue[0];
+                }
                 _CurrentProgram.state = PS_Terminated;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 //TO DO :: Clear memory after each process
                 //Restore memory after program finishes running and update memory table
-                //_MemoryManager.resetMem();
+                //alert("Current Program "+_CurrentProgram.PID + "   state =" + _CurrentProgram.state);
+                //alert("1 length =" + _ReadyQueue.length);
                 if ((_RunAll == true && _DONE != true) || _ReadyQueue.length > 1) {
-                    this.roundRobin();
-                    this.startIndex = _CurrentProgram.startIndex;
-                    if (_ReadyQueue.lemgth == 0) {
-                        this.isExecuting = false;
+                    TSOS.CpuScheduler.roundRobin();
+                    alert("1 length =" + _ReadyQueue.length);
+                    if (_MemoryManager.fetch(this.startIndex) != "00" && _CurrentProgram.state != PS_Running) {
+                        this.startIndex = _CurrentProgram.startIndex;
+                        alert("Round Robin Switching to " + _CurrentProgram.PID);
+                        _CurrentProgram.state = PS_Running;
+                        this.isExecuting = true;
                     }
-                    else {
-                        if (_MemoryManager.fetch(this.startIndex) != "00" && _CurrentProgram.state != PS_Running) {
-                            _CurrentProgram.state = PS_Running;
-                            this.isExecuting = true;
-                        }
-                        _ClockTicks = 1;
-                    }
+                    _ClockTicks = 1;
                     this.cycle();
                 }
                 else {
                     //remove the only program from ready queue
-                    for (var i = 0; i < _ReadyQueue.length; i++) {
-                        if (_ReadyQueue[i].PID == _CurrentProgram.PID && _ReadyQueue[i].state == PS_Terminated) {
-                            _ReadyQueue.splice(i, 1);
-                            _MemoryManager.deleteRowPcb(_CurrentProgram);
-                            break;
-                        }
-                    }
+                    alert("Removing the only program");
+                    _ReadyQueue.splice(0, 1);
+                    _MemoryManager.resetPartition(_CurrentProgram);
+                    _MemoryManager.updateMemTable(_CurrentProgram);
+                    _MemoryManager.deleteRowPcb(_CurrentProgram);
+                    _StdOut.advanceLine();
+                    _StdOut.putText(">");
+                    //alert("after length =" + _ReadyQueue.length);
+                    this.init();
+                    _MemoryManager.updateCpuTable();
+                    _DONE = true;
                 }
             }
         };

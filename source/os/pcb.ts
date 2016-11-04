@@ -11,9 +11,11 @@ module TSOS {
                 public Zflag: number = 0,
                 public PID: number = _PID,
                 public base: number = 0,
-                public limit: number = (_Base + _ProgramSize - 1),
+                public limit: number = 0,
                 public state: string = PS_New,
                 public startIndex: number = 0,
+                public waitTime: number = 0,
+                public taTime: number = 0,
                 public pcbProgram :string = "") {
     }
 

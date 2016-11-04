@@ -1,5 +1,7 @@
 ///<reference path="../globals.ts" />
 ///<reference path="../os/canvastext.ts" />
+///<reference path="memory.ts" />
+///<reference path="cpu.ts" />
 /* ------------
      Control.ts
 

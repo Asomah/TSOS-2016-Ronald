@@ -2,6 +2,8 @@
 ///<reference path="../utils.ts" />
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
+///<reference path="pcb.ts" />
+///<reference path="memoryManager.ts" />
 /* ------------
    Shell.ts
 
@@ -376,7 +378,9 @@ var TSOS;
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
                 if ((programInput.length / 2) < _ProgramSize) {
                     _MemoryManager = new TSOS.MemoryManager();
-                    _MemoryManager.updateMemTable();
+                    //load program to memory
+                    _MemoryManager.loadProgToMem();
+                    _MemoryManager.updateMemTable(_CurrentProgram);
                 }
                 else {
                     //Error if program is greater than or equal to 256
@@ -397,18 +401,22 @@ var TSOS;
             //set Runall to false if running a specific program
             _DONE = false;
             _RunAll = false;
+            _CPU.isExecuting = false;
             if (args.length == 0) {
                 _StdOut.putText('Empty PID... Please enter PID');
             }
             else {
                 var pid = -1;
                 var index = -1;
+                var activeProg = new TSOS.Pcb();
+                activeProg = _CurrentProgram;
                 for (index = 0; index < _ResidentQueue.length; index++) {
                     if (args == _ResidentQueue[index].PID) {
                         pid = _ResidentQueue[index].PID;
                         //remove process from resident queue and push it to ready queue
-                        _ResidentQueue[index].state = PS_Ready;
+                        //_ResidentQueue[index].state = PS_Ready;
                         _CurrentProgram = _ResidentQueue[index];
+                        _CurrentProgram.state = PS_Ready;
                         _ResidentQueue.splice(index, 1);
                         //push pcb to ready queue
                         _ReadyQueue.push(_CurrentProgram);
@@ -417,17 +425,34 @@ var TSOS;
                         break;
                     }
                 }
-                if (_CurrentProgram.state != PS_Terminated) {
+                if (_CurrentProgram.state == PS_Ready) {
                     //alert(pid);
-                    //base to start running program
-                    _CPU.startIndex = _CurrentProgram.base;
                     _StdOut.putText('Running PID ' + pid);
                     if (document.getElementById("singleStep").disabled == true) {
+                        _CPU.init();
+                        _CPU.startIndex = _CurrentProgram.startIndex;
+                        alert("Index " + _CPU.startIndex + " PC =" + _CPU.PC);
+                        alert(_MemoryManager.fetch(_CPU.startIndex));
                         _CPU.cycle();
                     }
                     else {
-                        _CPU.init();
-                        _CPU.isExecuting = true;
+                        if (_ReadyQueue.length > 1) {
+                            _CurrentProgram = activeProg;
+                            //_CPU.startIndex = _CurrentProgram.startIndex;
+                            alert("RR is starting   " + _CurrentProgram.PID);
+                            alert("Run StartIndex =" + _CPU.startIndex + " CPU =" + _CPU.PC);
+                            _ClockTicks++;
+                            _RunAll = true;
+                            _CPU.isExecuting = true;
+                        }
+                        else {
+                            //base to start running program
+                            _CPU.init();
+                            _CPU.startIndex = _CurrentProgram.startIndex;
+                            alert("Index " + _CPU.startIndex + " PC =" + _CPU.PC);
+                            alert(_MemoryManager.fetch(_CPU.startIndex));
+                            _CPU.isExecuting = true;
+                        }
                     }
                 }
                 else {
@@ -474,8 +499,6 @@ var TSOS;
         };
         Shell.prototype.shellClearAll = function (args) {
             //clear memory and update memory log
-            _Base = 0;
-            _BaseProgram = 0;
             _ResidentQueue = [];
             _ReadyQueue = [];
             _RowNumber = 0;

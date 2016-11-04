@@ -51,27 +51,27 @@ var _Zflag: number = 0;
 
 var _DONE:boolean = false;
 
-var _Quantum: number = 0;         //Quantum number
-
 // states of process for PCB.. Make constants to represent different states.
-var PS_New: string = "New";
-var PS_Ready: string = "Ready";
-var PS_Running: string = "Running";
-var PS_Waiting: string = "Waiting";
-var PS_Terminated: string = "Terminated";
+const PS_New: string = "New";
+const PS_Ready: string = "Ready";
+const PS_Running: string = "Running";
+const PS_Terminated: string = "Terminated";
 
 var _Quantum: number = 6;        //default quantum number
 var _ClockTicks: number = 0;     //number of clock ticks 
 
 
-var _RunAll: Boolean = false;
-var _ResetMem: Boolean = false;
+var _RunAll: Boolean = false;    //booleann to check if we are running more than one program
+var _ResetMem: Boolean = false;  
 
 var _RowNumber: number = 0;         //row number for each program
 
+var _WaitTime: number = 0;                //Global to Initialize wait timer
+var _taTIme: number = 0;                  //Global to Initialize turn around time 
+
 var _CurrMemIndex: number = 0;
 
-var _Base: number = 0;                  //defualt base of memory
+//var _Base: number = 0;                  //defualt base of memory
 
 var _ResidentQueue: any = [];         //resident queue 
 var _ReadyQueue: any = [];             //ready queue 
@@ -88,10 +88,7 @@ var _Trace: boolean = true;  // Default the OS trace to be on.
 var _CurrentProgram: TSOS.Pcb;
 var _Memory: TSOS.Memory;
 var _MemoryManager: TSOS.MemoryManager; 
-
 var _CpuScheduler: TSOS.CpuScheduler; 
-
-var _BaseProgram: number = 0; //start index for each program
 
 var _ProgramInput = "";  //Program input
 

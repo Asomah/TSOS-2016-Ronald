@@ -37,20 +37,20 @@ var _Xreg = 0;
 var _Yreg = 0;
 var _Zflag = 0;
 var _DONE = false;
-var _Quantum = 0; //Quantum number
 // states of process for PCB.. Make constants to represent different states.
 var PS_New = "New";
 var PS_Ready = "Ready";
 var PS_Running = "Running";
-var PS_Waiting = "Waiting";
 var PS_Terminated = "Terminated";
 var _Quantum = 6; //default quantum number
 var _ClockTicks = 0; //number of clock ticks 
-var _RunAll = false;
+var _RunAll = false; //booleann to check if we are running more than one program
 var _ResetMem = false;
 var _RowNumber = 0; //row number for each program
+var _WaitTime = 0; //Global to Initialize wait timer
+var _taTIme = 0; //Global to Initialize turn around time 
 var _CurrMemIndex = 0;
-var _Base = 0; //defualt base of memory
+//var _Base: number = 0;                  //defualt base of memory
 var _ResidentQueue = []; //resident queue 
 var _ReadyQueue = []; //ready queue 
 var _Canvas; // Initialized in Control.hostInit().
@@ -63,7 +63,6 @@ var _CurrentProgram;
 var _Memory;
 var _MemoryManager;
 var _CpuScheduler;
-var _BaseProgram = 0; //start index for each program
 var _ProgramInput = ""; //Program input
 // The OS Kernel and its queues.
 var _Kernel;
