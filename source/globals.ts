@@ -61,7 +61,7 @@ var _Quantum: number = 6;        //default quantum number
 var _ClockTicks: number = 0;     //number of clock ticks 
 
 var _WaitTime: number = 1;                //Global to Initialize wait timer
-var _TaTime: number = 0;                  //Global to Initialize turn around time 
+var _TaTime: number = 1;                  //Global to Initialize turn around time 
 
 
 var _RunAll: Boolean = false;    //booleann to check if we are running more than one program

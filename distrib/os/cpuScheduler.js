@@ -17,11 +17,11 @@ var TSOS;
                     //set current's program's time 
                     nextProgram = this.getNextprogram();
                     nextProgram.waitTime = _CurrentProgram.waitTime + _WaitTime;
-                    alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
+                    //alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
                     _MemoryManager.updatePcbTable(nextProgram);
                     // alert("2Clock Ticks " + _ClockTicks);
                     this.contextSwitch();
-                    //set clockTicks to 1
+                    //reset clock ticks 
                     _ClockTicks = 1;
                     //reset wait time
                     _WaitTime = 1;
@@ -31,11 +31,11 @@ var TSOS;
                 //set current's program's time
                 nextProgram = this.getNextprogram();
                 nextProgram.waitTime = _CurrentProgram.waitTime + _WaitTime;
-                alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
+                //alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
                 _MemoryManager.updatePcbTable(nextProgram);
+                this.contextSwitch();
                 //reset wait time
                 _WaitTime = 1;
-                this.contextSwitch();
             }
         };
         //Context switch 

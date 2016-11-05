@@ -454,6 +454,7 @@ module TSOS {
         }
 
         public shellLoad(args) {
+
             //Get user input fromm html
             _ProgramInput = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
             var hex = _ProgramInput;
@@ -467,10 +468,25 @@ module TSOS {
                 //Update Memory Table
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
                 if ((programInput.length / 2) < _ProgramSize) {
+                    //load program if there are currently no executing programs
+                    //Else save the executing program, load the new program and continue to execute the running program
+                    if (_CPU.isExecuting != true){
                     _MemoryManager = new MemoryManager();
                     //load program to memory
                     _MemoryManager.loadProgToMem();
                     _MemoryManager.updateMemTable(_CurrentProgram);
+                    }
+                    else{
+                        var newprog = new Pcb();
+                        newprog = _CurrentProgram;
+
+                        _MemoryManager = new MemoryManager();
+                    //load program to memory
+                    _MemoryManager.loadProgToMem();
+                    _MemoryManager.updateMemTable(_CurrentProgram);
+
+                    _CurrentProgram = newprog;
+                    }
                 } else {
                     //Error if program is greater than or equal to 256
                     _StdOut.putText("Program too Large.. ");
@@ -647,7 +663,7 @@ module TSOS {
 
         public shellActivePids(args) {
             if (_ReadyQueue.length != 0) {
-                alert("ReadyQueue " + _ReadyQueue.length)
+                //alert("ReadyQueue " + _ReadyQueue.length)
                 for (var i = 0; i < _ReadyQueue.length; i++) {
                     _StdOut.putText("Active PID :: " + _ReadyQueue[i].PID);
                     _StdOut.advanceLine();

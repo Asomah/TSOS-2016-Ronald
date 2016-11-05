@@ -347,6 +347,11 @@ module TSOS {
                 }
                 //alert(_CurrentProgram.PID + " index = " + this.startIndex);;
 
+                //Increase turn around time for all programs in ready queue 
+                for (var i = 0; i < _ReadyQueue.length; i++){
+                    _ReadyQueue[i].taTime++;
+                }
+
             }
             else {
 
@@ -368,10 +373,10 @@ module TSOS {
                 if ((_RunAll == true && _DONE != true) || _ReadyQueue.length > 1) {
 
                     CpuScheduler.roundRobin();
-                    alert("1 length =" + _ReadyQueue.length);
+                    //alert("1 length =" + _ReadyQueue.length);
                         if (_MemoryManager.fetch(this.startIndex) != "00" && _CurrentProgram.state != PS_Running) {
                             this.startIndex = _CurrentProgram.startIndex;
-                            alert("Round Robin Switching to " + _CurrentProgram.PID);
+                            //alert("Round Robin Switching to " + _CurrentProgram.PID);
 
                             _CurrentProgram.state = PS_Running;
                             this.isExecuting = true;
@@ -385,7 +390,7 @@ module TSOS {
 
                     //remove the only program from ready queue
 
-                    alert("Removing the only program");
+                    //alert("Removing the only program");
                     
                     _ReadyQueue.splice(0, 1);
 
