@@ -325,7 +325,6 @@ module TSOS {
 
         }
 
-
         public cycle(): void {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.

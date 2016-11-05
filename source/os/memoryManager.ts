@@ -117,11 +117,25 @@ module TSOS {
                         var newText = document.createTextNode(_CurrentProgram.limit + "");
                         newCell9.appendChild(newText);
 
+
                         // Insert a cell in the row at index 10
                         var newCell10 = newRow.insertCell(9);
                         // Append a text node to the cell
-                        var newText = document.createTextNode(_CurrentProgram.state + "");
+                        var newText = document.createTextNode(_CurrentProgram.waitTime + "");
                         newCell10.appendChild(newText);
+
+                        // Insert a cell in the row at index 11
+                        var newCell11 = newRow.insertCell(10);
+                        // Append a text node to the cell
+                        var newText = document.createTextNode(_CurrentProgram.taTime + "");
+                        newCell11.appendChild(newText);
+
+                        // Insert a cell in the row at index 12
+                        var newCell12 = newRow.insertCell(11);
+                        // Append a text node to the cell
+                        var newText = document.createTextNode(_CurrentProgram.state + "");
+                        newCell12.appendChild(newText);
+
 
                         //alert(myTable.rows.length)
 
@@ -347,7 +361,9 @@ module TSOS {
                               rows[i].cells[6].innerHTML = _CPU.Zflag + "";
                               rows[i].cells[7].innerHTML = pcb.base + "";
                               rows[i].cells[8].innerHTML = pcb.limit + "";
-                              rows[i].cells[9].innerHTML = pcb.state;
+                              rows[i].cells[9].innerHTML = pcb.waitTime + "";
+                              rows[i].cells[10].innerHTML = pcb.taTime + "";
+                              rows[i].cells[11].innerHTML = pcb.state;
                               break;
                         }
 

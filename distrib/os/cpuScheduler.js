@@ -6,18 +6,35 @@ var TSOS;
         function CpuScheduler() {
         }
         CpuScheduler.roundRobin = function () {
+            var nextProgram = new TSOS.Pcb();
             if (_CurrentProgram.state != PS_Terminated) {
                 if (_ClockTicks < _Quantum) {
                     _ClockTicks++;
+                    //increase wait time
+                    _WaitTime++;
                 }
                 else {
-                    //set clockTicks to 1
-                    _ClockTicks = 1;
+                    //set current's program's time 
+                    nextProgram = this.getNextprogram();
+                    nextProgram.waitTime = _CurrentProgram.waitTime + _WaitTime;
+                    alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
+                    _MemoryManager.updatePcbTable(nextProgram);
                     // alert("2Clock Ticks " + _ClockTicks);
                     this.contextSwitch();
+                    //set clockTicks to 1
+                    _ClockTicks = 1;
+                    //reset wait time
+                    _WaitTime = 1;
                 }
             }
             else {
+                //set current's program's time
+                nextProgram = this.getNextprogram();
+                nextProgram.waitTime = _CurrentProgram.waitTime + _WaitTime;
+                alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
+                _MemoryManager.updatePcbTable(nextProgram);
+                //reset wait time
+                _WaitTime = 1;
                 this.contextSwitch();
             }
         };
@@ -87,6 +104,7 @@ var TSOS;
                         //last program in queue is curreent
                         if (i == _ReadyQueue.length - 1) {
                             nextProgram = _ReadyQueue[0];
+                            _WaitTime = 0;
                         }
                         else {
                             nextProgram = _ReadyQueue[i + 1];
