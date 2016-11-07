@@ -123,8 +123,8 @@ module TSOS {
             this.commandList[this.commandList.length] = sc;
 
             //clear All
-            sc = new ShellCommand(this.shellClearAll,
-                "clearall",
+            sc = new ShellCommand(this.shellclearMem,
+                "clearmem",
                 "Clears all memory partitions .");
             this.commandList[this.commandList.length] = sc;
 
@@ -356,7 +356,7 @@ module TSOS {
                     case "run":
                         _StdOut.putText("Runs a valid process.");
                         break;
-                    case "clearall":
+                    case "clearmem":
                         _StdOut.putText("Clears all memory partitions.");
                         break;
                     case "runall":
@@ -467,25 +467,25 @@ module TSOS {
                 //Create a new PCB
                 //Update Memory Table
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
-                if ((programInput.length / 2) < _ProgramSize) {
+                if ((programInput.length / 2) <= _ProgramSize) {
                     //load program if there are currently no executing programs
                     //Else save the executing program, load the new program and continue to execute the running program
-                    if (_CPU.isExecuting != true){
-                    _MemoryManager = new MemoryManager();
-                    //load program to memory
-                    _MemoryManager.loadProgToMem();
-                    _MemoryManager.updateMemTable(_CurrentProgram);
+                    if (_CPU.isExecuting != true) {
+                        _MemoryManager = new MemoryManager();
+                        //load program to memory
+                        _MemoryManager.loadProgToMem();
+                        _MemoryManager.updateMemTable(_CurrentProgram);
                     }
-                    else{
+                    else {
                         var newprog = new Pcb();
                         newprog = _CurrentProgram;
 
                         _MemoryManager = new MemoryManager();
-                    //load program to memory
-                    _MemoryManager.loadProgToMem();
-                    _MemoryManager.updateMemTable(_CurrentProgram);
+                        //load program to memory
+                        _MemoryManager.loadProgToMem();
+                        _MemoryManager.updateMemTable(_CurrentProgram);
 
-                    _CurrentProgram = newprog;
+                        _CurrentProgram = newprog;
                     }
                 } else {
                     //Error if program is greater than or equal to 256
@@ -513,7 +513,7 @@ module TSOS {
             _RunAll = false;
             _CPU.isExecuting = false;
 
-            
+
             if (args.length == 0) {
                 _StdOut.putText('Empty PID... Please enter PID');
             }
@@ -521,8 +521,8 @@ module TSOS {
                 var pid = -1;
                 var index = -1;
 
-                 var activeProg = new Pcb();
-                 activeProg = _CurrentProgram;
+                var activeProg = new Pcb();
+                activeProg = _CurrentProgram;
 
                 for (index = 0; index < _ResidentQueue.length; index++) {
                     if (args == _ResidentQueue[index].PID) {
@@ -558,7 +558,7 @@ module TSOS {
                     }
                     else {
 
-                        if (_ReadyQueue.length > 1){
+                        if (_ReadyQueue.length > 1) {
                             _CurrentProgram = activeProg;
                             //_CPU.startIndex = _CurrentProgram.startIndex;
                             //alert("RR is starting   " + _CurrentProgram.PID);
@@ -566,15 +566,15 @@ module TSOS {
                             _ClockTicks++;
                             _RunAll = true;
                             _CPU.isExecuting = true;
-                            
+
                         }
-                        else{
-                        //base to start running program
-                        _CPU.init();
-                        _CPU.startIndex = _CurrentProgram.startIndex;
-                        //alert("Index " + _CPU.startIndex + " PC =" + _CPU.PC);
-                        //alert(_MemoryManager.fetch(_CPU.startIndex)); 
-                        _CPU.isExecuting = true;
+                        else {
+                            //base to start running program
+                            _CPU.init();
+                            _CPU.startIndex = _CurrentProgram.startIndex;
+                            //alert("Index " + _CPU.startIndex + " PC =" + _CPU.PC);
+                            //alert(_MemoryManager.fetch(_CPU.startIndex)); 
+                            _CPU.isExecuting = true;
                         }
                     }
                     //_ResidentQueue[index].state = PS_Running;
@@ -584,7 +584,7 @@ module TSOS {
                     //_MemoryManager.updatePcbTable();
 
                 }
-                else if (pid == -1){
+                else if (pid == -1) {
                     pid = args;
                     _StdOut.putText('PID ' + pid + ' does not exist... please enter a valid pid to run program ');
                 }
@@ -641,13 +641,24 @@ module TSOS {
         }
 
 
-        public shellClearAll(args) {
+        public shellclearMem(args) {
             //clear memory and update memory log
             _ResidentQueue = [];
             _ReadyQueue = [];
             _RowNumber = 0;
             _Memory.init();
             _MemoryManager.clearMemoryLog();
+
+
+            //clear pcb log
+            var pcbTable: HTMLTableElement = <HTMLTableElement>document.getElementById("pcbTable");
+            var rows = pcbTable.getElementsByTagName("tr");
+
+
+            //Clear pcb table
+            while (pcbTable.rows.length > 1) {
+                pcbTable.deleteRow(1);
+            }
 
 
         }
@@ -718,14 +729,18 @@ module TSOS {
                                 deadProg.state = PS_Terminated;
                                 _ReadyQueue.splice(i, 1);
 
+                                _CPU.init();
+                                _IR = "NA";
+                                _MemoryManager.updateCpuTable();
+
                             }
 
                             //_CPU.isExecuting = false;
 
-                           // alert("Killing " + deadProg.PID);
+                            // alert("Killing " + deadProg.PID);
                             //reset memory at that partition and update memory table 
-                             _MemoryManager.resetPartition(deadProg);
-                             _MemoryManager.updateMemTable(deadProg);
+                            _MemoryManager.resetPartition(deadProg);
+                            _MemoryManager.updateMemTable(deadProg);
 
                             //update pcb table
                             _MemoryManager.deleteRowPcb(deadProg);
@@ -739,7 +754,7 @@ module TSOS {
                     _StdOut.putText('INVALID PID ... The pid you entered is not active to be killed');
                     //Continue to run other programs in the ready queue
                     if (_ReadyQueue.length > 0) {
-                     _CPU.isExecuting = true;
+                        _CPU.isExecuting = true;
                     }
                 }
 

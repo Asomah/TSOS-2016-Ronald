@@ -289,31 +289,15 @@ module TSOS {
             }
             else if (opCode == "FF") {
                 _IR = opCode;
-                if (this.Xreg == 1) {
-                    _StdOut.putText(_CPU.Yreg.toString());
-                } else if (this.Xreg == 2) {
-                    var address = _CPU.Yreg;
-                    if (_CurrentProgram.base == 256) {
-                        address = address + 256;
-                    }
-                    else if (_CurrentProgram.base == 512) {
-                        address = address + 512;
-                    }
-                    //alert("FF currAddres =" + currAddr);
-                    var str = "";
-                    while (_MemoryManager.fetch(address) !== "00") {
-                        var charAscii = parseInt(_MemoryManager.fetch(address), 16);
-                        str += String.fromCharCode(charAscii);
-                        address++;
-                    }
-                    _StdOut.putText(str);
-                }
+                _Kernel.krnInterruptHandler(SYSCALL_IRQ, this.Xreg);
             }
             else {
-                //Stop process
-                //_CurrentProgram.state = PS_Terminated;
-                //_MemoryManager.updateCpuTable();
-                _StdOut.putText("NOT VALID PROGRAM");
+                //kill current program if there is an invalid opcode
+                _StdOut.putText("INVALID OPCODE .... KILLING THIS PROGRAM");
+                _Kernel.krnInterruptHandler(INVALIDOPCODE_IRQ, _CurrentProgram.PID);
+                _StdOut.advanceLine();
+                _StdOut.putText(">");
+
 
             }
 
@@ -348,7 +332,7 @@ module TSOS {
                 //alert(_CurrentProgram.PID + " index = " + this.startIndex);;
 
                 //Increase turn around time for all programs in ready queue 
-                for (var i = 0; i < _ReadyQueue.length; i++){
+                for (var i = 0; i < _ReadyQueue.length; i++) {
                     _ReadyQueue[i].taTime++;
                 }
 
@@ -358,7 +342,7 @@ module TSOS {
                 this.isExecuting = false;
                 //set the next program to execute
                 //Get current program if ready queue length is 1
-                if (_ReadyQueue.length == 1){
+                if (_ReadyQueue.length == 1) {
                     _CurrentProgram = _ReadyQueue[0];
                 }
                 _CurrentProgram.state = PS_Terminated;
@@ -374,14 +358,14 @@ module TSOS {
 
                     CpuScheduler.roundRobin();
                     //alert("1 length =" + _ReadyQueue.length);
-                        if (_MemoryManager.fetch(this.startIndex) != "00" && _CurrentProgram.state != PS_Running) {
-                            this.startIndex = _CurrentProgram.startIndex;
-                            //alert("Round Robin Switching to " + _CurrentProgram.PID);
+                    if (_MemoryManager.fetch(this.startIndex) != "00" && _CurrentProgram.state != PS_Running) {
+                        this.startIndex = _CurrentProgram.startIndex;
+                        //alert("Round Robin Switching to " + _CurrentProgram.PID);
 
-                            _CurrentProgram.state = PS_Running;
-                            this.isExecuting = true;
-                        }
-                        _ClockTicks = 1;
+                        _CurrentProgram.state = PS_Running;
+                        this.isExecuting = true;
+                    }
+                    _ClockTicks = 1;
                     this.cycle();
 
 
@@ -391,7 +375,7 @@ module TSOS {
                     //remove the only program from ready queue
 
                     //alert("Removing the only program");
-                    
+
                     _ReadyQueue.splice(0, 1);
 
                     _MemoryManager.resetPartition(_CurrentProgram);
@@ -403,6 +387,7 @@ module TSOS {
                     //alert("after length =" + _ReadyQueue.length);
 
                     this.init();
+                    _IR = "NA";
                     _MemoryManager.updateCpuTable();
                     _DONE = true;
 

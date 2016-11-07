@@ -101,6 +101,37 @@ var TSOS;
             TSOS.Devices.hostDisableKeyboardInterrupt();
             // Put more here.
         };
+        Kernel.prototype.krnSyscall = function (param) {
+            if (param == 1) {
+                _StdOut.putText(_CPU.Yreg.toString());
+            }
+            else if (param == 2) {
+                var address = _CPU.Yreg;
+                if (_CurrentProgram.base == 256) {
+                    address = address + 256;
+                }
+                else if (_CurrentProgram.base == 512) {
+                    address = address + 512;
+                }
+                var str = "";
+                while (_MemoryManager.fetch(address) !== "00") {
+                    var charAscii = parseInt(_MemoryManager.fetch(address), 16);
+                    str += String.fromCharCode(charAscii);
+                    address++;
+                }
+                _StdOut.putText(str);
+            }
+        };
+        Kernel.prototype.krnBreak = function () {
+            _CurrentProgram.startIndex = _CPU.startIndex;
+            _CurrentProgram.PC = _CPU.PC;
+            _CurrentProgram.Acc = _CPU.Acc;
+            _CurrentProgram.Xreg = _CPU.Xreg;
+            _CurrentProgram.Yreg = _CPU.Yreg;
+            _CurrentProgram.Zflag = _CPU.Zflag;
+            _CurrentProgram.state = PS_Ready;
+            _MemoryManager.updatePcbTable(_CurrentProgram);
+        };
         Kernel.prototype.krnInterruptHandler = function (irq, params) {
             // This is the Interrupt Handler Routine.  See pages 8 and 560.
             // Trace our entrance here so we can compute Interrupt Latency by analyzing the log file later on. Page 766.
@@ -116,6 +147,15 @@ var TSOS;
                 case KEYBOARD_IRQ:
                     _krnKeyboardDriver.isr(params); // Kernel mode device driver
                     _StdIn.handleInput();
+                    break;
+                case SYSCALL_IRQ:
+                    this.krnSyscall(params);
+                    break;
+                case BREAK_IRQ:
+                    this.krnBreak();
+                    break;
+                case INVALIDOPCODE_IRQ:
+                    _OsShell.shellKill(params);
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");

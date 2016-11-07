@@ -260,32 +260,14 @@ var TSOS;
             }
             else if (opCode == "FF") {
                 _IR = opCode;
-                if (this.Xreg == 1) {
-                    _StdOut.putText(_CPU.Yreg.toString());
-                }
-                else if (this.Xreg == 2) {
-                    var address = _CPU.Yreg;
-                    if (_CurrentProgram.base == 256) {
-                        address = address + 256;
-                    }
-                    else if (_CurrentProgram.base == 512) {
-                        address = address + 512;
-                    }
-                    //alert("FF currAddres =" + currAddr);
-                    var str = "";
-                    while (_MemoryManager.fetch(address) !== "00") {
-                        var charAscii = parseInt(_MemoryManager.fetch(address), 16);
-                        str += String.fromCharCode(charAscii);
-                        address++;
-                    }
-                    _StdOut.putText(str);
-                }
+                _Kernel.krnInterruptHandler(SYSCALL_IRQ, this.Xreg);
             }
             else {
-                //Stop process
-                //_CurrentProgram.state = PS_Terminated;
-                //_MemoryManager.updateCpuTable();
-                _StdOut.putText("NOT VALID PROGRAM");
+                //kill current program if there is an invalid opcode
+                _StdOut.putText("INVALID OPCODE .... KILLING THIS PROGRAM");
+                _Kernel.krnInterruptHandler(INVALIDOPCODE_IRQ, _CurrentProgram.PID);
+                _StdOut.advanceLine();
+                _StdOut.putText(">");
             }
             this.PC++;
             this.startIndex++;
@@ -349,6 +331,7 @@ var TSOS;
                     _StdOut.putText(">");
                     //alert("after length =" + _ReadyQueue.length);
                     this.init();
+                    _IR = "NA";
                     _MemoryManager.updateCpuTable();
                     _DONE = true;
                 }

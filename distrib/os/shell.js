@@ -73,7 +73,7 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellRun, "run", " <pid> - run a valid process.");
             this.commandList[this.commandList.length] = sc;
             //clear All
-            sc = new TSOS.ShellCommand(this.shellClearAll, "clearall", "Clears all memory partitions .");
+            sc = new TSOS.ShellCommand(this.shellclearMem, "clearmem", "Clears all memory partitions .");
             this.commandList[this.commandList.length] = sc;
             //run All
             sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "Runs all loaded programs in memory.");
@@ -275,7 +275,7 @@ var TSOS;
                     case "run":
                         _StdOut.putText("Runs a valid process.");
                         break;
-                    case "clearall":
+                    case "clearmem":
                         _StdOut.putText("Clears all memory partitions.");
                         break;
                     case "runall":
@@ -376,7 +376,7 @@ var TSOS;
                 //Create a new PCB
                 //Update Memory Table
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
-                if ((programInput.length / 2) < _ProgramSize) {
+                if ((programInput.length / 2) <= _ProgramSize) {
                     //load program if there are currently no executing programs
                     //Else save the executing program, load the new program and continue to execute the running program
                     if (_CPU.isExecuting != true) {
@@ -508,13 +508,20 @@ var TSOS;
                 _StdOut.putText("No programs loaded... Load program(s) to before using this command");
             }
         };
-        Shell.prototype.shellClearAll = function (args) {
+        Shell.prototype.shellclearMem = function (args) {
             //clear memory and update memory log
             _ResidentQueue = [];
             _ReadyQueue = [];
             _RowNumber = 0;
             _Memory.init();
             _MemoryManager.clearMemoryLog();
+            //clear pcb log
+            var pcbTable = document.getElementById("pcbTable");
+            var rows = pcbTable.getElementsByTagName("tr");
+            //Clear pcb table
+            while (pcbTable.rows.length > 1) {
+                pcbTable.deleteRow(1);
+            }
         };
         Shell.prototype.shellQuantum = function (args) {
             //Sets quantum number for round robin
@@ -570,6 +577,9 @@ var TSOS;
                                 deadProg = _ReadyQueue[i];
                                 deadProg.state = PS_Terminated;
                                 _ReadyQueue.splice(i, 1);
+                                _CPU.init();
+                                _IR = "NA";
+                                _MemoryManager.updateCpuTable();
                             }
                             //_CPU.isExecuting = false;
                             // alert("Killing " + deadProg.PID);
