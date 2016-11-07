@@ -143,7 +143,6 @@ var TSOS;
                 document.getElementById("execStep").disabled = true;
                 document.getElementById("singleStep").value = "Single Step";
                 _CPU.isExecuting = true;
-                _CPU.cycle();
             }
         };
         Control.hostBtnExecStepOS_click = function (btn) {

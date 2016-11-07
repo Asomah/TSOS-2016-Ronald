@@ -185,7 +185,7 @@ module TSOS {
                 (<HTMLButtonElement>document.getElementById("execStep")).disabled = true;
                 (<HTMLButtonElement>document.getElementById("singleStep")).value = "Single Step";
                 _CPU.isExecuting = true;
-                _CPU.cycle();
+                //_CPU.cycle();
             }
 
         }

@@ -382,9 +382,9 @@ module TSOS {
 
                   for (var i = 1; i < rows.length; i++) {
                         var cells = rows[i].cells;
-
+                        //alert ("PID=" + pcb.PID + "   State=" + pcb.state);
                         if (rows[i].cells[0].innerHTML == pcb.PID && pcb.state == PS_Terminated) {
-                              //alert("Reomving row " + i + "  and PID = " + pcb.PID);
+                             // alert("Reomving row " + i + "  and PID = " + pcb.PID);
                               rows[i].remove();
                               break;
 
