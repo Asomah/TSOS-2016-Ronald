@@ -554,7 +554,7 @@ module TSOS {
                         _CPU.startIndex = _CurrentProgram.startIndex;
                         //alert("Index " + _CPU.startIndex + " PC =" + _CPU.PC);
                         //alert(_MemoryManager.fetch(_CPU.startIndex)); 
-                        //_CPU.cycle();
+                        _CPU.cycle();
                     }
                     else {
 

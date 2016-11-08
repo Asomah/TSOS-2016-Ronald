@@ -178,7 +178,7 @@ module TSOS {
                 (<HTMLButtonElement>document.getElementById("singleStep")).value = "Exit";
                 //(<HTMLButtonElement>document.getElementById("execStep")).style.backgroundColor = "blue";
 
-                //_CPU.cycle();
+                 //_CPU.cycle();
                  _CPU.isExecuting = false;
             }
             else{
