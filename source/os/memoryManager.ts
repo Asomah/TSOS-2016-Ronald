@@ -222,7 +222,6 @@ module TSOS {
                   }
 
 
-
                   //To DO : Error if Base is greater than 512
                   var memIndex = pcb.base;
 
@@ -238,6 +237,8 @@ module TSOS {
 
             }
 
+
+            
             //Update memory table when memory is erased
             public clearMemoryLog() {
                   var memoryTable: HTMLTableElement = <HTMLTableElement>document.getElementById("memoryTable");

@@ -282,6 +282,8 @@ var TSOS;
             if (_MemoryManager.fetch(this.startIndex) != "00" && _DONE != true) {
                 this.executeProgram(_MemoryManager.fetch(this.startIndex));
                 _CurrentProgram.state = PS_Running;
+                //Update memory, pcb table and cpu log log tables
+                _MemoryManager.updateMemTable(_CurrentProgram);
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 _MemoryManager.updateCpuTable();
                 //Perform round robbin if ready queue is greater than 0
