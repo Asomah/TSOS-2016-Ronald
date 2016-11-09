@@ -88,10 +88,7 @@ var TSOS;
                 else if (_CurrentProgram.base == 512) {
                     destAddress = destAddress + 512;
                 }
-                //alert("8D " + _Base)
-                if (destAddress <= _CurrentProgram.limit) {
-                    _MemoryArray[destAddress] = this.Acc.toString(16);
-                }
+                _MemoryManager.storeValue(this.Acc.toString(16), destAddress);
             }
             else if (opCode == "6D") {
                 _IR = opCode;
@@ -278,23 +275,20 @@ var TSOS;
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             //debugger;
-            //alert("Before Scheduler");
             if (_MemoryManager.fetch(this.startIndex) != "00" && _DONE != true) {
                 this.executeProgram(_MemoryManager.fetch(this.startIndex));
                 _CurrentProgram.state = PS_Running;
+                //Increase turn around time for all programs in ready queue 
+                for (var i = 0; i < _ReadyQueue.length; i++) {
+                    _ReadyQueue[i].taTime++;
+                }
                 //Update memory, pcb table and cpu log log tables
                 _MemoryManager.updateMemTable(_CurrentProgram);
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 _MemoryManager.updateCpuTable();
                 //Perform round robbin if ready queue is greater than 0
                 if (_ReadyQueue.length > 1) {
-                    //alert("Doing Round Robin");
                     TSOS.CpuScheduler.roundRobin();
-                }
-                //alert(_CurrentProgram.PID + " index = " + this.startIndex);;
-                //Increase turn around time for all programs in ready queue 
-                for (var i = 0; i < _ReadyQueue.length; i++) {
-                    _ReadyQueue[i].taTime++;
                 }
             }
             else {
@@ -308,14 +302,10 @@ var TSOS;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 //TO DO :: Clear memory after each process
                 //Restore memory after program finishes running and update memory table
-                //alert("Current Program "+_CurrentProgram.PID + "   state =" + _CurrentProgram.state);
-                //alert("1 length =" + _ReadyQueue.length);
                 if ((_RunAll == true && _DONE != true) || _ReadyQueue.length > 1) {
                     TSOS.CpuScheduler.roundRobin();
-                    //alert("1 length =" + _ReadyQueue.length);
                     if (_MemoryManager.fetch(this.startIndex) != "00" && _CurrentProgram.state != PS_Running) {
                         this.startIndex = _CurrentProgram.startIndex;
-                        //alert("Round Robin Switching to " + _CurrentProgram.PID);
                         _CurrentProgram.state = PS_Running;
                         this.isExecuting = true;
                     }

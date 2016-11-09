@@ -547,22 +547,14 @@ module TSOS {
 
 
                 if (_CurrentProgram.state == PS_Ready) {
-                    //alert(pid);
                     _StdOut.putText('Running PID ' + pid);
-                    if ((<HTMLButtonElement>document.getElementById("singleStep")).style.backgroundColor == "red") {
-                        _CPU.init();
-                        _CPU.startIndex = _CurrentProgram.startIndex;
-                        //alert("Index " + _CPU.startIndex + " PC =" + _CPU.PC);
-                        //alert(_MemoryManager.fetch(_CPU.startIndex)); 
+                    if ((<HTMLButtonElement>document.getElementById("singleStep")).value == "Exit") {
                         _CPU.cycle();
                     }
                     else {
 
                         if (_ReadyQueue.length > 1) {
                             _CurrentProgram = activeProg;
-                            //_CPU.startIndex = _CurrentProgram.startIndex;
-                            //alert("RR is starting   " + _CurrentProgram.PID);
-                            //alert("Run StartIndex =" + _CPU.startIndex + " CPU =" + _CPU.PC) ;
                             _ClockTicks++;
                             _RunAll = true;
                             _CPU.isExecuting = true;
@@ -572,16 +564,9 @@ module TSOS {
                             //base to start running program
                             _CPU.init();
                             _CPU.startIndex = _CurrentProgram.startIndex;
-                            //alert("Index " + _CPU.startIndex + " PC =" + _CPU.PC);
-                            //alert(_MemoryManager.fetch(_CPU.startIndex)); 
                             _CPU.isExecuting = true;
                         }
                     }
-                    //_ResidentQueue[index].state = PS_Running;
-                    // _CPU.counter = _ResidentQueue[index].startIndex;
-                    //_CPU.isExecuting = false;
-                    //_ResidentQueue[index].state = PS_Terminated;
-                    //_MemoryManager.updatePcbTable();
 
                 }
                 else if (pid == -1) {
@@ -620,7 +605,7 @@ module TSOS {
                 if (_CurrentProgram.state != PS_Terminated) {
                     //alert(pid);
                     _StdOut.putText('Running all Programs ... ');
-                    if ((<HTMLButtonElement>document.getElementById("singleStep")).style.backgroundColor == "red") {
+                    if ((<HTMLButtonElement>document.getElementById("singleStep")).value == "Exit") {
                         _ClockTicks++;
                         _CPU.cycle();
 
@@ -715,16 +700,13 @@ module TSOS {
                                     _CurrentProgram = _ReadyQueue[i + 1];
                                 }
 
-                                //alert("1 Removing index " + i + " from ready queue" )
                                 _ReadyQueue.splice(i, 1);
                                 _CPU.startIndex = _CurrentProgram.startIndex;
                                 _CPU.isExecuting = true;
-                                //_CPU.cycle();
 
 
                             }
                             else {
-                                //alert("2 Removing index " + i + " from ready queue" )
                                 deadProg = _ReadyQueue[i];
                                 deadProg.state = PS_Terminated;
                                 _ReadyQueue.splice(i, 1);
@@ -734,10 +716,7 @@ module TSOS {
                                 _MemoryManager.updateCpuTable();
 
                             }
-
-                            //_CPU.isExecuting = false;
-
-                            // alert("Killing " + deadProg.PID);
+                            
                             //reset memory at that partition and update memory table 
                             _MemoryManager.resetPartition(deadProg);
                             _MemoryManager.updateMemTable(deadProg);

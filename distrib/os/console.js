@@ -21,7 +21,8 @@ var TSOS;
             if (prevYPositions === void 0) { prevYPositions = []; }
             if (prevXpositions === void 0) { prevXpositions = []; }
             if (arrayOfCommands === void 0) { arrayOfCommands = _ArrayOfCommands = ["ver", "help", "shutdown", "cls", "man", "trace", "rot13",
-                "prompt", "date", "whereami", "restart", "alpaca", "load"]; }
+                "prompt", "date", "whereami", "restart", "alpaca", "load", "run", "clearmem", "runall", "quantum", "ps",
+                "kill"]; }
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
