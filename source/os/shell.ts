@@ -152,6 +152,12 @@ module TSOS {
                 "<pid> to kill a specific process.");
             this.commandList[this.commandList.length] = sc;
 
+            //create file
+            sc = new ShellCommand(this.shellCreateFile,
+                "create",
+                " <filename> - Creates a new file on disk.");
+            this.commandList[this.commandList.length] = sc;
+
 
 
             // ps  - list the running processes and their IDs
@@ -370,6 +376,9 @@ module TSOS {
                         break;
                     case "kill":
                         _StdOut.putText("Kills a specified process");
+                        break;
+                    case "create":
+                        _StdOut.putText("creates a new file on disk");
                         break;
 
 
@@ -668,6 +677,27 @@ module TSOS {
             else {
                 _StdOut.putText("There are no active pids");
             }
+
+        }
+
+        public shellCreateFile(args) {
+            if(args.length == 0){
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("Empty file name... Please specify name of file");
+            }
+            else if(args.length > 1){
+                //then there is a space in the fileName
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("Spaces in file name... File name cannot contain spaces");
+            }
+            else{
+                //Go ahead and try to create file
+                var fileName = args;
+                _DeviceDriverFileSystem.createFile(fileName);
+            }
+            
 
         }
 
