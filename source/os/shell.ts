@@ -155,7 +155,31 @@ module TSOS {
             //create file
             sc = new ShellCommand(this.shellCreateFile,
                 "create",
-                " <filename> - Creates a new file on disk.");
+                " <filename> - creates a new file on disk.");
+            this.commandList[this.commandList.length] = sc;
+
+             //read file
+            sc = new ShellCommand(this.shellReadFile,
+                "read",
+                " <filename> - reads and display contents of a file name.");
+            this.commandList[this.commandList.length] = sc;
+
+             //write file
+            sc = new ShellCommand(this.shellWriteFile,
+                "write",
+                " <filename> \"data\" - writes data to the specified file name.");
+            this.commandList[this.commandList.length] = sc;
+
+             //delete file
+            sc = new ShellCommand(this.shellDeleteFile,
+                "delete",
+                " <filename> - deletes a filename from storage.");
+            this.commandList[this.commandList.length] = sc;
+
+             //format
+            sc = new ShellCommand(this.shellFormat,
+                "format",
+                "initialize	all	blocks in all sectors in all tracks.");
             this.commandList[this.commandList.length] = sc;
 
 
@@ -379,6 +403,18 @@ module TSOS {
                         break;
                     case "create":
                         _StdOut.putText("creates a new file on disk");
+                        break;
+                    case "read":
+                        _StdOut.putText("reads and displays contents of a filename");
+                        break;
+                    case "write":
+                        _StdOut.putText("write data to a specified filename");
+                        break;
+                    case "delete":
+                        _StdOut.putText("removes filename from storage");
+                        break;
+                    case "format":
+                        _StdOut.putText("initialize	all	blocks in all sectors in all tracks");
                         break;
 
 
@@ -697,7 +733,41 @@ module TSOS {
                 var fileName = args;
                 _DeviceDriverFileSystem.createFile(fileName);
             }
-            
+
+        }
+
+        public shellReadFile(args) {
+
+        }
+
+        public shellWriteFile(args) {
+            if(args.length < 2){
+                //error if no create command is missing an operand
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("Missing operand(s)... Please specify name of file or the data you want to write");
+            }
+            else if (args.length > 2){
+                //Error if more than 2 args are enterred
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("Too many operand(s)... Correct syntax :: write <filename> \"data\" ");
+            }
+            else{
+                var fileName = args[0];
+                //remove starting and ending commas from data enterred
+                var contents = args[1].slice(1, -1);
+                _DeviceDriverFileSystem.writeToFile(fileName,contents);
+
+            }
+
+        }
+
+        public shellDeleteFile(args) {
+
+        }
+
+        public shellFormat(args) {
 
         }
 

@@ -27,7 +27,13 @@ var TSOS;
             this.blocks = blocks;
             this.dataSize = dataSize;
             this.headerSize = headerSize;
+            this.driverEntry = this.krnFsDriverEntry;
         }
+        DeviceDriverFileSystem.prototype.krnFsDriverEntry = function () {
+            // Initialization routine for this, the kernel-mode File System Device Driver.
+            this.status = "File System Driver loaded";
+            // More?
+        };
         // Initalize blocks with " - " and " 0 "
         DeviceDriverFileSystem.prototype.initializeBlock = function () {
             var data = "0";
@@ -59,7 +65,7 @@ var TSOS;
             var hexString = data.substring(0, this.headerSize);
             var newData = data.substring(this.headerSize);
             //check to see if header tsb is free, convert newdata to hex if not free
-            if (data.substring(1, this.headerSize) != "---") {
+            if (data.substring(1, this.headerSize) != "---" || key[0] != "0") {
                 hexString += this.convertToHex(newData);
             }
             else {
@@ -79,7 +85,7 @@ var TSOS;
                 _StdOut.advanceLine();
                 _StdOut.putText("File name too long... Please enter a file name less than 60 characters.");
             }
-            else if (dirKey == "null" || dataKey == null) {
+            else if (dirKey == null || dataKey == null) {
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("Memory out of space... There is no free space to create this file");
@@ -101,6 +107,59 @@ var TSOS;
                 _StdOut.putText("SUCESS : " + fileName + " has been created");
             }
         };
+        DeviceDriverFileSystem.prototype.writeToFile = function (fileName, contents) {
+            var dirKey = this.findFilename(fileName);
+            if (dirKey == null) {
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("File name does not exist");
+            }
+            else {
+                var dirData = sessionStorage.getItem(dirKey);
+                var dataKey = dirData.substring(1, this.headerSize);
+                var dataData = "";
+                var inUseBit = sessionStorage.getItem(dataKey).substring(0, 1);
+                var headerTSB = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
+                //write to file if length of data is less than 60 bytes
+                //NOTE: by converting to hex, each character is 2 bytes
+                if (contents.length <= this.dataSize / 2 && inUseBit == "1" && headerTSB == "---") {
+                    dataData = inUseBit + headerTSB + contents;
+                    this.writeData(dataKey, dataData);
+                    this.updateHardDiskTable(dataKey);
+                }
+                else if (contents.length > this.dataSize / 2 && inUseBit == "1" && headerTSB == "---") {
+                    //first data to write to file 
+                    var newDataKey = this.getFreeDataEntry();
+                    headerTSB = newDataKey;
+                    if (newDataKey != null) {
+                        var contentSize = 0;
+                        var nextContentSize = this.dataSize / 2;
+                        while (contentSize < contents.length) {
+                            inUseBit = "1";
+                            dataData = inUseBit + headerTSB + contents.substring(contentSize, nextContentSize);
+                            this.writeData(dataKey, dataData);
+                            this.updateHardDiskTable(dataKey);
+                            contentSize = +this.dataSize / 2;
+                            if ((contents.length - contentSize) <= (this.dataSize / 2)) {
+                                nextContentSize = contents.length;
+                                headerTSB = "---";
+                            }
+                            else {
+                                nextContentSize = contentSize + this.dataSize / 2;
+                                newDataKey = this.getFreeDataEntry();
+                                headerTSB = newDataKey;
+                                if (newDataKey == null) {
+                                    //TO DO:: Error if file is too large
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                }
+            }
+        };
         //get availble dir that is not in use
         DeviceDriverFileSystem.prototype.getFreeDirEntry = function () {
             var key = "";
@@ -117,7 +176,7 @@ var TSOS;
                 }
             }
             //return null if there are no available or free tsb
-            return "null";
+            return null;
         };
         //get available data that is not in use
         DeviceDriverFileSystem.prototype.getFreeDataEntry = function () {
@@ -137,20 +196,23 @@ var TSOS;
                 }
             }
             //return null if there are no available or free tsb
-            return "null";
+            return null;
         };
         // 
-        DeviceDriverFileSystem.prototype.findFilename = function (filename) {
+        DeviceDriverFileSystem.prototype.findFilename = function (fileName) {
             var key = "";
             var data = "";
-            var fileNameHex = this.convertToHex(filename);
+            var inUseBit = "";
+            var fileNameHex = this.convertToHex(fileName);
             for (var i = 0; i < this.sectors; i++) {
                 for (var j = 0; j < this.blocks; j++) {
                     key = "0" + i + j;
                     data = sessionStorage.getItem(key).substring(this.headerSize);
-                    // Keep iterating through the directory entry until
-                    // we find a filename match in the file system
-                    if (data == fileNameHex) {
+                    inUseBit = sessionStorage.getItem(key).substring(0, 1);
+                    //alert("Hex File = " + fileNameHex + "  data= " + data);
+                    // return key if data of that key is equal to the converted hexString of file name and file name is in use
+                    if (data == fileNameHex && inUseBit == "1") {
+                        // alert("FileName Found");
                         return key;
                     }
                 }
