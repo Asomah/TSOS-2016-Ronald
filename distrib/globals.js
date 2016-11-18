@@ -66,6 +66,7 @@ var _CurrentProgram;
 var _Memory;
 var _MemoryManager;
 var _CpuScheduler;
+var _DeviceDriverFileSystem;
 var _ProgramInput = ""; //Program input
 // The OS Kernel and its queues.
 var _Kernel;

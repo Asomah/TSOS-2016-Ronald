@@ -93,6 +93,7 @@ var _CurrentProgram: TSOS.Pcb;
 var _Memory: TSOS.Memory;
 var _MemoryManager: TSOS.MemoryManager; 
 var _CpuScheduler: TSOS.CpuScheduler; 
+var _DeviceDriverFileSystem: TSOS.DeviceDriverFileSystem;
 
 var _ProgramInput = "";  //Program input
 

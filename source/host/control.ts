@@ -1,5 +1,6 @@
 ///<reference path="../globals.ts" />
 ///<reference path="../os/canvastext.ts" />
+///<reference path="../os/deviceDriverFileSystem.ts" />
 ///<reference path="memory.ts" />
 ///<reference path="cpu.ts" />
 
@@ -117,7 +118,47 @@ module TSOS {
 
         }
 
+        //Create hard disk table
+        public static hardDiskTable(): void {
+            // make a new instance of DeviceDriverFileSystem
+            _DeviceDriverFileSystem = new DeviceDriverFileSystem();
 
+            //get the tag of the hard disk table body
+            var hardDiskHTML = document.getElementById("fsBody");
+            hardDiskHTML.innerHTML = "";
+
+            for (var i = 0; i < _DeviceDriverFileSystem.tracks ; i++) {
+                for (var j = 0; j < _DeviceDriverFileSystem.sectors; j++) {
+                    for (var k = 0; k < _DeviceDriverFileSystem.blocks; k++) {
+                        var key: string = i.toString() + j.toString() + k.toString();
+                        var data = _DeviceDriverFileSystem.initializeBlock();
+
+                        var row = document.createElement("tr");
+                        hardDiskHTML.appendChild(row);
+
+                        var cell = document.createElement("td");
+                        cell.className = "tsb";
+                        cell.textContent = key;
+                        row.appendChild(cell);
+
+                        var cell = document.createElement("td");
+                        cell.className = "inUse";
+                        cell.textContent = data.substring(0,1);
+                        row.appendChild(cell);
+
+                        var cell = document.createElement("td");
+                        cell.className = "headerTSB";
+                        cell.textContent = data.substring(1, _DeviceDriverFileSystem.headerSize);
+                        row.appendChild(cell);
+
+                        var cell = document.createElement("td");
+                        cell.className = "data";
+                        cell.textContent = data.substring( _DeviceDriverFileSystem.headerSize);
+                        row.appendChild(cell);
+                    }
+                }
+            }
+        }
 
         //
         // Host Events
@@ -146,7 +187,7 @@ module TSOS {
 
             this.memoryTable();
 
-
+            this.hardDiskTable();
 
 
         }

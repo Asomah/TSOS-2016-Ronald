@@ -1,0 +1,72 @@
+<?php
+//error_reporting(E_ALL);
+//ini_set('display_errors', '1');
+?>
+<?php 
+//TO DO : Connect to database
+// Start the session
+	session_start();
+	//Use this to link to the global function page
+	require 'Globals/buildHTML.php';
+	
+	
+	buildHTMLHeadLinks('true');// Builds all of the links takes in parameter for the auto slider needs to be a string
+	buildHeader(); //Builds the Header and Navigation Bar
+
+if (isset($_GET['id'])) {
+
+	$id = preg_replace('#[^0-9]#i', '', $_GET['id']);
+	
+	//Use this to link to the conenctions page for the database functions
+	require 'Globals/connection.php';
+
+    $sql =   "SELECT * FROM `products`,`categories` 
+                        WHERE products.categoryId = categories.categoryId 
+                        AND categories.categoryId = '$id'";
+                
+                $result = $conn->query($sql);
+                $c = 0;
+                $n = 3; // Each Nth iteration would be a new table row
+                while ($row = mysqli_fetch_array($result, MYSQL_ASSOC)) {
+                     $productId = $row["productId"];
+                     $typeId = $row["typeId"];
+                     $colorId = $row["color"];
+                     $sizeId = $row["sizeId"];
+                     $designId = $row["designId"];
+                     $supplierId = $row["supplierId"];
+                     $quantity = $row["quantity"];
+	        		 $price = $row["price"];
+
+                    if ($c % $n == 0 && $c != 0) { // If $c is divisible by $n...
+                        echo '<div class="row"</div>';
+                        
+                    }
+                    $c++;
+                    ?>
+                    <div class="col-md-3 col-sm-4" style="margin-left: 100px" id = 1>
+                       <p><li><a href="productsPage.php?id=<?php echo $productId ?>"><img src="images/productsImages/<?php echo $productId ?>.jpg" alt="images/productsImages/<?php echo $productId ?>.jpg"/></a></li></p>
+                            <h2> Price:     $<?php echo $price ?> </h2>
+                            <form id="form1" name="form1" method="get" action="productModal.php"> <!-- reference cart action -->
+                                <input type="hidden" name="id" id="id" value="<?php echo $productId; ?>" />
+                                <input class="btn btn-primary" type="submit" name="button" id="myBtn" value="View Product" />
+                            </form>
+                            </br>
+                            <!-- Add to cart action for this button -->
+                            <div id="selector" class="btn-group">
+                                <button type="button" class="btn btn-primary" id="<?php $productId ?>">Add To Cart</button>
+                            </div>
+                    </div>
+                    
+      <?php 
+    }
+    
+
+} else {
+	echo "Data to render this page is missing.";
+	exit();
+}
+
+?>
+<p>   <br />  <br /> <br />  <br /><br />  <br /><br /> <br /><br /><br /><br /><br /><br /><br />
+<br /><br /><br /><br />  <br /><br />  <br /><br /> </p>
+<?php  buildFooter(false); //Builds the Footer ?>
