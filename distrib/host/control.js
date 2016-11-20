@@ -101,11 +101,11 @@ var TSOS;
             var hardDiskHTML = document.getElementById("fsBody");
             hardDiskHTML.innerHTML = "";
             var key = "";
+            var data = _DeviceDriverFileSystem.initializeBlock();
             for (var i = 0; i < _DeviceDriverFileSystem.tracks; i++) {
                 for (var j = 0; j < _DeviceDriverFileSystem.sectors; j++) {
                     for (var k = 0; k < _DeviceDriverFileSystem.blocks; k++) {
-                        key = i.toString() + j.toString() + k.toString();
-                        var data = _DeviceDriverFileSystem.initializeBlock();
+                        var key = i.toString() + j.toString() + k.toString();
                         //save data to session storage 
                         sessionStorage.setItem(key, data);
                         var row = document.createElement("tr");

@@ -586,22 +586,32 @@ var TSOS;
         Shell.prototype.shellReadFile = function (args) {
         };
         Shell.prototype.shellWriteFile = function (args) {
+            // take care of spaces enterred in data
+            var dataString = "";
+            for (var i = 1; i < args.length; i++) {
+                if (i == args.length - 1) {
+                    dataString = dataString + args[i];
+                }
+                else {
+                    dataString = dataString + args[i] + " ";
+                }
+            }
             if (args.length < 2) {
                 //error if no create command is missing an operand
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("Missing operand(s)... Please specify name of file or the data you want to write");
             }
-            else if (args.length > 2) {
-                //Error if more than 2 args are enterred
+            else if (dataString[0] != "\"" || dataString[dataString.length - 1] != "\"") {
+                //Error if data is not enterred right
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
-                _StdOut.putText("Too many operand(s)... Correct syntax :: write <filename> \"data\" ");
+                _StdOut.putText("Missing quotes... Correct syntax :: write <filename> \"data\" ");
             }
             else {
                 var fileName = args[0];
                 //remove starting and ending commas from data enterred
-                var contents = args[1].slice(1, -1);
+                var contents = dataString.slice(1, -1);
                 _DeviceDriverFileSystem.writeToFile(fileName, contents);
             }
         };
