@@ -584,6 +584,16 @@ var TSOS;
             }
         };
         Shell.prototype.shellReadFile = function (args) {
+            if (args.length == 0) {
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("Empty file name... Please specify name of file");
+            }
+            else {
+                //Go ahead and try to read file
+                var fileName = args + "";
+                _DeviceDriverFileSystem.readFile(fileName);
+            }
         };
         Shell.prototype.shellWriteFile = function (args) {
             // take care of spaces enterred in data
@@ -596,6 +606,7 @@ var TSOS;
                     dataString = dataString + args[i] + " ";
                 }
             }
+            alert(args[1]);
             if (args.length < 2) {
                 //error if no create command is missing an operand
                 _StdOut.putText("FAILURE");
@@ -606,12 +617,13 @@ var TSOS;
                 //Error if data is not enterred right
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
-                _StdOut.putText("Missing quotes... Correct syntax :: write <filename> \"data\" ");
+                _StdOut.putText("Missing quotes... Correct syntax :: write <filename> \"data\"");
             }
             else {
                 var fileName = args[0];
                 //remove starting and ending commas from data enterred
                 var contents = dataString.slice(1, -1);
+                alert(contents);
                 _DeviceDriverFileSystem.writeToFile(fileName, contents);
             }
         };

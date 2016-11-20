@@ -40,7 +40,7 @@ module TSOS {
             }
 
             //intitialize data with 0s
-            for (var i = 0; i < this.dataSize*2; i++) {
+            for (var i = 0; i < this.dataSize * 2; i++) {
                 data += "0";
             }
             return data;
@@ -51,7 +51,7 @@ module TSOS {
         public convertToString(data) {
             var str = "";
             //alert("data Length = " + data.length);
-            for (var i = 0; i < data.length / 2; i += 2) {
+            for (var i = 0; i < data.length ; i += 2) {
                 if ((data[i] + data[i + 1]) == "00") {
                     //alert("1 Function " + str);
                     return str;
@@ -68,14 +68,12 @@ module TSOS {
         //converts the string-data provided to hex
         public convertToHex(data) {
             var hexString = "";
-
             //converts a char at an index to hex and builds the string
             for (var i = 0; i < data.length; i++) {
                 hexString += data.charCodeAt(i).toString(16);
             }
-
             //TO DO:: Decide to set the rest of bytes in to 0s or not
-            for (var j = hexString.length; j < this.dataSize*2; j++) {
+            for (var j = hexString.length; j < this.dataSize * 2; j++) {
                 hexString += "0";
             }
             return hexString;
@@ -89,12 +87,12 @@ module TSOS {
             //alert (key[0]);
 
             //check to see if header tsb is free, convert newdata to hex if not free
-            if (data.substring(1, this.headerSize) != "---" || key[0] != "0" ) {
+            if (data.substring(1, this.headerSize) != "---" || key[0] != "0") {
                 hexString += this.convertToHex(newData);
             }
             else {
-                 hexString += newData;
-                
+                hexString += newData;
+
             }
 
             sessionStorage.setItem(key, hexString);
@@ -146,6 +144,50 @@ module TSOS {
 
         }
 
+        public readFile(fileName) {
+            var dirKey = this.findFilename(fileName);
+            if (dirKey == null) {
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("File name does not exist");
+
+            }
+            else {
+                var dirData = sessionStorage.getItem(dirKey);
+                var dataKey = dirData.substring(1, this.headerSize);
+                //var dataData = 
+
+                var fileData = "";
+                var nextDataKey = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
+
+                if (nextDataKey == "---"){
+                fileData = fileData + this.convertToString(sessionStorage.getItem(dataKey).substring(this.headerSize));
+               // alert ("File =" + fileData );
+                }
+                else{
+
+                fileData = fileData + this.convertToString(sessionStorage.getItem(dataKey).substring(this.headerSize));
+                //nextDataKey = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
+                //alert ("File =" + fileData  + "  Next Key =" + nextDataKey);
+                //var nextDataKey = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
+                while (nextDataKey != "---") {
+                     //alert ("File =" + this.convertToString(sessionStorage.getItem(nextDataKey).substring(this.headerSize)));
+                    fileData = fileData + this.convertToString(sessionStorage.getItem(nextDataKey).substring(this.headerSize));
+                    //fileData = fileData + this.convertToString(sessionStorage.getItem(dataKey).substring(this.headerSize));
+                    //alert ("1 File =" + fileData );
+
+                    nextDataKey = sessionStorage.getItem(nextDataKey).substring(1, this.headerSize);
+
+                }
+                }
+
+                _StdOut.putText("SUCESS : Reading " + fileName + "...");
+                _StdOut.advanceLine();
+                _StdOut.putText(fileData);
+
+            }
+        }
+
         public writeToFile(fileName, contents) {
             var dirKey = this.findFilename(fileName);
             if (dirKey == null) {
@@ -171,8 +213,8 @@ module TSOS {
                         // alert ("New Data = " + newData);
                         var prevContents = this.convertToString(newData);
                         var newContents = prevContents + contents;
-                         //alert("Prev Cont = " +prevContents + " Lenght = " + prevContents.length);
-                         //alert("Prev Cont = " +newContents + " Lenght = " + newContents.length);
+                        //alert("Prev Cont = " +prevContents + " Lenght = " + prevContents.length);
+                        //alert("Prev Cont = " +newContents + " Lenght = " + newContents.length);
                         //recall write funtion if contents length is greater than 30
                         if (newContents.length > this.dataSize) {
                             this.writeToFile(fileName, newContents);
@@ -189,7 +231,7 @@ module TSOS {
                     }
                     else {
                         //get readerble data from hard disk and append the the new contents to it
-                         var newData = sessionStorage.getItem(dataKey).substring(this.headerSize);
+                        var newData = sessionStorage.getItem(dataKey).substring(this.headerSize);
                         // alert ("New Data = " + newData);
                         var prevContents = this.convertToString(newData);
                         var newContents = prevContents;
@@ -217,7 +259,7 @@ module TSOS {
 
                 }
                 else if (contents.length > this.dataSize && inUseBit == "1" && headerTSB == "---") {
-                     alert("2 = " + contents.length);
+                    alert("2 = " + contents.length);
                     //first data to write to file 
                     var newDataKey = this.getFreeDataEntry();
                     headerTSB = newDataKey;
@@ -230,7 +272,7 @@ module TSOS {
                             inUseBit = "1";
                             dataData = inUseBit + headerTSB + contents.substring(contentSize, nextContentSize);
                             //alert("Contents subStr = " + contents.substring(contentSize, nextContentSize));
-                             //alert("Contents Length = " + contents.substring(contentSize, nextContentSize).length);
+                            //alert("Contents Length = " + contents.substring(contentSize, nextContentSize).length);
 
                             //sessionStorage.setItem(dataKey, dataData);
                             this.writeData(dataKey, dataData);
@@ -238,7 +280,7 @@ module TSOS {
 
 
                             contentSize = contentSize + this.dataSize;
-                            if ( (contents.length - contentSize) >= 0 &&(contents.length - contentSize) <= (this.dataSize)) {
+                            if ((contents.length - contentSize) >= 0 && (contents.length - contentSize) <= (this.dataSize)) {
                                 nextContentSize = contents.length;
                                 dataKey = this.getFreeDataEntry();
                                 //sessionStorage.setItem(dataKey, dataData);
@@ -346,10 +388,8 @@ module TSOS {
                     data = sessionStorage.getItem(key).substring(this.headerSize);
                     inUseBit = sessionStorage.getItem(key).substring(0, 1);
 
-                    //alert("Hex File = " + fileNameHex + "  data= " + data);
                     // return key if data of that key is equal to the converted hexString of file name and file name is in use
                     if (data == fileNameHex && inUseBit == "1") {
-                        // alert("FileName Found");
                         return key;
                     }
                 }
