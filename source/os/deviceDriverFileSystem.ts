@@ -46,6 +46,25 @@ module TSOS {
             return data;
         }
 
+        public listFiles(){
+                for (var i = 0; i < this.sectors; i++) {
+                    for (var j = 1; j < this.blocks; j++) {
+                        var key = "0" + i + j;
+                        var inUseBit = sessionStorage.getItem(key).substring(0,1);
+
+                        if (inUseBit == "1"){
+                            var data = sessionStorage.getItem(key).substring(this.headerSize);
+                            var fileName = this.convertToString(data);
+                            //Display file name 
+                            _StdOut.putText(fileName);
+                            _StdOut.advanceLine();
+
+                        }
+                    }
+                }
+            
+        }
+
         public format(){
                 for (var i = 0; i < this.tracks; i++) {
                 for (var j = 0; j < this.sectors; j++) {

@@ -182,6 +182,13 @@ module TSOS {
                 "initialize	all	blocks in all sectors in all tracks.");
             this.commandList[this.commandList.length] = sc;
 
+             //list files
+            sc = new ShellCommand(this.shellListFiles,
+                "ls",
+                "list all files on disk.");
+            this.commandList[this.commandList.length] = sc;
+
+
 
 
             // ps  - list the running processes and their IDs
@@ -416,6 +423,10 @@ module TSOS {
                     case "format":
                         _StdOut.putText("initialize	all	blocks in all sectors in all tracks");
                         break;
+                    case "ls":
+                        _StdOut.putText("list all files on disk");
+                        break;
+
 
 
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
@@ -802,6 +813,11 @@ module TSOS {
 
         public shellFormat(args) {
             _DeviceDriverFileSystem.format();
+
+        }
+
+        public shellListFiles(args) {
+            _DeviceDriverFileSystem.listFiles();
 
         }
 

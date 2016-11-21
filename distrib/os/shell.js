@@ -102,6 +102,9 @@ var TSOS;
             //format
             sc = new TSOS.ShellCommand(this.shellFormat, "format", "initialize	all	blocks in all sectors in all tracks.");
             this.commandList[this.commandList.length] = sc;
+            //list files
+            sc = new TSOS.ShellCommand(this.shellListFiles, "ls", "list all files on disk.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -319,6 +322,9 @@ var TSOS;
                         break;
                     case "format":
                         _StdOut.putText("initialize	all	blocks in all sectors in all tracks");
+                        break;
+                    case "ls":
+                        _StdOut.putText("list all files on disk");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
@@ -639,6 +645,9 @@ var TSOS;
         };
         Shell.prototype.shellFormat = function (args) {
             _DeviceDriverFileSystem.format();
+        };
+        Shell.prototype.shellListFiles = function (args) {
+            _DeviceDriverFileSystem.listFiles();
         };
         Shell.prototype.shellKill = function (args) {
             _CPU.isExecuting = false;

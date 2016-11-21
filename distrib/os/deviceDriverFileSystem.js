@@ -47,6 +47,21 @@ var TSOS;
             }
             return data;
         };
+        DeviceDriverFileSystem.prototype.listFiles = function () {
+            for (var i = 0; i < this.sectors; i++) {
+                for (var j = 1; j < this.blocks; j++) {
+                    var key = "0" + i + j;
+                    var inUseBit = sessionStorage.getItem(key).substring(0, 1);
+                    if (inUseBit == "1") {
+                        var data = sessionStorage.getItem(key).substring(this.headerSize);
+                        var fileName = this.convertToString(data);
+                        //Display file name 
+                        _StdOut.putText(fileName);
+                        _StdOut.advanceLine();
+                    }
+                }
+            }
+        };
         DeviceDriverFileSystem.prototype.format = function () {
             for (var i = 0; i < this.tracks; i++) {
                 for (var j = 0; j < this.sectors; j++) {
@@ -57,6 +72,8 @@ var TSOS;
                     }
                 }
             }
+            //Display suscces status
+            _StdOut.putText("Successfully Formatted");
         };
         //converts a hex dtring back to regular string
         DeviceDriverFileSystem.prototype.convertToString = function (data) {
