@@ -762,7 +762,6 @@ module TSOS {
                 dataString = dataString + args[i] + " ";
                 }
             }
-            alert(args[1]);
 
             if(args.length < 2){
                 //error if no create command is missing an operand
@@ -780,7 +779,6 @@ module TSOS {
                 var fileName = args[0];
                 //remove starting and ending commas from data enterred
                 var contents = dataString.slice(1, -1);
-                alert(contents);
                 _DeviceDriverFileSystem.writeToFile(fileName,contents);
 
             }
@@ -788,6 +786,17 @@ module TSOS {
         }
 
         public shellDeleteFile(args) {
+             if(args.length == 0){
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("Empty file name... Please specify name of file");
+            }
+            else{
+                //Go ahead and try to read file
+                var fileName:string = args + "";
+                _DeviceDriverFileSystem.deleteFile(fileName);
+            }
+
 
         }
 
