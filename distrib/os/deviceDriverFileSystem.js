@@ -47,6 +47,17 @@ var TSOS;
             }
             return data;
         };
+        DeviceDriverFileSystem.prototype.format = function () {
+            for (var i = 0; i < this.tracks; i++) {
+                for (var j = 0; j < this.sectors; j++) {
+                    for (var k = 0; k < this.blocks; k++) {
+                        var key = i.toString() + j.toString() + k.toString();
+                        sessionStorage.setItem(key, this.initializeBlock());
+                        this.updateHardDiskTable(key);
+                    }
+                }
+            }
+        };
         //converts a hex dtring back to regular string
         DeviceDriverFileSystem.prototype.convertToString = function (data) {
             var str = "";
@@ -277,7 +288,7 @@ var TSOS;
                                     //set inUse bit for file/data block to 1 and 
                                     dataData = sessionStorage.getItem(dataKey);
                                     dataData = "1" + dataData.substr(1);
-                                    //sessionStorage.setItem(dataKey, dataData);
+                                    sessionStorage.setItem(dataKey, dataData);
                                     newDataKey = this.getFreeDataEntry();
                                     headerTSB = newDataKey;
                                     if (newDataKey == null) {

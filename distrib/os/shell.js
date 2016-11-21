@@ -638,6 +638,7 @@ var TSOS;
             }
         };
         Shell.prototype.shellFormat = function (args) {
+            _DeviceDriverFileSystem.format();
         };
         Shell.prototype.shellKill = function (args) {
             _CPU.isExecuting = false;

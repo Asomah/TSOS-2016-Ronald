@@ -46,6 +46,22 @@ module TSOS {
             return data;
         }
 
+        public format(){
+                for (var i = 0; i < this.tracks; i++) {
+                for (var j = 0; j < this.sectors; j++) {
+                    for (var k = 0; k < this.blocks; k++) {
+                        var key = i.toString() + j.toString() + k.toString();
+                        sessionStorage.setItem(key, this.initializeBlock());
+                        this.updateHardDiskTable(key);
+                    }
+                }
+            }
+
+             //Display suscces status
+             _StdOut.putText("Successfully Formatted");
+
+        }
+
 
         //converts a hex dtring back to regular string
         public convertToString(data) {
@@ -334,7 +350,7 @@ module TSOS {
                                     //set inUse bit for file/data block to 1 and 
                                     dataData = sessionStorage.getItem(dataKey);
                                     dataData = "1" + dataData.substr(1);
-                                    //sessionStorage.setItem(dataKey, dataData);
+                                    sessionStorage.setItem(dataKey, dataData);
 
                                     newDataKey = this.getFreeDataEntry();
                                     headerTSB = newDataKey;

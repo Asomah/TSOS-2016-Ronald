@@ -801,6 +801,7 @@ module TSOS {
         }
 
         public shellFormat(args) {
+            _DeviceDriverFileSystem.format();
 
         }
 
