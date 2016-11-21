@@ -105,6 +105,12 @@ var TSOS;
             //list files
             sc = new TSOS.ShellCommand(this.shellListFiles, "ls", "list all files on disk.");
             this.commandList[this.commandList.length] = sc;
+            //set schedule
+            sc = new TSOS.ShellCommand(this.shellSetSchedule, "setschedule", " [rr, fcfs, priority] sets a CPU scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
+            //get schedule
+            sc = new TSOS.ShellCommand(this.shellGetSchedule, "getschedule", "gets the current CPU scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -326,6 +332,12 @@ var TSOS;
                     case "ls":
                         _StdOut.putText("list all files on disk");
                         break;
+                    case "setschedule":
+                        _StdOut.putText("sets a CPU scheduling algorithm");
+                        break;
+                    case "getschedule":
+                        _StdOut.putText("gets the current CPU scheduling algorithm");
+                        break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -517,7 +529,12 @@ var TSOS;
                     //update pcb table
                     _MemoryManager.updatePcbTable(_CurrentProgram);
                 }
-                _CurrentProgram = _ReadyQueue[0];
+                if (_CpuSchedule == "rr" || _CpuSchedule == "fcfs") {
+                    _CurrentProgram = _ReadyQueue[0];
+                }
+                else {
+                    TSOS.CpuScheduler.priority();
+                }
                 _CPU.startIndex = _CurrentProgram.base;
                 if (_CurrentProgram.state != PS_Terminated) {
                     //alert(pid);
@@ -648,6 +665,28 @@ var TSOS;
         };
         Shell.prototype.shellListFiles = function (args) {
             _DeviceDriverFileSystem.listFiles();
+        };
+        Shell.prototype.shellSetSchedule = function (args) {
+            if (args.length > 1) {
+                _StdOut.putText("Too many opreands... Correct command is -- setschedule [rr, fcfs, priority]");
+            }
+            else if (args == "rr") {
+                _CpuSchedule = args;
+                _Quantum = 6;
+            }
+            else if (args == "fcfs") {
+                _CpuSchedule = args;
+                _Quantum = Number.MAX_VALUE;
+            }
+            else if (args == "priority") {
+                _CpuSchedule = args;
+            }
+            else {
+                _StdOut.putText("Invalid scheduling input... Available scheduling are \"rr\", \"fcfs\" and \"priority\"");
+            }
+        };
+        Shell.prototype.shellGetSchedule = function (args) {
+            _StdOut.putText("Current CPU scheduling is " + _CpuSchedule);
         };
         Shell.prototype.shellKill = function (args) {
             _CPU.isExecuting = false;

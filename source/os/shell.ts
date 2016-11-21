@@ -158,36 +158,47 @@ module TSOS {
                 " <filename> - creates a new file on disk.");
             this.commandList[this.commandList.length] = sc;
 
-             //read file
+            //read file
             sc = new ShellCommand(this.shellReadFile,
                 "read",
                 " <filename> - reads and display contents of a file name.");
             this.commandList[this.commandList.length] = sc;
 
-             //write file
+            //write file
             sc = new ShellCommand(this.shellWriteFile,
                 "write",
                 " <filename> \"data\" - writes data to the specified file name.");
             this.commandList[this.commandList.length] = sc;
 
-             //delete file
+            //delete file
             sc = new ShellCommand(this.shellDeleteFile,
                 "delete",
                 " <filename> - deletes a filename from storage.");
             this.commandList[this.commandList.length] = sc;
 
-             //format
+            //format
             sc = new ShellCommand(this.shellFormat,
                 "format",
                 "initialize	all	blocks in all sectors in all tracks.");
             this.commandList[this.commandList.length] = sc;
 
-             //list files
+            //list files
             sc = new ShellCommand(this.shellListFiles,
                 "ls",
                 "list all files on disk.");
             this.commandList[this.commandList.length] = sc;
 
+            //set schedule
+            sc = new ShellCommand(this.shellSetSchedule,
+                "setschedule",
+                " [rr, fcfs, priority] sets a CPU scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
+
+            //get schedule
+            sc = new ShellCommand(this.shellGetSchedule,
+                "getschedule",
+                "gets the current CPU scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
 
 
 
@@ -426,6 +437,12 @@ module TSOS {
                     case "ls":
                         _StdOut.putText("list all files on disk");
                         break;
+                    case "setschedule":
+                        _StdOut.putText("sets a CPU scheduling algorithm");
+                        break;
+                    case "getschedule":
+                        _StdOut.putText("gets the current CPU scheduling algorithm");
+                        break;
 
 
 
@@ -640,22 +657,28 @@ module TSOS {
             _ClockTicks = 0;
 
             if (_ResidentQueue.length > 0) {
-                var resLength = _ResidentQueue.length;
-                for (var i = resLength; i > 0; i--) {
-                    //remove process from resident queue and push it to ready queue
-                    _ResidentQueue[0].state = PS_Ready;
-                    _CurrentProgram = _ResidentQueue[0];
-                    _ResidentQueue.splice(0, 1);
+                                   var resLength = _ResidentQueue.length;
+                    for (var i = resLength; i > 0; i--) {
+                        //remove process from resident queue and push it to ready queue
+                        _ResidentQueue[0].state = PS_Ready;
+                        _CurrentProgram = _ResidentQueue[0];
+                        _ResidentQueue.splice(0, 1);
 
-                    //push pcb to ready queue
-                    _ReadyQueue.push(_CurrentProgram);
+                        //push pcb to ready queue
+                        _ReadyQueue.push(_CurrentProgram);
 
-                    //update pcb table
-                    _MemoryManager.updatePcbTable(_CurrentProgram);
+                        //update pcb table
+                        _MemoryManager.updatePcbTable(_CurrentProgram);
 
+                    }
+                 if (_CpuSchedule == "rr" || _CpuSchedule == "fcfs") {
+                    _CurrentProgram = _ReadyQueue[0];
+                }
+                else{
+                     CpuScheduler.priority();
                 }
 
-                _CurrentProgram = _ReadyQueue[0];
+
                 _CPU.startIndex = _CurrentProgram.base;
 
                 if (_CurrentProgram.state != PS_Terminated) {
@@ -728,18 +751,18 @@ module TSOS {
         }
 
         public shellCreateFile(args) {
-            if(args.length == 0){
+            if (args.length == 0) {
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("Empty file name... Please specify name of file");
             }
-            else if(args.length > 1){
+            else if (args.length > 1) {
                 //then there is a space in the fileName
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("Spaces in file name... File name cannot contain spaces");
             }
-            else{
+            else {
                 //Go ahead and try to create file
                 var fileName = args;
                 _DeviceDriverFileSystem.createFile(fileName);
@@ -748,14 +771,14 @@ module TSOS {
         }
 
         public shellReadFile(args) {
-             if(args.length == 0){
+            if (args.length == 0) {
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("Empty file name... Please specify name of file");
             }
-            else{
+            else {
                 //Go ahead and try to read file
-                var fileName:string = args + "";
+                var fileName: string = args + "";
                 _DeviceDriverFileSystem.readFile(fileName);
             }
 
@@ -766,45 +789,45 @@ module TSOS {
             // take care of spaces enterred in data
             var dataString = "";
             for (var i = 1; i < args.length; i++) {
-                if (i == args.length-1){
+                if (i == args.length - 1) {
                     dataString = dataString + args[i];
                 }
-                else{
-                dataString = dataString + args[i] + " ";
+                else {
+                    dataString = dataString + args[i] + " ";
                 }
             }
 
-            if(args.length < 2){
+            if (args.length < 2) {
                 //error if no create command is missing an operand
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("Missing operand(s)... Please specify name of file or the data you want to write");
             }
-            else if (dataString[0] != "\"" || dataString[dataString.length-1] != "\""){
+            else if (dataString[0] != "\"" || dataString[dataString.length - 1] != "\"") {
                 //Error if data is not enterred right
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("Missing quotes... Correct syntax :: write <filename> \"data\"");
             }
-            else{
+            else {
                 var fileName = args[0];
                 //remove starting and ending commas from data enterred
                 var contents = dataString.slice(1, -1);
-                _DeviceDriverFileSystem.writeToFile(fileName,contents);
+                _DeviceDriverFileSystem.writeToFile(fileName, contents);
 
             }
 
         }
 
         public shellDeleteFile(args) {
-             if(args.length == 0){
+            if (args.length == 0) {
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("Empty file name... Please specify name of file");
             }
-            else{
+            else {
                 //Go ahead and try to read file
-                var fileName:string = args + "";
+                var fileName: string = args + "";
                 _DeviceDriverFileSystem.deleteFile(fileName);
             }
 
@@ -818,6 +841,35 @@ module TSOS {
 
         public shellListFiles(args) {
             _DeviceDriverFileSystem.listFiles();
+
+        }
+
+        public shellSetSchedule(args) {
+            if (args.length > 1) {
+                _StdOut.putText("Too many opreands... Correct command is -- setschedule [rr, fcfs, priority]");
+            }
+            else if (args == "rr") {
+                _CpuSchedule = args;
+                 _Quantum = 6;
+            }
+            else if (args == "fcfs") {
+                _CpuSchedule = args;
+                _Quantum = Number.MAX_VALUE;
+
+            }
+            else if (args == "priority") {
+                _CpuSchedule = args;
+
+            }
+            else {
+                _StdOut.putText("Invalid scheduling input... Available scheduling are \"rr\", \"fcfs\" and \"priority\"");
+            }
+
+
+
+        }
+        public shellGetSchedule(args) {
+            _StdOut.putText("Current CPU scheduling is " + _CpuSchedule);
 
         }
 
@@ -866,7 +918,7 @@ module TSOS {
                                 _MemoryManager.updateCpuTable();
 
                             }
-                            
+
                             //reset memory at that partition and update memory table 
                             _MemoryManager.resetPartition(deadProg);
                             _MemoryManager.updateMemTable(deadProg);

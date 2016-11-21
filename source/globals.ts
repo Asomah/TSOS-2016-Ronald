@@ -97,6 +97,8 @@ var _DeviceDriverFileSystem: TSOS.DeviceDriverFileSystem;
 
 var _ProgramInput = "";  //Program input
 
+var _CpuSchedule = "rr";  // default cpu scheduling to round robbin
+
 
 // The OS Kernel and its queues.
 var _Kernel: TSOS.Kernel;

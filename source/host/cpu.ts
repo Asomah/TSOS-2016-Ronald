@@ -315,11 +315,10 @@ module TSOS {
                 this.executeProgram(_MemoryManager.fetch(this.startIndex));
                 _CurrentProgram.state = PS_Running;
 
-                 //Increase turn around time for all programs in ready queue 
+                //Increase turn around time for all programs in ready queue 
                 for (var i = 0; i < _ReadyQueue.length; i++) {
                     _ReadyQueue[i].taTime++;
                 }
-
 
                 //Update memory, pcb table and cpu log log tables
                 _MemoryManager.updateMemTable(_CurrentProgram);
@@ -327,7 +326,7 @@ module TSOS {
                 _MemoryManager.updateCpuTable();
 
                 //Perform round robbin if ready queue is greater than 0
-                if (_ReadyQueue.length > 1) {
+                if (_ReadyQueue.length > 1 && _CpuSchedule != "priority") {
                     CpuScheduler.roundRobin();
                 }
 
@@ -349,13 +348,34 @@ module TSOS {
 
                 if ((_RunAll == true && _DONE != true) || _ReadyQueue.length > 1) {
 
-                    CpuScheduler.roundRobin();
+                    if (_CpuSchedule == "rr" || _CpuSchedule == "fcfs") {
+                        CpuScheduler.roundRobin();
+                        _ClockTicks = 1;
+                    }
+                    else {
+                        if (_CurrentProgram.state == PS_Terminated) {
+                            for (var i = 0; i < _ReadyQueue.length; i++) {
+                                if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
+                                    _ReadyQueue.splice(i, 1);
+
+                                    _MemoryManager.resetPartition(_CurrentProgram);
+                                    _MemoryManager.updateMemTable(_CurrentProgram);
+
+                                    _MemoryManager.deleteRowPcb(_CurrentProgram);
+                                    break;
+                                }
+
+                            }
+                        }
+                        this.isExecuting = true;
+                        CpuScheduler.priority();
+                    }
+
                     if (_MemoryManager.fetch(this.startIndex) != "00" && _CurrentProgram.state != PS_Running) {
                         this.startIndex = _CurrentProgram.startIndex;
                         _CurrentProgram.state = PS_Running;
                         this.isExecuting = true;
                     }
-                    _ClockTicks = 1;
                     this.cycle();
 
 

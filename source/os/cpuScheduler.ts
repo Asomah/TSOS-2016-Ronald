@@ -8,6 +8,42 @@ module TSOS {
 
         }
 
+        public static priority() {
+            _CurrentProgram = this.priorityNextProgram();
+
+            //Load next program
+            _CPU.startIndex = _CurrentProgram.startIndex;
+            _CPU.PC = _CurrentProgram.PC;
+            _CPU.Acc = _CurrentProgram.Acc;
+            _CPU.Xreg = _CurrentProgram.Xreg;
+            _CPU.Yreg = _CurrentProgram.Yreg;
+            _CPU.Zflag = _CurrentProgram.Zflag;
+
+            if (_ReadyQueue.length == 1) {
+                    _RunAll = false;
+
+            }
+
+
+        }
+        public static priorityNextProgram() {
+
+            var lowestPriority = _ReadyQueue[0].priority;
+            _CurrentProgram = _ReadyQueue[0];
+            for (var i = 1; i < _ReadyQueue.length; i++) {
+                if (_ReadyQueue[i].priority < lowestPriority) {
+                    lowestPriority = _ReadyQueue[i].priority;
+                    _CurrentProgram = _ReadyQueue[i];
+
+                }
+            }
+
+            //alert(_CurrentProgram.PID + " priority" + _CurrentProgram.priority);
+            return _CurrentProgram;
+
+        }
+
+
         public static roundRobin() {
             var nextProgram = new Pcb();
 
@@ -15,7 +51,7 @@ module TSOS {
                 if (_ClockTicks < _Quantum) {
                     _ClockTicks++;
                     //increase wait time
-                    _WaitTime ++;
+                    _WaitTime++;
                     // alert("1Clock Ticks " + _ClockTicks);
                 }
                 else {
@@ -23,10 +59,10 @@ module TSOS {
                     //set current's program's time 
                     nextProgram = this.getNextprogram();
                     nextProgram.waitTime = _CurrentProgram.waitTime + _WaitTime;
-                     //alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
+                    //alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
                     _MemoryManager.updatePcbTable(nextProgram);
 
-                    
+
                     // alert("2Clock Ticks " + _ClockTicks);
                     this.contextSwitch();
 
@@ -40,10 +76,10 @@ module TSOS {
             }
             else {
                 //set current's program's time
-                nextProgram = this.getNextprogram(); 
+                nextProgram = this.getNextprogram();
                 nextProgram.waitTime = _CurrentProgram.waitTime + _WaitTime;
                 //alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
-                _MemoryManager.updatePcbTable(nextProgram);    
+                _MemoryManager.updatePcbTable(nextProgram);
 
                 this.contextSwitch();
 
@@ -89,11 +125,11 @@ module TSOS {
                 }
             }
             else {
-                    //Break and save all cpu values to current program
-                  _Kernel.krnInterruptHandler(BREAK_IRQ, "");
-                
+                //Break and save all cpu values to current program
+                _Kernel.krnInterruptHandler(BREAK_IRQ, "");
+
             }
-            
+
             //Load next program
             _CurrentProgram = nextProgram;
             _CPU.startIndex = _CurrentProgram.startIndex;

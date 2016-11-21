@@ -287,7 +287,7 @@ var TSOS;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 _MemoryManager.updateCpuTable();
                 //Perform round robbin if ready queue is greater than 0
-                if (_ReadyQueue.length > 1) {
+                if (_ReadyQueue.length > 1 && _CpuSchedule != "priority") {
                     TSOS.CpuScheduler.roundRobin();
                 }
             }
@@ -303,13 +303,30 @@ var TSOS;
                 //TO DO :: Clear memory after each process
                 //Restore memory after program finishes running and update memory table
                 if ((_RunAll == true && _DONE != true) || _ReadyQueue.length > 1) {
-                    TSOS.CpuScheduler.roundRobin();
+                    if (_CpuSchedule == "rr" || _CpuSchedule == "fcfs") {
+                        TSOS.CpuScheduler.roundRobin();
+                        _ClockTicks = 1;
+                    }
+                    else {
+                        if (_CurrentProgram.state == PS_Terminated) {
+                            for (var i = 0; i < _ReadyQueue.length; i++) {
+                                if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
+                                    _ReadyQueue.splice(i, 1);
+                                    _MemoryManager.resetPartition(_CurrentProgram);
+                                    _MemoryManager.updateMemTable(_CurrentProgram);
+                                    _MemoryManager.deleteRowPcb(_CurrentProgram);
+                                    break;
+                                }
+                            }
+                        }
+                        this.isExecuting = true;
+                        TSOS.CpuScheduler.priority();
+                    }
                     if (_MemoryManager.fetch(this.startIndex) != "00" && _CurrentProgram.state != PS_Running) {
                         this.startIndex = _CurrentProgram.startIndex;
                         _CurrentProgram.state = PS_Running;
                         this.isExecuting = true;
                     }
-                    _ClockTicks = 1;
                     this.cycle();
                 }
                 else {

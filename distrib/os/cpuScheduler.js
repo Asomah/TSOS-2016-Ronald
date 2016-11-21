@@ -5,6 +5,31 @@ var TSOS;
     var CpuScheduler = (function () {
         function CpuScheduler() {
         }
+        CpuScheduler.priority = function () {
+            _CurrentProgram = this.priorityNextProgram();
+            //Load next program
+            _CPU.startIndex = _CurrentProgram.startIndex;
+            _CPU.PC = _CurrentProgram.PC;
+            _CPU.Acc = _CurrentProgram.Acc;
+            _CPU.Xreg = _CurrentProgram.Xreg;
+            _CPU.Yreg = _CurrentProgram.Yreg;
+            _CPU.Zflag = _CurrentProgram.Zflag;
+            if (_ReadyQueue.length == 1) {
+                _RunAll = false;
+            }
+        };
+        CpuScheduler.priorityNextProgram = function () {
+            var lowestPriority = _ReadyQueue[0].priority;
+            _CurrentProgram = _ReadyQueue[0];
+            for (var i = 1; i < _ReadyQueue.length; i++) {
+                if (_ReadyQueue[i].priority < lowestPriority) {
+                    lowestPriority = _ReadyQueue[i].priority;
+                    _CurrentProgram = _ReadyQueue[i];
+                }
+            }
+            //alert(_CurrentProgram.PID + " priority" + _CurrentProgram.priority);
+            return _CurrentProgram;
+        };
         CpuScheduler.roundRobin = function () {
             var nextProgram = new TSOS.Pcb();
             if (_CurrentProgram.state != PS_Terminated) {

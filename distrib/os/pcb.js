@@ -2,7 +2,7 @@
 var TSOS;
 (function (TSOS) {
     var Pcb = (function () {
-        function Pcb(PC, IR, Acc, Xreg, Yreg, Zflag, PID, base, limit, state, startIndex, waitTime, taTime, pcbProgram) {
+        function Pcb(PC, IR, Acc, Xreg, Yreg, Zflag, PID, base, limit, state, startIndex, waitTime, taTime, priority, pcbProgram) {
             if (PC === void 0) { PC = 0; }
             if (IR === void 0) { IR = _IR; }
             if (Acc === void 0) { Acc = 0; }
@@ -16,6 +16,7 @@ var TSOS;
             if (startIndex === void 0) { startIndex = 0; }
             if (waitTime === void 0) { waitTime = 0; }
             if (taTime === void 0) { taTime = 0; }
+            if (priority === void 0) { priority = 120; }
             if (pcbProgram === void 0) { pcbProgram = ""; }
             this.PC = PC;
             this.IR = IR;
@@ -30,6 +31,7 @@ var TSOS;
             this.startIndex = startIndex;
             this.waitTime = waitTime;
             this.taTime = taTime;
+            this.priority = priority;
             this.pcbProgram = pcbProgram;
         }
         Pcb.prototype.init = function () {
