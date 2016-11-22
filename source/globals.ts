@@ -61,6 +61,7 @@ const PS_Ready: string = "Ready";
 const PS_Running: string = "Running";
 const PS_Terminated: string = "Terminated";
 
+var _Priority: number = 120;
 var _Quantum: number = 6;        //default quantum number
 var _ClockTicks: number = 0;     //number of clock ticks 
 

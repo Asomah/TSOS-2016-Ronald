@@ -45,6 +45,7 @@ var PS_New = "New";
 var PS_Ready = "Ready";
 var PS_Running = "Running";
 var PS_Terminated = "Terminated";
+var _Priority = 120;
 var _Quantum = 6; //default quantum number
 var _ClockTicks = 0; //number of clock ticks 
 var _WaitTime = 1; //Global to Initialize wait timer

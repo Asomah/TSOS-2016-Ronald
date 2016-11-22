@@ -52,6 +52,7 @@ module TSOS {
 
                         _CurrentProgram.base = base;
                         _CurrentProgram.state = PS_New;
+                        _CurrentProgram.priority = _Priority;
                         _ResidentQueue.push(_CurrentProgram);
 
                         _StdOut.putText("PID " + _PID + " Loaded");
@@ -130,11 +131,17 @@ module TSOS {
                         var newText = document.createTextNode(_CurrentProgram.taTime + "");
                         newCell11.appendChild(newText);
 
-                        // Insert a cell in the row at index 12
+                        // Insert a cell in the row at index 11
                         var newCell12 = newRow.insertCell(11);
                         // Append a text node to the cell
-                        var newText = document.createTextNode(_CurrentProgram.state + "");
+                        var newText = document.createTextNode(_CurrentProgram.priority + "");
                         newCell12.appendChild(newText);
+
+                        // Insert a cell in the row at index 12
+                        var newCell13 = newRow.insertCell(12);
+                        // Append a text node to the cell
+                        var newText = document.createTextNode(_CurrentProgram.state + "");
+                        newCell13.appendChild(newText);
 
 
                         //alert(myTable.rows.length)
@@ -364,7 +371,8 @@ module TSOS {
                               rows[i].cells[8].innerHTML = pcb.limit + "";
                               rows[i].cells[9].innerHTML = pcb.waitTime + "";
                               rows[i].cells[10].innerHTML = pcb.taTime + "";
-                              rows[i].cells[11].innerHTML = pcb.state;
+                              rows[i].cells[11].innerHTML = pcb.priority + "";
+                              rows[i].cells[12].innerHTML = pcb.state;
                               break;
                         }
 

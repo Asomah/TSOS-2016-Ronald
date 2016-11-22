@@ -113,7 +113,7 @@ module TSOS {
             //load 
             sc = new ShellCommand(this.shellLoad,
                 "load",
-                " <HEX> - Validates user code.");
+                " [<priority>] - Validates user code.");
             this.commandList[this.commandList.length] = sc;
 
             //run
@@ -399,7 +399,7 @@ module TSOS {
                         _StdOut.putText("Displays status of user.");
                         break;
                     case "load":
-                        _StdOut.putText("Validates user code.");
+                        _StdOut.putText("Loads program to memory and sets priority of program if specified.");
                         break;
                     case "run":
                         _StdOut.putText("Runs a valid process.");
@@ -527,6 +527,8 @@ module TSOS {
         }
 
         public shellLoad(args) {
+            //set priority to default 
+            _Priority = 120;
 
             //Get user input fromm html
             _ProgramInput = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
@@ -540,29 +542,39 @@ module TSOS {
                 //Create a new PCB
                 //Update Memory Table
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
-                if ((programInput.length / 2) <= _ProgramSize) {
-                    //load program if there are currently no executing programs
-                    //Else save the executing program, load the new program and continue to execute the running program
-                    if (_CPU.isExecuting != true) {
-                        _MemoryManager = new MemoryManager();
-                        //load program to memory
-                        _MemoryManager.loadProgToMem();
-                        _MemoryManager.updateMemTable(_CurrentProgram);
+                if ((args.length == 1 && args == parseInt(args, 10)) || args.length == 0)   {
+                    if (args.length == 1) {
+                        _Priority = args;
                     }
-                    else {
-                        var newprog = new Pcb();
-                        newprog = _CurrentProgram;
 
-                        _MemoryManager = new MemoryManager();
-                        //load program to memory
-                        _MemoryManager.loadProgToMem();
-                        _MemoryManager.updateMemTable(_CurrentProgram);
+                    if ((programInput.length / 2) <= _ProgramSize) {
+                        //load program if there are currently no executing programs
+                        //Else save the executing program, load the new program and continue to execute the running program
+                        if (_CPU.isExecuting != true) {
 
-                        _CurrentProgram = newprog;
+                            _MemoryManager = new MemoryManager();
+                            //load program to memory
+                            _MemoryManager.loadProgToMem();
+                            _MemoryManager.updateMemTable(_CurrentProgram);
+                        }
+                        else {
+                            var newprog = new Pcb();
+                            newprog = _CurrentProgram;
+
+                            _MemoryManager = new MemoryManager();
+                            //load program to memory
+                            _MemoryManager.loadProgToMem();
+                            _MemoryManager.updateMemTable(_CurrentProgram);
+
+                            _CurrentProgram = newprog;
+                        }
+                    } else {
+                        //Error if program is greater than or equal to 256
+                        _StdOut.putText("Program too Large.. ");
                     }
-                } else {
-                    //Error if program is greater than or equal to 256
-                    _StdOut.putText("Program too Large.. ");
+                }
+                else {
+                    _StdOut.putText("Invalid priority... Please enter a valid priority");
                 }
 
             } else {
@@ -657,25 +669,25 @@ module TSOS {
             _ClockTicks = 0;
 
             if (_ResidentQueue.length > 0) {
-                                   var resLength = _ResidentQueue.length;
-                    for (var i = resLength; i > 0; i--) {
-                        //remove process from resident queue and push it to ready queue
-                        _ResidentQueue[0].state = PS_Ready;
-                        _CurrentProgram = _ResidentQueue[0];
-                        _ResidentQueue.splice(0, 1);
+                var resLength = _ResidentQueue.length;
+                for (var i = resLength; i > 0; i--) {
+                    //remove process from resident queue and push it to ready queue
+                    _ResidentQueue[0].state = PS_Ready;
+                    _CurrentProgram = _ResidentQueue[0];
+                    _ResidentQueue.splice(0, 1);
 
-                        //push pcb to ready queue
-                        _ReadyQueue.push(_CurrentProgram);
+                    //push pcb to ready queue
+                    _ReadyQueue.push(_CurrentProgram);
 
-                        //update pcb table
-                        _MemoryManager.updatePcbTable(_CurrentProgram);
+                    //update pcb table
+                    _MemoryManager.updatePcbTable(_CurrentProgram);
 
-                    }
-                 if (_CpuSchedule == "rr" || _CpuSchedule == "fcfs") {
+                }
+                if (_CpuSchedule == "rr" || _CpuSchedule == "fcfs") {
                     _CurrentProgram = _ReadyQueue[0];
                 }
-                else{
-                     CpuScheduler.priority();
+                else {
+                    CpuScheduler.priority();
                 }
 
 
@@ -730,10 +742,12 @@ module TSOS {
         public shellQuantum(args) {
             //Sets quantum number for round robin
 
-            if (args == parseInt(args, 10))
+            if (args == parseInt(args, 10)) {
                 _Quantum = args;
-            else
-                _StdOut.putText("Please enter an inter");
+            }
+            else {
+                _StdOut.putText("Please enter an integer");
+            }
         }
 
         public shellActivePids(args) {
@@ -850,7 +864,7 @@ module TSOS {
             }
             else if (args == "rr") {
                 _CpuSchedule = args;
-                 _Quantum = 6;
+                _Quantum = 6;
             }
             else if (args == "fcfs") {
                 _CpuSchedule = args;

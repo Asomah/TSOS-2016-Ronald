@@ -67,7 +67,7 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellStatus, "status", " <String> - Status of user.");
             this.commandList[this.commandList.length] = sc;
             //load 
-            sc = new TSOS.ShellCommand(this.shellLoad, "load", " <HEX> - Validates user code.");
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", " [<priority>] - Validates user code.");
             this.commandList[this.commandList.length] = sc;
             //run
             sc = new TSOS.ShellCommand(this.shellRun, "run", " <pid> - run a valid process.");
@@ -294,7 +294,7 @@ var TSOS;
                         _StdOut.putText("Displays status of user.");
                         break;
                     case "load":
-                        _StdOut.putText("Validates user code.");
+                        _StdOut.putText("Loads program to memory and sets priority of program if specified.");
                         break;
                     case "run":
                         _StdOut.putText("Runs a valid process.");
@@ -412,6 +412,8 @@ var TSOS;
             document.getElementById('Status').innerHTML = 'Status: ' + statusString;
         };
         Shell.prototype.shellLoad = function (args) {
+            //set priority to default 
+            _Priority = 120;
             //Get user input fromm html
             _ProgramInput = document.getElementById("taProgramInput").value;
             var hex = _ProgramInput;
@@ -424,28 +426,36 @@ var TSOS;
                 //Create a new PCB
                 //Update Memory Table
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
-                if ((programInput.length / 2) <= _ProgramSize) {
-                    //load program if there are currently no executing programs
-                    //Else save the executing program, load the new program and continue to execute the running program
-                    if (_CPU.isExecuting != true) {
-                        _MemoryManager = new TSOS.MemoryManager();
-                        //load program to memory
-                        _MemoryManager.loadProgToMem();
-                        _MemoryManager.updateMemTable(_CurrentProgram);
+                if ((args.length == 1 && args == parseInt(args, 10)) || args.length == 0) {
+                    if (args.length == 1) {
+                        _Priority = args;
+                    }
+                    if ((programInput.length / 2) <= _ProgramSize) {
+                        //load program if there are currently no executing programs
+                        //Else save the executing program, load the new program and continue to execute the running program
+                        if (_CPU.isExecuting != true) {
+                            _MemoryManager = new TSOS.MemoryManager();
+                            //load program to memory
+                            _MemoryManager.loadProgToMem();
+                            _MemoryManager.updateMemTable(_CurrentProgram);
+                        }
+                        else {
+                            var newprog = new TSOS.Pcb();
+                            newprog = _CurrentProgram;
+                            _MemoryManager = new TSOS.MemoryManager();
+                            //load program to memory
+                            _MemoryManager.loadProgToMem();
+                            _MemoryManager.updateMemTable(_CurrentProgram);
+                            _CurrentProgram = newprog;
+                        }
                     }
                     else {
-                        var newprog = new TSOS.Pcb();
-                        newprog = _CurrentProgram;
-                        _MemoryManager = new TSOS.MemoryManager();
-                        //load program to memory
-                        _MemoryManager.loadProgToMem();
-                        _MemoryManager.updateMemTable(_CurrentProgram);
-                        _CurrentProgram = newprog;
+                        //Error if program is greater than or equal to 256
+                        _StdOut.putText("Program too Large.. ");
                     }
                 }
                 else {
-                    //Error if program is greater than or equal to 256
-                    _StdOut.putText("Program too Large.. ");
+                    _StdOut.putText("Invalid priority... Please enter a valid priority");
                 }
             }
             else {
@@ -571,10 +581,12 @@ var TSOS;
         };
         Shell.prototype.shellQuantum = function (args) {
             //Sets quantum number for round robin
-            if (args == parseInt(args, 10))
+            if (args == parseInt(args, 10)) {
                 _Quantum = args;
-            else
-                _StdOut.putText("Please enter an inter");
+            }
+            else {
+                _StdOut.putText("Please enter an integer");
+            }
         };
         Shell.prototype.shellActivePids = function (args) {
             if (_ReadyQueue.length != 0) {
