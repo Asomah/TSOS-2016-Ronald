@@ -304,8 +304,9 @@ var TSOS;
                                     //newDataKey = 
                                     //set inUse bit for file/data block to 1 and 
                                     dataData = sessionStorage.getItem(dataKey);
-                                    dataData = "1" + dataData.substr(1);
+                                    //dataData = "1" + dataData.substr(1);
                                     sessionStorage.setItem(dataKey, dataData);
+                                    this.updateHardDiskTable(dataKey);
                                     newDataKey = this.getFreeDataEntry();
                                     headerTSB = newDataKey;
                                     if (newDataKey == null) {

@@ -17,6 +17,7 @@ module TSOS {
                 public waitTime: number = 0,
                 public taTime: number = 0,
                 public priority: number = 120,
+                public location: string = "",
                 public pcbProgram :string = "") {
     }
 

@@ -18,7 +18,7 @@ module TSOS {
                   */
                   var programInput = _ProgramInput.replace(/[\s]/g, "");
 
-                  var base = -20;
+                  var base = -1;
 
                   //get new base
                   for (var i = 0; i <= 512; i += 256) {
@@ -27,8 +27,13 @@ module TSOS {
                               break;
                         }
                   }
+                  //Increase PID by one
+                  _PID++;
+                  _CurrentProgram = new Pcb();
+                  _CurrentProgram.init();
+                  _CurrentProgram.pcbProgram = programInput;
 
-                  if (base != -20) {
+                  if (base != -1) {
                         var j = base
 
                         for (var i = 0; i < programInput.length; i++) {
@@ -36,19 +41,22 @@ module TSOS {
                               j++;
                               i++;
                         }
+                        _CurrentProgram.startIndex = base;
+                        _CurrentProgram.limit = base + _ProgramSize - 1;
+                        _CurrentProgram.location = "Memory";
+                  }
+                  else{
+                        _DeviceDriverFileSystem.createFile("process" + _PID);
+                        _DeviceDriverFileSystem.writeToFile("process" + _PID, programInput);
+                        _CurrentProgram.location = "Hard Disk";
+                        
+                  }
 
 
 
                         //Increase current memory index by 2 so that new process starts by 2 bytes offset
                         //_CurrMemIndex = (base - j) + j;
 
-
-                        _PID++;
-                        _CurrentProgram = new Pcb();
-                        _CurrentProgram.init();
-                        _CurrentProgram.pcbProgram = programInput;
-                        _CurrentProgram.startIndex = base;
-                        _CurrentProgram.limit = base + _ProgramSize - 1;
 
                         _CurrentProgram.base = base;
                         _CurrentProgram.state = PS_New;
@@ -143,16 +151,19 @@ module TSOS {
                         var newText = document.createTextNode(_CurrentProgram.state + "");
                         newCell13.appendChild(newText);
 
-
-                        //alert(myTable.rows.length)
+                        // Insert a cell in the row at index 13
+                        var newCell14 = newRow.insertCell(13);
+                        // Append a text node to the cell
+                        var newText = document.createTextNode(_CurrentProgram.location);
+                        newCell14.appendChild(newText);
 
                         //Ctreate CPU log
                         this.cpuTableLog();
 
-                  }
+                 /* }
                   else {
                         _StdOut.putText("Memory Full... Can't load Program ");
-                  }
+                  }*/
 
                   /*Get new base
                   if (base != 512){
@@ -373,6 +384,7 @@ module TSOS {
                               rows[i].cells[10].innerHTML = pcb.taTime + "";
                               rows[i].cells[11].innerHTML = pcb.priority + "";
                               rows[i].cells[12].innerHTML = pcb.state;
+                              rows[i].cells[13].innerHTML = pcb.location;
                               break;
                         }
 
