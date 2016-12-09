@@ -101,12 +101,15 @@ var TSOS;
             var hardDiskHTML = document.getElementById("fsBody");
             hardDiskHTML.innerHTML = "";
             var key = "";
-            var data = _DeviceDriverFileSystem.initializeBlock();
             for (var i = 0; i < _DeviceDriverFileSystem.tracks; i++) {
                 for (var j = 0; j < _DeviceDriverFileSystem.sectors; j++) {
                     for (var k = 0; k < _DeviceDriverFileSystem.blocks; k++) {
                         var key = i.toString() + j.toString() + k.toString();
-                        //save data to session storage 
+                        var data = _DeviceDriverFileSystem.initializeBlock();
+                        //save data to session storage
+                        if (key == "000") {
+                            data = "1000" + data.substring(_DeviceDriverFileSystem.headerSize);
+                        }
                         sessionStorage.setItem(key, data);
                         var row = document.createElement("tr");
                         hardDiskHTML.appendChild(row);

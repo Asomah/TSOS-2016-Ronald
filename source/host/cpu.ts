@@ -320,12 +320,12 @@ module TSOS {
                     _ReadyQueue[i].taTime++;
                 }
 
-                //Update memory, pcb table and cpu log log tables
+                //Update memory, pcb table and cpu log tables
                 _MemoryManager.updateMemTable(_CurrentProgram);
                 _MemoryManager.updatePcbTable(_CurrentProgram);
                 _MemoryManager.updateCpuTable();
 
-                //Perform round robbin if ready queue is greater than 0
+                //Perform round robbin or fcfs if ready queue is greater than 0
                 if (_ReadyQueue.length > 1 && _CpuSchedule != "priority") {
                     CpuScheduler.roundRobin();
                 }

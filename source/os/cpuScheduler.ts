@@ -8,6 +8,57 @@ module TSOS {
 
         }
 
+        //roll out a program from memory to hard drive
+        public static rollout(program){
+            program = _CurrentProgram;
+            var programInput:string = "";
+            
+            for (var i = program.base; i <= program.limit; i++) {
+                       programInput += _MemoryArray[i];
+                  }
+
+            
+            _DeviceDriverFileSystem.createFile("process" + program.PID);
+            _DeviceDriverFileSystem.writeToFile("process" + program.PID, programInput);
+            _CurrentProgram.location = "Hard Disk";
+
+            _MemoryManager.resetPartition(program);
+
+        }
+
+        //load a program from hard drive and load it to memory
+        public static rollin(program){
+
+            var programInput = _DeviceDriverFileSystem.readFile("process" + program.PID);
+
+            var j = program.base;
+            for (var i = 0; i < programInput.length; i++) {
+                              _MemoryArray[j] = programInput[i] + programInput[i + 1];
+                              j++;
+                              i++;
+                        }
+            //_MemoryManager.loadProgToMem();
+            _MemoryManager.updateMemTable(program);
+
+            _DeviceDriverFileSystem.deleteFile("process" + program.PID);
+
+        }
+
+        //Swap out process and place it on 
+        public static swapProgram(currProg, nextProg){
+            nextProg.base = currProg.base;
+            nextProg.limit = currProg.limit;
+
+            _IsProgramName = true;
+            //if (currProg.state != PS_Terminated){
+            this.rollout(currProg);
+
+            //}
+            this.rollin(nextProg);
+            _IsProgramName = false ;
+
+        }
+
         public static priority() {
             _CurrentProgram = this.priorityNextProgram();
 
@@ -58,6 +109,7 @@ module TSOS {
 
                     //set current's program's time 
                     nextProgram = this.getNextprogram();
+
                     nextProgram.waitTime = _CurrentProgram.waitTime + _WaitTime;
                     //alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
                     _MemoryManager.updatePcbTable(nextProgram);
@@ -81,6 +133,7 @@ module TSOS {
                 //alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
                 _MemoryManager.updatePcbTable(nextProgram);
 
+
                 this.contextSwitch();
 
                 //reset wait time
@@ -94,6 +147,17 @@ module TSOS {
             //break and save current state of program
             var nextProgram = new Pcb();
             nextProgram = this.getNextprogram();
+            //alert("1 CPU " + _CPU.PC);
+            //alert("1 base " + _CurrentProgram.base + " Limit " + _CurrentProgram.limit);
+            if (nextProgram.location == "Hard Disk"){
+                        this.swapProgram(_CurrentProgram, nextProgram);
+                        _CurrentProgram.location = "Hard Disk";
+                        nextProgram.location = "Memory";
+                        _MemoryManager.updatePcbTable(_CurrentProgram);
+                    }
+            //alert("2 CPU " + _CPU.PC);
+            //alert("2 base " + nextProgram.base + " Limit " + nextProgram.limit);
+
 
             if (_CurrentProgram.state == PS_Terminated) {
                 if (_ReadyQueue.length == 1) {
@@ -138,6 +202,7 @@ module TSOS {
             _CPU.Xreg = _CurrentProgram.Xreg;
             _CPU.Yreg = _CurrentProgram.Yreg;
             _CPU.Zflag = _CurrentProgram.Zflag;
+            
 
 
         }

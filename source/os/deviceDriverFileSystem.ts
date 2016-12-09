@@ -134,6 +134,8 @@ module TSOS {
 
         }
 
+        
+
         //create file
         public createFile(fileName) {
 
@@ -172,9 +174,11 @@ module TSOS {
                 this.updateHardDiskTable(dirKey);
                 this.updateHardDiskTable(dataKey);
 
+                if (!_IsProgramName){
                 //Display suscces status
-                _StdOut.putText("SUCESS : " + fileName + " has been created");
+                _StdOut.putText("SUCCESS : " + fileName + " has been created");
 
+                }
             }
 
         }
@@ -212,8 +216,10 @@ module TSOS {
                     nextDataKey = dataKey;
 
                 }
+                 if (!_IsProgramName){
                 //Display suscces status
-                _StdOut.putText("SUCESS : " + fileName + " has been deleted");
+                _StdOut.putText("SUCCESS : " + fileName + " has been deleted");
+                 }
 
             }
 
@@ -247,11 +253,36 @@ module TSOS {
                     }
                 }
 
-                //_StdOut.putText("SUCESS : Reading " + fileName + "...");
+                //_StdOut.putText("SUCCESS : Reading " + fileName + "...");
                 //_StdOut.advanceLine();
+                 if (!_IsProgramName){
                 _StdOut.putText(fileData);
+                 }
+                return fileData;
 
             }
+        }
+
+        public storeProgramOnHD(fileName, program){
+            var dirKey = this.findFilename(fileName);
+            if (dirKey == null) {
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("File name does not exist");
+
+            }
+            else {
+                var dirData = sessionStorage.getItem(dirKey);
+                var dataKey = dirData.substring(1, this.headerSize);
+
+                var dataData = "";
+                var inUseBit = sessionStorage.getItem(dataKey).substring(0, 1);
+                var headerTSB = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
+
+
+            
+            }
+
         }
 
         public writeToFile(fileName, contents) {
@@ -288,8 +319,10 @@ module TSOS {
                             this.writeData(dataKey, dataData);
                             this.updateHardDiskTable(dataKey);
 
+                            if (!_IsProgramName){
                             //Display suscces status
-                            _StdOut.putText("SUCESS : " + fileName + " has been updated");
+                            _StdOut.putText("SUCCESS : " + fileName + " has been updated");
+                            }
 
                         }
                     }
@@ -323,7 +356,7 @@ module TSOS {
                             newKey = dataKey;
 
                         }
-                        alert("Appending file...  " + newContents + contents);
+                        //alert("Appending file...  " + newContents + contents);
                         //recall write to function
                         this.writeToFile(fileName, newContents + contents);
 
@@ -368,7 +401,7 @@ module TSOS {
                                     //newDataKey = 
                                     //set inUse bit for file/data block to 1 and 
                                     dataData = sessionStorage.getItem(dataKey);
-                                    //dataData = "1" + dataData.substr(1);
+                                    dataData = "1" + dataData.substr(1);
                                     sessionStorage.setItem(dataKey, dataData);
                                     this.updateHardDiskTable(dataKey);
 
@@ -386,8 +419,10 @@ module TSOS {
                                 }
 
                             }
+                            if (!_IsProgramName){
                             //Display suscces status
-                            _StdOut.putText("SUCESS : " + fileName + " has been updated");
+                            _StdOut.putText("SUCCESS : " + fileName + " has been updated");
+                            }
                         }
                         else {
                             //TO DO:: Error if file is too large
@@ -423,7 +458,7 @@ module TSOS {
                             newKey = dataKey;
 
                         }
-                        alert("2 Appending file...  " + newContents + contents);
+                        //alert("2 Appending file...  " + newContents + contents);
                         //recall write to function
                         this.writeToFile(fileName, newContents + contents);
 
@@ -446,7 +481,7 @@ module TSOS {
             var inUseBit = "";
 
             for (var i = 0; i < this.sectors; i++) {
-                for (var j = 1; j < this.blocks; j++) {
+                for (var j = 0; j < this.blocks; j++) {
                     key = "0" + i + j;
                     data = sessionStorage.getItem(key);
                     inUseBit = data.substring(0, 1);

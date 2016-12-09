@@ -5,6 +5,42 @@ var TSOS;
     var CpuScheduler = (function () {
         function CpuScheduler() {
         }
+        //roll out a program from memory to hard drive
+        CpuScheduler.rollout = function (program) {
+            program = _CurrentProgram;
+            var programInput = "";
+            for (var i = program.base; i <= program.limit; i++) {
+                programInput += _MemoryArray[i];
+            }
+            _DeviceDriverFileSystem.createFile("process" + program.PID);
+            _DeviceDriverFileSystem.writeToFile("process" + program.PID, programInput);
+            _CurrentProgram.location = "Hard Disk";
+            _MemoryManager.resetPartition(program);
+        };
+        //load a program from hard drive and load it to memory
+        CpuScheduler.rollin = function (program) {
+            var programInput = _DeviceDriverFileSystem.readFile("process" + program.PID);
+            var j = program.base;
+            for (var i = 0; i < programInput.length; i++) {
+                _MemoryArray[j] = programInput[i] + programInput[i + 1];
+                j++;
+                i++;
+            }
+            //_MemoryManager.loadProgToMem();
+            _MemoryManager.updateMemTable(program);
+            _DeviceDriverFileSystem.deleteFile("process" + program.PID);
+        };
+        //Swap out process and place it on 
+        CpuScheduler.swapProgram = function (currProg, nextProg) {
+            nextProg.base = currProg.base;
+            nextProg.limit = currProg.limit;
+            _IsProgramName = true;
+            //if (currProg.state != PS_Terminated){
+            this.rollout(currProg);
+            //}
+            this.rollin(nextProg);
+            _IsProgramName = false;
+        };
         CpuScheduler.priority = function () {
             _CurrentProgram = this.priorityNextProgram();
             //Load next program
@@ -68,6 +104,16 @@ var TSOS;
             //break and save current state of program
             var nextProgram = new TSOS.Pcb();
             nextProgram = this.getNextprogram();
+            //alert("1 CPU " + _CPU.PC);
+            //alert("1 base " + _CurrentProgram.base + " Limit " + _CurrentProgram.limit);
+            if (nextProgram.location == "Hard Disk") {
+                this.swapProgram(_CurrentProgram, nextProgram);
+                _CurrentProgram.location = "Hard Disk";
+                nextProgram.location = "Memory";
+                _MemoryManager.updatePcbTable(_CurrentProgram);
+            }
+            //alert("2 CPU " + _CPU.PC);
+            //alert("2 base " + nextProgram.base + " Limit " + nextProgram.limit);
             if (_CurrentProgram.state == PS_Terminated) {
                 if (_ReadyQueue.length == 1) {
                     _RunAll = false;

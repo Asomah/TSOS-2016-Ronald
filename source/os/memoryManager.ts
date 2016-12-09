@@ -46,9 +46,11 @@ module TSOS {
                         _CurrentProgram.location = "Memory";
                   }
                   else{
+                        _IsProgramName = true;
                         _DeviceDriverFileSystem.createFile("process" + _PID);
                         _DeviceDriverFileSystem.writeToFile("process" + _PID, programInput);
                         _CurrentProgram.location = "Hard Disk";
+                        _IsProgramName = false;
                         
                   }
 
@@ -418,7 +420,7 @@ module TSOS {
             public resetPartition(pcb) {
                   var index = pcb.base;
 
-                  for (var i = index; i <= pcb.limit; i++) {
+                  for (var i = index; i <= pcb.limit/2; i++) {
                         _MemoryArray[i] = "00";
                   }
             }

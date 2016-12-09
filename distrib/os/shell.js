@@ -437,7 +437,9 @@ var TSOS;
                             _MemoryManager = new TSOS.MemoryManager();
                             //load program to memory
                             _MemoryManager.loadProgToMem();
-                            _MemoryManager.updateMemTable(_CurrentProgram);
+                            if (_CurrentProgram.base != -1) {
+                                _MemoryManager.updateMemTable(_CurrentProgram);
+                            }
                         }
                         else {
                             var newprog = new TSOS.Pcb();
@@ -445,7 +447,9 @@ var TSOS;
                             _MemoryManager = new TSOS.MemoryManager();
                             //load program to memory
                             _MemoryManager.loadProgToMem();
-                            _MemoryManager.updateMemTable(_CurrentProgram);
+                            if (_CurrentProgram.base != -1) {
+                                _MemoryManager.updateMemTable(_CurrentProgram);
+                            }
                             _CurrentProgram = newprog;
                         }
                     }
@@ -680,7 +684,7 @@ var TSOS;
         };
         Shell.prototype.shellSetSchedule = function (args) {
             if (args.length > 1) {
-                _StdOut.putText("Too many opreands... Correct command is -- setschedule [rr, fcfs, priority]");
+                _StdOut.putText("Too many operands... Correct command is -- setschedule [rr, fcfs, priority]");
             }
             else if (args == "rr") {
                 _CpuSchedule = args;

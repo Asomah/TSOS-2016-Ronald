@@ -150,8 +150,10 @@ var TSOS;
                 sessionStorage.setItem(dataKey, dataData);
                 this.updateHardDiskTable(dirKey);
                 this.updateHardDiskTable(dataKey);
-                //Display suscces status
-                _StdOut.putText("SUCESS : " + fileName + " has been created");
+                if (!_IsProgramName) {
+                    //Display suscces status
+                    _StdOut.putText("SUCCESS : " + fileName + " has been created");
+                }
             }
         };
         DeviceDriverFileSystem.prototype.deleteFile = function (fileName) {
@@ -180,8 +182,10 @@ var TSOS;
                     this.updateHardDiskTable(nextDataKey);
                     nextDataKey = dataKey;
                 }
-                //Display suscces status
-                _StdOut.putText("SUCESS : " + fileName + " has been deleted");
+                if (!_IsProgramName) {
+                    //Display suscces status
+                    _StdOut.putText("SUCCESS : " + fileName + " has been deleted");
+                }
             }
         };
         DeviceDriverFileSystem.prototype.readFile = function (fileName) {
@@ -206,9 +210,27 @@ var TSOS;
                         nextDataKey = sessionStorage.getItem(nextDataKey).substring(1, this.headerSize);
                     }
                 }
-                //_StdOut.putText("SUCESS : Reading " + fileName + "...");
+                //_StdOut.putText("SUCCESS : Reading " + fileName + "...");
                 //_StdOut.advanceLine();
-                _StdOut.putText(fileData);
+                if (!_IsProgramName) {
+                    _StdOut.putText(fileData);
+                }
+                return fileData;
+            }
+        };
+        DeviceDriverFileSystem.prototype.storeProgramOnHD = function (fileName, program) {
+            var dirKey = this.findFilename(fileName);
+            if (dirKey == null) {
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("File name does not exist");
+            }
+            else {
+                var dirData = sessionStorage.getItem(dirKey);
+                var dataKey = dirData.substring(1, this.headerSize);
+                var dataData = "";
+                var inUseBit = sessionStorage.getItem(dataKey).substring(0, 1);
+                var headerTSB = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
             }
         };
         DeviceDriverFileSystem.prototype.writeToFile = function (fileName, contents) {
@@ -242,8 +264,10 @@ var TSOS;
                             sessionStorage.setItem(dataKey, dataData);
                             this.writeData(dataKey, dataData);
                             this.updateHardDiskTable(dataKey);
-                            //Display suscces status
-                            _StdOut.putText("SUCESS : " + fileName + " has been updated");
+                            if (!_IsProgramName) {
+                                //Display suscces status
+                                _StdOut.putText("SUCCESS : " + fileName + " has been updated");
+                            }
                         }
                     }
                     else {
@@ -270,7 +294,7 @@ var TSOS;
                             //get next header tsb 
                             newKey = dataKey;
                         }
-                        alert("Appending file...  " + newContents + contents);
+                        //alert("Appending file...  " + newContents + contents);
                         //recall write to function
                         this.writeToFile(fileName, newContents + contents);
                     }
@@ -304,7 +328,7 @@ var TSOS;
                                     //newDataKey = 
                                     //set inUse bit for file/data block to 1 and 
                                     dataData = sessionStorage.getItem(dataKey);
-                                    //dataData = "1" + dataData.substr(1);
+                                    dataData = "1" + dataData.substr(1);
                                     sessionStorage.setItem(dataKey, dataData);
                                     this.updateHardDiskTable(dataKey);
                                     newDataKey = this.getFreeDataEntry();
@@ -315,8 +339,10 @@ var TSOS;
                                     }
                                 }
                             }
-                            //Display suscces status
-                            _StdOut.putText("SUCESS : " + fileName + " has been updated");
+                            if (!_IsProgramName) {
+                                //Display suscces status
+                                _StdOut.putText("SUCCESS : " + fileName + " has been updated");
+                            }
                         }
                         else {
                         }
@@ -342,7 +368,7 @@ var TSOS;
                             //get next header tsb 
                             newKey = dataKey;
                         }
-                        alert("2 Appending file...  " + newContents + contents);
+                        //alert("2 Appending file...  " + newContents + contents);
                         //recall write to function
                         this.writeToFile(fileName, newContents + contents);
                     }
@@ -357,7 +383,7 @@ var TSOS;
             var data = "";
             var inUseBit = "";
             for (var i = 0; i < this.sectors; i++) {
-                for (var j = 1; j < this.blocks; j++) {
+                for (var j = 0; j < this.blocks; j++) {
                     key = "0" + i + j;
                     data = sessionStorage.getItem(key);
                     inUseBit = data.substring(0, 1);

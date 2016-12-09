@@ -70,6 +70,7 @@ var _CpuScheduler;
 var _DeviceDriverFileSystem;
 var _ProgramInput = ""; //Program input
 var _CpuSchedule = "rr"; // default cpu scheduling to round robbin
+var _IsProgramName = false;
 // The OS Kernel and its queues.
 var _Kernel;
 var _KernelInterruptQueue; // Initializing this to null (which I would normally do) would then require us to specify the 'any' type, as below.

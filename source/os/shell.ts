@@ -555,7 +555,9 @@ module TSOS {
                             _MemoryManager = new MemoryManager();
                             //load program to memory
                             _MemoryManager.loadProgToMem();
+                            if (_CurrentProgram.base != -1){
                             _MemoryManager.updateMemTable(_CurrentProgram);
+                            }
                         }
                         else {
                             var newprog = new Pcb();
@@ -564,9 +566,13 @@ module TSOS {
                             _MemoryManager = new MemoryManager();
                             //load program to memory
                             _MemoryManager.loadProgToMem();
+                            if (_CurrentProgram.base != -1){
                             _MemoryManager.updateMemTable(_CurrentProgram);
 
+                            }
                             _CurrentProgram = newprog;
+
+                            
                         }
                     } else {
                         //Error if program is greater than or equal to 256
@@ -735,8 +741,6 @@ module TSOS {
             while (pcbTable.rows.length > 1) {
                 pcbTable.deleteRow(1);
             }
-
-
         }
 
         public shellQuantum(args) {
@@ -860,7 +864,7 @@ module TSOS {
 
         public shellSetSchedule(args) {
             if (args.length > 1) {
-                _StdOut.putText("Too many opreands... Correct command is -- setschedule [rr, fcfs, priority]");
+                _StdOut.putText("Too many operands... Correct command is -- setschedule [rr, fcfs, priority]");
             }
             else if (args == "rr") {
                 _CpuSchedule = args;
@@ -869,7 +873,6 @@ module TSOS {
             else if (args == "fcfs") {
                 _CpuSchedule = args;
                 _Quantum = Number.MAX_VALUE;
-
             }
             else if (args == "priority") {
                 _CpuSchedule = args;

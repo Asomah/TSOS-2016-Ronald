@@ -38,9 +38,11 @@ var TSOS;
                 _CurrentProgram.location = "Memory";
             }
             else {
+                _IsProgramName = true;
                 _DeviceDriverFileSystem.createFile("process" + _PID);
                 _DeviceDriverFileSystem.writeToFile("process" + _PID, programInput);
                 _CurrentProgram.location = "Hard Disk";
+                _IsProgramName = false;
             }
             //Increase current memory index by 2 so that new process starts by 2 bytes offset
             //_CurrMemIndex = (base - j) + j;
@@ -313,7 +315,7 @@ var TSOS;
         //Clear a section of memory
         MemoryManager.prototype.resetPartition = function (pcb) {
             var index = pcb.base;
-            for (var i = index; i <= pcb.limit; i++) {
+            for (var i = index; i <= pcb.limit / 2; i++) {
                 _MemoryArray[i] = "00";
             }
         };
