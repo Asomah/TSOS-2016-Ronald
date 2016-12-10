@@ -9,15 +9,15 @@ module TSOS {
         }
 
         //roll out a program from memory to hard drive
-        public static rollout(program){
+        public static rollout(program) {
             program = _CurrentProgram;
-            var programInput:string = "";
-            
-            for (var i = program.base; i <= program.limit; i++) {
-                       programInput += _MemoryArray[i];
-                  }
+            var programInput: string = "";
 
-            
+            for (var i = program.base; i <= program.limit; i++) {
+                programInput += _MemoryArray[i];
+            }
+
+
             _DeviceDriverFileSystem.createFile("process" + program.PID);
             _DeviceDriverFileSystem.writeToFile("process" + program.PID, programInput);
             _CurrentProgram.location = "Hard Disk";
@@ -27,16 +27,16 @@ module TSOS {
         }
 
         //load a program from hard drive and load it to memory
-        public static rollin(program){
+        public static rollin(program) {
 
             var programInput = _DeviceDriverFileSystem.readFile("process" + program.PID);
 
             var j = program.base;
             for (var i = 0; i < programInput.length; i++) {
-                              _MemoryArray[j] = programInput[i] + programInput[i + 1];
-                              j++;
-                              i++;
-                        }
+                _MemoryArray[j] = programInput[i] + programInput[i + 1];
+                j++;
+                i++;
+            }
             //_MemoryManager.loadProgToMem();
             _MemoryManager.updateMemTable(program);
 
@@ -45,17 +45,28 @@ module TSOS {
         }
 
         //Swap out process and place it on 
-        public static swapProgram(currProg, nextProg){
+        public static swapProgram(currProg, nextProg) {
+            if (nextProg.base == -1){
+                nextProg.startIndex = currProg.base;
+                //alert("New prog start index =" + nextProg.startIndex);
+            }else{
+                //Get the current start index in a particular segment
+                 nextProg.startIndex = (nextProg.startIndex - nextProg.base) + currProg.base;
+            }
+
             nextProg.base = currProg.base;
-            nextProg.limit = currProg.limit;
+            nextProg.limit = currProg.limit; 
 
             _IsProgramName = true;
-            //if (currProg.state != PS_Terminated){
-            this.rollout(currProg);
+            if (currProg.state != PS_Terminated) {
+                this.rollout(currProg);
 
-            //}
+            }
             this.rollin(nextProg);
-            _IsProgramName = false ;
+            //currProg.base = -1;
+            //currProg.limit = -1;
+
+            _IsProgramName = false;
 
         }
 
@@ -71,7 +82,7 @@ module TSOS {
             _CPU.Zflag = _CurrentProgram.Zflag;
 
             if (_ReadyQueue.length == 1) {
-                    _RunAll = false;
+                _RunAll = false;
 
             }
 
@@ -148,15 +159,7 @@ module TSOS {
             var nextProgram = new Pcb();
             nextProgram = this.getNextprogram();
             //alert("1 CPU " + _CPU.PC);
-            //alert("1 base " + _CurrentProgram.base + " Limit " + _CurrentProgram.limit);
-            if (nextProgram.location == "Hard Disk"){
-                        this.swapProgram(_CurrentProgram, nextProgram);
-                        _CurrentProgram.location = "Hard Disk";
-                        nextProgram.location = "Memory";
-                        _MemoryManager.updatePcbTable(_CurrentProgram);
-                    }
-            //alert("2 CPU " + _CPU.PC);
-            //alert("2 base " + nextProgram.base + " Limit " + nextProgram.limit);
+
 
 
             if (_CurrentProgram.state == PS_Terminated) {
@@ -183,17 +186,36 @@ module TSOS {
 
                     }
 
+                    if (nextProgram.location == "Hard Disk") {
+                        //roll next prongram to memory after deleting terminated program
+                        _IsProgramName = true;
+                        this.rollin(nextProgram);
+                        _IsProgramName = false;
+                        nextProgram.location = "Memory";
+                    }
                     nextProgram.state = PS_Ready;
                     _MemoryManager.updatePcbTable(nextProgram);
 
                 }
             }
             else {
+                //alert("1 base " + _CurrentProgram.base + " Limit " + _CurrentProgram.limit);
+
+                //swap files if next program is on hard disk
+                if (nextProgram.location == "Hard Disk") {
+                    this.swapProgram(_CurrentProgram, nextProgram);
+                    _CurrentProgram.location = "Hard Disk";
+                    nextProgram.location = "Memory";
+                    _MemoryManager.updatePcbTable(_CurrentProgram);
+                }
+                //alert("2 CPU " + _CPU.PC);
+                //alert("2 base " + nextProgram.base + " Limit " + nextProgram.limit);
                 //Break and save all cpu values to current program
                 _Kernel.krnInterruptHandler(BREAK_IRQ, "");
 
             }
 
+            //alert("1. startIndex = " + nextProgram.startIndex);
             //Load next program
             _CurrentProgram = nextProgram;
             _CPU.startIndex = _CurrentProgram.startIndex;
@@ -202,8 +224,8 @@ module TSOS {
             _CPU.Xreg = _CurrentProgram.Xreg;
             _CPU.Yreg = _CurrentProgram.Yreg;
             _CPU.Zflag = _CurrentProgram.Zflag;
-            
 
+            
 
         }
         public static getNextprogram() {

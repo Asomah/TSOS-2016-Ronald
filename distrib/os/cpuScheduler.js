@@ -32,13 +32,22 @@ var TSOS;
         };
         //Swap out process and place it on 
         CpuScheduler.swapProgram = function (currProg, nextProg) {
+            if (nextProg.base == -1) {
+                nextProg.startIndex = currProg.base;
+            }
+            else {
+                //Get the current start index in a particular segment
+                nextProg.startIndex = (nextProg.startIndex - nextProg.base) + currProg.base;
+            }
             nextProg.base = currProg.base;
             nextProg.limit = currProg.limit;
             _IsProgramName = true;
-            //if (currProg.state != PS_Terminated){
-            this.rollout(currProg);
-            //}
+            if (currProg.state != PS_Terminated) {
+                this.rollout(currProg);
+            }
             this.rollin(nextProg);
+            //currProg.base = -1;
+            //currProg.limit = -1;
             _IsProgramName = false;
         };
         CpuScheduler.priority = function () {
@@ -105,15 +114,6 @@ var TSOS;
             var nextProgram = new TSOS.Pcb();
             nextProgram = this.getNextprogram();
             //alert("1 CPU " + _CPU.PC);
-            //alert("1 base " + _CurrentProgram.base + " Limit " + _CurrentProgram.limit);
-            if (nextProgram.location == "Hard Disk") {
-                this.swapProgram(_CurrentProgram, nextProgram);
-                _CurrentProgram.location = "Hard Disk";
-                nextProgram.location = "Memory";
-                _MemoryManager.updatePcbTable(_CurrentProgram);
-            }
-            //alert("2 CPU " + _CPU.PC);
-            //alert("2 base " + nextProgram.base + " Limit " + nextProgram.limit);
             if (_CurrentProgram.state == PS_Terminated) {
                 if (_ReadyQueue.length == 1) {
                     _RunAll = false;
@@ -131,14 +131,32 @@ var TSOS;
                             break;
                         }
                     }
+                    if (nextProgram.location == "Hard Disk") {
+                        //roll next prongram to memory after deleting terminated program
+                        _IsProgramName = true;
+                        this.rollin(nextProgram);
+                        _IsProgramName = false;
+                        nextProgram.location = "Memory";
+                    }
                     nextProgram.state = PS_Ready;
                     _MemoryManager.updatePcbTable(nextProgram);
                 }
             }
             else {
+                //alert("1 base " + _CurrentProgram.base + " Limit " + _CurrentProgram.limit);
+                //swap files if next program is on hard disk
+                if (nextProgram.location == "Hard Disk") {
+                    this.swapProgram(_CurrentProgram, nextProgram);
+                    _CurrentProgram.location = "Hard Disk";
+                    nextProgram.location = "Memory";
+                    _MemoryManager.updatePcbTable(_CurrentProgram);
+                }
+                //alert("2 CPU " + _CPU.PC);
+                //alert("2 base " + nextProgram.base + " Limit " + nextProgram.limit);
                 //Break and save all cpu values to current program
                 _Kernel.krnInterruptHandler(BREAK_IRQ, "");
             }
+            //alert("1. startIndex = " + nextProgram.startIndex);
             //Load next program
             _CurrentProgram = nextProgram;
             _CPU.startIndex = _CurrentProgram.startIndex;

@@ -230,7 +230,8 @@ module TSOS {
 
                     var jump = parseInt(_MemoryManager.fetch(++this.startIndex), 16);
                     // alert("Mem Elem =" + _MemoryManager.fetch(this.startIndex));
-                    // alert("Start Index =" + this.startIndex + " jump =" + jump);
+                    var index = this.startIndex;
+                    //alert("Start Index =" + this.startIndex + " jump =" + jump);
                     // Fetch the next byte and Branch
                     var nextAddress = this.startIndex + jump;
                     var pc = this.startIndex + jump;
@@ -241,6 +242,7 @@ module TSOS {
                     }
 
                     this.startIndex = nextAddress;
+                    //alert("Curr Prog base =" + _CurrentProgram.base + "  next address =" + nextAddress);
 
                     if (_CurrentProgram.base == 0) {
                         this.PC = nextAddress;
