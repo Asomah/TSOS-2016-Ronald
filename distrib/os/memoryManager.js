@@ -315,7 +315,7 @@ var TSOS;
         //Clear a section of memory
         MemoryManager.prototype.resetPartition = function (pcb) {
             var index = pcb.base;
-            for (var i = index; i <= pcb.limit / 2; i++) {
+            for (var i = index; i <= pcb.limit; i++) {
                 _MemoryArray[i] = "00";
             }
         };

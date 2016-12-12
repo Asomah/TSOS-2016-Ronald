@@ -46,12 +46,27 @@ var TSOS;
                 this.rollout(currProg);
             }
             this.rollin(nextProg);
-            //currProg.base = -1;
-            //currProg.limit = -1;
             _IsProgramName = false;
         };
         CpuScheduler.priority = function () {
-            _CurrentProgram = this.priorityNextProgram();
+            var nextProgram = this.priorityNextProgram();
+            if (nextProgram.location == "Hard Disk") {
+                if (_CurrentProgram.state == PS_Terminated) {
+                    _IsProgramName = true;
+                    this.rollin(nextProgram);
+                    _IsProgramName = false;
+                    nextProgram.location = "Memory";
+                }
+                else {
+                    this.swapProgram(_CurrentProgram, nextProgram);
+                    _CurrentProgram.location = "Hard Disk";
+                    nextProgram.location = "Memory";
+                    _MemoryManager.updatePcbTable(_CurrentProgram);
+                }
+            }
+            _CurrentProgram = nextProgram;
+            //update pcb table for the new rolled-in program
+            _MemoryManager.updatePcbTable(_CurrentProgram);
             //Load next program
             _CPU.startIndex = _CurrentProgram.startIndex;
             _CPU.PC = _CurrentProgram.PC;
@@ -65,15 +80,15 @@ var TSOS;
         };
         CpuScheduler.priorityNextProgram = function () {
             var lowestPriority = _ReadyQueue[0].priority;
-            _CurrentProgram = _ReadyQueue[0];
+            var nextProgram = _ReadyQueue[0];
             for (var i = 1; i < _ReadyQueue.length; i++) {
                 if (_ReadyQueue[i].priority < lowestPriority) {
                     lowestPriority = _ReadyQueue[i].priority;
-                    _CurrentProgram = _ReadyQueue[i];
+                    nextProgram = _ReadyQueue[i];
                 }
             }
             //alert(_CurrentProgram.PID + " priority" + _CurrentProgram.priority);
-            return _CurrentProgram;
+            return nextProgram;
         };
         CpuScheduler.roundRobin = function () {
             var nextProgram = new TSOS.Pcb();
@@ -125,9 +140,11 @@ var TSOS;
                     for (var i = 0; i < _ReadyQueue.length; i++) {
                         if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
                             _ReadyQueue.splice(i, 1);
+                            // alert("Resetting partition " + _CurrentProgram.PID + " and base " + _CurrentProgram.base + " value =" + _MemoryArray[_CurrentProgram.base]);
                             _MemoryManager.resetPartition(_CurrentProgram);
                             _MemoryManager.updateMemTable(_CurrentProgram);
                             _MemoryManager.deleteRowPcb(_CurrentProgram);
+                            //alert("2 value  =" + _MemoryArray[_CurrentProgram.base]);
                             break;
                         }
                     }

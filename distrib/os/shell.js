@@ -543,10 +543,8 @@ var TSOS;
                     //update pcb table
                     _MemoryManager.updatePcbTable(_CurrentProgram);
                 }
-                if (_CpuSchedule == "rr" || _CpuSchedule == "fcfs") {
-                    _CurrentProgram = _ReadyQueue[0];
-                }
-                else {
+                _CurrentProgram = _ReadyQueue[0];
+                if (_CpuSchedule == "priority") {
                     TSOS.CpuScheduler.priority();
                 }
                 _CPU.startIndex = _CurrentProgram.base;

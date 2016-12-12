@@ -276,6 +276,7 @@ var TSOS;
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            //alert("opCode " + _MemoryManager.fetch(this.startIndex) + "SI ="+ this.startIndex + " Prog Id=" + _CurrentProgram.PID);
             //debugger;
             if (_MemoryManager.fetch(this.startIndex) != "00" && _DONE != true) {
                 this.executeProgram(_MemoryManager.fetch(this.startIndex));
@@ -305,6 +306,8 @@ var TSOS;
                 //TO DO :: Clear memory after each process
                 //Restore memory after program finishes running and update memory table
                 if ((_RunAll == true && _DONE != true) || _ReadyQueue.length > 1) {
+                    //reset partition for terminated program
+                    //_MemoryManager.resetPartition(_CurrentProgram);
                     if (_CpuSchedule == "rr" || _CpuSchedule == "fcfs") {
                         TSOS.CpuScheduler.roundRobin();
                         _ClockTicks = 1;
@@ -314,6 +317,7 @@ var TSOS;
                             for (var i = 0; i < _ReadyQueue.length; i++) {
                                 if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
                                     _ReadyQueue.splice(i, 1);
+                                    alert("Resetting partition " + _CurrentProgram.PID + " and base " + _CurrentProgram.base);
                                     _MemoryManager.resetPartition(_CurrentProgram);
                                     _MemoryManager.updateMemTable(_CurrentProgram);
                                     _MemoryManager.deleteRowPcb(_CurrentProgram);

@@ -689,11 +689,10 @@ module TSOS {
                     _MemoryManager.updatePcbTable(_CurrentProgram);
 
                 }
-                if (_CpuSchedule == "rr" || _CpuSchedule == "fcfs") {
-                    _CurrentProgram = _ReadyQueue[0];
-                }
-                else {
-                    CpuScheduler.priority();
+                _CurrentProgram = _ReadyQueue[0];
+
+                if (_CpuSchedule == "priority") {
+                     CpuScheduler.priority();
                 }
 
 

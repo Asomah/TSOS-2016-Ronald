@@ -316,7 +316,9 @@ var TSOS;
                                 this.writeData(dataKey, dataData);
                                 this.updateHardDiskTable(dataKey);
                                 contentSize = contentSize + this.dataSize;
-                                if ((contents.length - contentSize) >= 0 && (contents.length - contentSize) <= (this.dataSize)) {
+                                //alert ("Contents Size =" + contentSize + " contents length =" + contents.length);
+                                if ((contents.length - contentSize) <= (this.dataSize)) {
+                                    //Write last contents less than or equal to 60 bytes to a file
                                     nextContentSize = contents.length;
                                     dataKey = this.getFreeDataEntry();
                                     //sessionStorage.setItem(dataKey, dataData);
