@@ -259,6 +259,7 @@ var TSOS;
             }
             else if (opCode == "FF") {
                 _IR = opCode;
+                //alert("Curr ProgID " + _CurrentProgram.PID + " opcode =" + opCode);                                    
                 _Kernel.krnInterruptHandler(SYSCALL_IRQ, this.Xreg);
             }
             else {
@@ -317,7 +318,7 @@ var TSOS;
                             for (var i = 0; i < _ReadyQueue.length; i++) {
                                 if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
                                     _ReadyQueue.splice(i, 1);
-                                    alert("Resetting partition " + _CurrentProgram.PID + " and base " + _CurrentProgram.base);
+                                    //alert("Resetting partition " + _CurrentProgram.PID + " and base " + _CurrentProgram.base);                                    
                                     _MemoryManager.resetPartition(_CurrentProgram);
                                     _MemoryManager.updateMemTable(_CurrentProgram);
                                     _MemoryManager.deleteRowPcb(_CurrentProgram);
@@ -337,7 +338,7 @@ var TSOS;
                 }
                 else {
                     //remove the only program from ready queue
-                    //alert("Removing the only program");
+                    alert("Removing the only program " + _CurrentProgram.PID);
                     _ReadyQueue.splice(0, 1);
                     _MemoryManager.resetPartition(_CurrentProgram);
                     _MemoryManager.updateMemTable(_CurrentProgram);

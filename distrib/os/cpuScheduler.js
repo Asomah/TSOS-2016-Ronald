@@ -36,7 +36,7 @@ var TSOS;
                 nextProg.startIndex = currProg.base;
             }
             else {
-                //Get the current start index in a particular segment
+                //Get the start index for the next program in a particular segment
                 nextProg.startIndex = (nextProg.startIndex - nextProg.base) + currProg.base;
             }
             nextProg.base = currProg.base;
@@ -53,6 +53,8 @@ var TSOS;
             if (nextProgram.location == "Hard Disk") {
                 if (_CurrentProgram.state == PS_Terminated) {
                     _IsProgramName = true;
+                    //Get the start index for the next program in a particular segment
+                    nextProgram.startIndex = (nextProgram.startIndex - nextProgram.base) + _CurrentProgram.base;
                     this.rollin(nextProgram);
                     _IsProgramName = false;
                     nextProgram.location = "Memory";
@@ -140,7 +142,7 @@ var TSOS;
                     for (var i = 0; i < _ReadyQueue.length; i++) {
                         if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
                             _ReadyQueue.splice(i, 1);
-                            // alert("Resetting partition " + _CurrentProgram.PID + " and base " + _CurrentProgram.base + " value =" + _MemoryArray[_CurrentProgram.base]);
+                            //alert("1 Resetting partition " + _CurrentProgram.PID + " and base " + _CurrentProgram.base + " value =" + _MemoryArray[_CurrentProgram.startIndex]);
                             _MemoryManager.resetPartition(_CurrentProgram);
                             _MemoryManager.updateMemTable(_CurrentProgram);
                             _MemoryManager.deleteRowPcb(_CurrentProgram);
@@ -149,7 +151,13 @@ var TSOS;
                         }
                     }
                     if (nextProgram.location == "Hard Disk") {
+                        //alert("next Program in HD =" + nextProgram.PID);
                         //roll next prongram to memory after deleting terminated program
+                        //Get the start index for the next program in a particular segment
+                        nextProgram.startIndex = (nextProgram.startIndex - nextProgram.base) + _CurrentProgram.base;
+                        //get base and limit for next program
+                        nextProgram.base = _CurrentProgram.base;
+                        nextProgram.limit = _CurrentProgram.limit;
                         _IsProgramName = true;
                         this.rollin(nextProgram);
                         _IsProgramName = false;

@@ -287,6 +287,8 @@ module TSOS {
             }
             else if (opCode == "FF") {
                 _IR = opCode;
+                //alert("Curr ProgID " + _CurrentProgram.PID + " opcode =" + opCode);                                    
+
                 _Kernel.krnInterruptHandler(SYSCALL_IRQ, this.Xreg);
             }
             else {
@@ -362,7 +364,7 @@ module TSOS {
                                 if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
                                     _ReadyQueue.splice(i, 1);
 
-                                    alert("Resetting partition " + _CurrentProgram.PID + " and base " + _CurrentProgram.base);                                    
+                                    //alert("Resetting partition " + _CurrentProgram.PID + " and base " + _CurrentProgram.base);                                    
                                     _MemoryManager.resetPartition(_CurrentProgram);
                                     _MemoryManager.updateMemTable(_CurrentProgram);
 
@@ -389,7 +391,7 @@ module TSOS {
 
                     //remove the only program from ready queue
 
-                    //alert("Removing the only program");
+                    alert("Removing the only program " + _CurrentProgram.PID );
 
                     _ReadyQueue.splice(0, 1);
 
