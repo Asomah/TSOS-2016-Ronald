@@ -193,7 +193,6 @@ var TSOS;
                 var value = _MemoryManager.fetch(address);
                 var newV = _MemoryManager.fetch(parseInt(memAddress, 16));
                 var xValue = parseInt(value, 16);
-                //alert("PrevX =" + xValue + " currentX =" + this.Xreg);
                 if (xValue == this.Xreg) {
                     this.Zflag = 1;
                     _Zflag = 1;
@@ -205,23 +204,18 @@ var TSOS;
             }
             else if (opCode == "D0") {
                 _IR = opCode;
-                // alert("Zflag = " + this.Zflag);
                 //Branch n bytes if Z flag is zero
                 if (this.Zflag == 0) {
                     this.PC++;
                     var jump = parseInt(_MemoryManager.fetch(++this.startIndex), 16);
-                    // alert("Mem Elem =" + _MemoryManager.fetch(this.startIndex));
                     var index = this.startIndex;
-                    //alert("Start Index =" + this.startIndex + " jump =" + jump);
                     // Fetch the next byte and Branch
                     var nextAddress = this.startIndex + jump;
                     var pc = this.startIndex + jump;
-                    // alert("Next Address" + nextAddress);
                     if (nextAddress >= (_CurrentProgram.limit + 1)) {
                         nextAddress = nextAddress - _ProgramSize;
                     }
                     this.startIndex = nextAddress;
-                    //alert("Curr Prog base =" + _CurrentProgram.base + "  next address =" + nextAddress);
                     if (_CurrentProgram.base == 0) {
                         this.PC = nextAddress;
                     }
@@ -259,25 +253,22 @@ var TSOS;
             }
             else if (opCode == "FF") {
                 _IR = opCode;
-                //alert("Curr ProgID " + _CurrentProgram.PID + " opcode =" + opCode);                                    
                 _Kernel.krnInterruptHandler(SYSCALL_IRQ, this.Xreg);
             }
             else {
                 //kill current program if there is an invalid opcode
-                _StdOut.putText("INVALID OPCODE .... KILLING THIS PROGRAM");
+                _StdOut.putText("INVALID OPCODE .... KILLING PROGRAM " + _CurrentProgram.PID);
                 _Kernel.krnInterruptHandler(INVALIDOPCODE_IRQ, _CurrentProgram.PID);
                 _StdOut.advanceLine();
                 _StdOut.putText(">");
             }
             this.PC++;
             this.startIndex++;
-            //alert("Opcode =" + opCode + " State =" + _CurrentProgram.state + " Counter =" + this.startIndex + " PC=" + this.PC);
         };
         Cpu.prototype.cycle = function () {
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
-            //alert("opCode " + _MemoryManager.fetch(this.startIndex) + "SI ="+ this.startIndex + " Prog Id=" + _CurrentProgram.PID);
             //debugger;
             if (_MemoryManager.fetch(this.startIndex) != "00" && _DONE != true) {
                 this.executeProgram(_MemoryManager.fetch(this.startIndex));
@@ -296,7 +287,7 @@ var TSOS;
                 }
             }
             else {
-                this.isExecuting = false;
+                //this.isExecuting = false;
                 //set the next program to execute
                 //Get current program if ready queue length is 1
                 if (_ReadyQueue.length == 1) {
@@ -304,8 +295,6 @@ var TSOS;
                 }
                 _CurrentProgram.state = PS_Terminated;
                 _MemoryManager.updatePcbTable(_CurrentProgram);
-                //TO DO :: Clear memory after each process
-                //Restore memory after program finishes running and update memory table
                 if ((_RunAll == true && _DONE != true) || _ReadyQueue.length > 1) {
                     //reset partition for terminated program
                     //_MemoryManager.resetPartition(_CurrentProgram);
@@ -318,7 +307,7 @@ var TSOS;
                             for (var i = 0; i < _ReadyQueue.length; i++) {
                                 if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
                                     _ReadyQueue.splice(i, 1);
-                                    //alert("Resetting partition " + _CurrentProgram.PID + " and base " + _CurrentProgram.base);                                    
+                                    //Restore memory after program finishes running and update memory table
                                     _MemoryManager.resetPartition(_CurrentProgram);
                                     _MemoryManager.updateMemTable(_CurrentProgram);
                                     _MemoryManager.deleteRowPcb(_CurrentProgram);
@@ -328,6 +317,10 @@ var TSOS;
                         }
                         this.isExecuting = true;
                         TSOS.CpuScheduler.priority();
+                        //execute format command if it is activated
+                        if (_FormatCommandActive == true) {
+                            _DeviceDriverFileSystem.format();
+                        }
                     }
                     if (_MemoryManager.fetch(this.startIndex) != "00" && _CurrentProgram.state != PS_Running) {
                         this.startIndex = _CurrentProgram.startIndex;
@@ -338,18 +331,18 @@ var TSOS;
                 }
                 else {
                     //remove the only program from ready queue
-                    alert("Removing the only program " + _CurrentProgram.PID);
+                    //alert("Removing the only program " + _CurrentProgram.PID );
                     _ReadyQueue.splice(0, 1);
                     _MemoryManager.resetPartition(_CurrentProgram);
                     _MemoryManager.updateMemTable(_CurrentProgram);
                     _MemoryManager.deleteRowPcb(_CurrentProgram);
                     _StdOut.advanceLine();
                     _StdOut.putText(">");
-                    //alert("after length =" + _ReadyQueue.length);
                     this.init();
                     _IR = "NA";
                     _MemoryManager.updateCpuTable();
                     _DONE = true;
+                    this.isExecuting = false;
                 }
             }
         };

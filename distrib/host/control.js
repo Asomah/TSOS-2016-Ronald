@@ -106,10 +106,11 @@ var TSOS;
                     for (var k = 0; k < _DeviceDriverFileSystem.blocks; k++) {
                         var key = i.toString() + j.toString() + k.toString();
                         var data = _DeviceDriverFileSystem.initializeBlock();
-                        //save data to session storage
+                        //Set MBR inUse bit to 1 so that it never gets accessed
                         if (key == "000") {
                             data = "1000" + data.substring(_DeviceDriverFileSystem.headerSize);
                         }
+                        //save data to session storage
                         sessionStorage.setItem(key, data);
                         var row = document.createElement("tr");
                         hardDiskHTML.appendChild(row);

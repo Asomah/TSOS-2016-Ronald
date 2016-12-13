@@ -16,7 +16,9 @@ module TSOS {
             public sectors: number = 8,
             public blocks: number = 8,
             public dataSize: number = 60,
-            public headerSize: number = 4) {
+            public headerSize: number = 4,
+            public formatCount: number = 1    // Display format waiting message once
+            ) {
 
             super();
             this.driverEntry = this.krnFsDriverEntry;
@@ -25,10 +27,7 @@ module TSOS {
         public krnFsDriverEntry() {
             // Initialization routine for this, the kernel-mode File System Device Driver.
             this.status = "File System Driver loaded";
-            // More?
         }
-
-
 
 
         // Initalize blocks with " - " and " 0 "
@@ -46,6 +45,7 @@ module TSOS {
             return data;
         }
 
+        //list all files available on HD
         public listFiles(){
                 for (var i = 0; i < this.sectors; i++) {
                     for (var j = 1; j < this.blocks; j++) {
@@ -65,38 +65,81 @@ module TSOS {
             
         }
 
+        // reinitialize HD
         public format(){
+            //look to see if there is a program in the ready queue that is on the HD. Do not execute format command if there is one
+            var format = true;        //boolean to check if format command should be executed or not
+             if (_ReadyQueue.length > 1){
+                for (var i = 0; i < _ReadyQueue.length; i++){
+                if (_ReadyQueue[i].location == "Hard Disk"){
+                    //alert ("Location " + _ReadyQueue[i].location);
+                    format = false;
+                    if (this.formatCount == 1){
+                    _StdOut.putText("FORMAT WAITING...");
+                    _StdOut.advanceLine();
+                    this.formatCount++;
+                    }
+                    break;
+                }
+             }
+                         
+            }else if (_ResidentQueue.length > 1){
+                for (var i = 0; i < _ResidentQueue.length; i++){
+                if (_ResidentQueue[i].location == "Hard Disk"){
+                    //alert ("Location " + _ResidentQueue[i].location);
+                    format = false;
+                   _StdOut.putText("Cannot format HD now... There are programs on HD waiting to be executed.");
+                      //set format command back to not activated
+                      _FormatCommandActive = false;
+                    break;
+                }
+            }
+                
+            } 
+            
+            //alert ("Format " + format);
+            if (format == true) {
                 for (var i = 0; i < this.tracks; i++) {
-                for (var j = 0; j < this.sectors; j++) {
+                    for (var j = 0; j < this.sectors; j++) {
                     for (var k = 0; k < this.blocks; k++) {
                         var key = i.toString() + j.toString() + k.toString();
-                        sessionStorage.setItem(key, this.initializeBlock());
+                        var data = this.initializeBlock();
+                        //Set MBR inUse bit to 1 so that it never gets accessed
+                        if (key == "000"){
+                             data = "1000"+ data.substring(this.headerSize); 
+                        }
+                        sessionStorage.setItem(key, data );
                         this.updateHardDiskTable(key);
                     }
                 }
             }
 
              //Display suscces status
+            if (_CPU.isExecuting == true){
+                _StdOut.advanceLine();
+            }
              _StdOut.putText("Successfully Formatted");
+             if (_CPU.isExecuting == true){
+                _StdOut.advanceLine();
+            }
+             //set format command back to not activated
+             _FormatCommandActive = false;
+        }
 
         }
 
 
-        //converts a hex dtring back to regular string
+        //converts a hex string back to regular string
         public convertToString(data) {
             var str = "";
-            //alert("data Length = " + data.length);
             for (var i = 0; i < data.length; i += 2) {
                 if ((data[i] + data[i + 1]) == "00") {
-                    //alert("1 Function " + str);
                     return str;
                 }
                 else {
-                    //alert("Data = " + data[i] + data[i + 1]);
                     str += String.fromCharCode(parseInt(data.substr(i, 2), 16));
                 }
             }
-            //alert("2 Function " + str);
             return str;
 
         }
@@ -117,9 +160,7 @@ module TSOS {
         // Write data to a specific TSB key 
         public writeData(key, data): void {
             var hexString = data.substring(0, this.headerSize);
-
             var newData = data.substring(this.headerSize);
-            //alert (key[0]);
 
             //check to see if header tsb is free, convert newdata to hex if not free
             if (data.substring(1, this.headerSize) != "---" || key[0] != "0") {
@@ -127,18 +168,15 @@ module TSOS {
             }
             else {
                 hexString += newData;
-
             }
-
             sessionStorage.setItem(key, hexString);
-
         }
 
-        
 
         //create file
         public createFile(fileName) {
 
+            //var fileNameDirKey = this.findFilename(fileName);
             var dirKey = this.getFreeDirEntry();
             var dataKey = this.getFreeDataEntry();
             var dirData = "";
@@ -156,6 +194,13 @@ module TSOS {
                 _StdOut.putText("Memory out of space... There is no free space to create this file");
 
             }
+            /*else if ( fileNameDirKey == null){
+                //if file already exist don't create it. 
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("File already exist... Create file using a different file name");
+
+            }*/
             else {
                 //Create file if it passes the above cases
                 dirData = sessionStorage.getItem(dirKey);
@@ -183,7 +228,9 @@ module TSOS {
 
         }
 
+        //delete a given file 
         public deleteFile(fileName) {
+            //check to see if file exists. delete file if it exist else display error.
             var dirKey = this.findFilename(fileName);
             if (dirKey == null) {
                 _StdOut.putText("FAILURE");
@@ -216,6 +263,7 @@ module TSOS {
                     nextDataKey = dataKey;
 
                 }
+                //display success message if file is not a program's name ( a program in ready queue)
                  if (!_IsProgramName){
                 //Display suscces status
                 _StdOut.putText("SUCCESS : " + fileName + " has been deleted");
@@ -225,6 +273,7 @@ module TSOS {
 
         }
 
+        //read a specified file if it exists
         public readFile(fileName) {
             var dirKey = this.findFilename(fileName);
             if (dirKey == null) {
@@ -240,21 +289,16 @@ module TSOS {
                 var fileData = "";
                 var nextDataKey = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
 
-                if (nextDataKey == "---") {
-                    fileData = fileData + this.convertToString(sessionStorage.getItem(dataKey).substring(this.headerSize));
-                }
-                else {
-
-                    fileData = fileData + this.convertToString(sessionStorage.getItem(dataKey).substring(this.headerSize));
+                //conver contents of file TSB linked to file name to asci string. Convert subsequent file TSB to string if it's not empty (---)
+                fileData = fileData + this.convertToString(sessionStorage.getItem(dataKey).substring(this.headerSize));
                     while (nextDataKey != "---") {
                         fileData = fileData + this.convertToString(sessionStorage.getItem(nextDataKey).substring(this.headerSize));
                         nextDataKey = sessionStorage.getItem(nextDataKey).substring(1, this.headerSize);
-
                     }
-                }
-
+                
                 //_StdOut.putText("SUCCESS : Reading " + fileName + "...");
                 //_StdOut.advanceLine();
+                //display file content if file is not a program's name ( a program in ready queue)
                  if (!_IsProgramName){
                 _StdOut.putText(fileData);
                  }
@@ -263,28 +307,7 @@ module TSOS {
             }
         }
 
-        public storeProgramOnHD(fileName, program){
-            var dirKey = this.findFilename(fileName);
-            if (dirKey == null) {
-                _StdOut.putText("FAILURE");
-                _StdOut.advanceLine();
-                _StdOut.putText("File name does not exist");
-
-            }
-            else {
-                var dirData = sessionStorage.getItem(dirKey);
-                var dataKey = dirData.substring(1, this.headerSize);
-
-                var dataData = "";
-                var inUseBit = sessionStorage.getItem(dataKey).substring(0, 1);
-                var headerTSB = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
-
-
-            
-            }
-
-        }
-
+        //write to or update a file
         public writeToFile(fileName, contents) {
             var dirKey = this.findFilename(fileName);
             if (dirKey == null) {
@@ -308,8 +331,6 @@ module TSOS {
                         var newData = sessionStorage.getItem(dataKey).substring(this.headerSize);
                         var prevContents = this.convertToString(newData);
                         var newContents = prevContents + contents;
-                        //alert("Prev Cont = " +prevContents + " Lenght = " + prevContents.length);
-                        //alert("Prev Cont = " +newContents + " Lenght = " + newContents.length);
                         //recall write funtion if contents length is greater than 30
                         if (newContents.length > this.dataSize) {
                             this.writeToFile(fileName, newContents);
@@ -320,7 +341,7 @@ module TSOS {
                             this.updateHardDiskTable(dataKey);
 
                             if (!_IsProgramName){
-                            //Display suscces status
+                            //Display suscces status if file is not a program's name ( a program in ready queue)
                             _StdOut.putText("SUCCESS : " + fileName + " has been updated");
                             }
 
@@ -329,7 +350,6 @@ module TSOS {
                     else {
                         //get readerble data from hard disk and append the the new contents to it
                         var newData = sessionStorage.getItem(dataKey).substring(this.headerSize);
-                        // alert ("New Data = " + newData);
                         var prevContents = this.convertToString(newData);
                         var newContents = prevContents;
 
@@ -337,16 +357,11 @@ module TSOS {
 
                         //reset header tsb
                         sessionStorage.setItem(dataKey, "1" + "---" + newData);
-                        //var newData = "";
-                        //var prevContents = "";
-                        //var newContents = "";
                         while (newKey != "---") {
                             //newKey = sessionStorage.getItem(headerTSB).substring(1, this.headerSize); 
                             newData = sessionStorage.getItem(newKey).substring(this.headerSize);
                             dataKey = sessionStorage.getItem(newKey).substring(1, this.headerSize);
 
-                            // alert ("New Data = " + newData);
-                            //prevContents = this.convertToString(newData);
                             newContents = newContents + this.convertToString(newData);
 
                             //reset header tsb
@@ -359,8 +374,6 @@ module TSOS {
                         //alert("Appending file...  " + newContents + contents);
                         //recall write to function
                         this.writeToFile(fileName, newContents + contents);
-
-
                     }
 
                 }
@@ -375,16 +388,11 @@ module TSOS {
                             var contentSize = 0;
                             var nextContentSize = this.dataSize;
                             while (contentSize < contents.length) {
-
                                 inUseBit = "1";
                                 dataData = inUseBit + headerTSB + contents.substring(contentSize, nextContentSize);
-                                //alert("Contents subStr = " + contents.substring(contentSize, nextContentSize));
-                                //alert("Contents Length = " + contents.substring(contentSize, nextContentSize).length);
-
-                                //sessionStorage.setItem(dataKey, dataData);
+    
                                 this.writeData(dataKey, dataData);
                                 this.updateHardDiskTable(dataKey);
-
 
                                 contentSize = contentSize + this.dataSize;
                                 //alert ("Contents Size =" + contentSize + " contents length =" + contents.length);
@@ -392,15 +400,12 @@ module TSOS {
                                     //Write last contents less than or equal to 60 bytes to a file
                                     nextContentSize = contents.length;
                                     dataKey = this.getFreeDataEntry();
-                                    //sessionStorage.setItem(dataKey, dataData);
                                     headerTSB = "---";
-                                    //alert("One More " + nextContentSize);
 
                                 }
                                 else {
                                     nextContentSize = contentSize + this.dataSize;
                                     dataKey = this.getFreeDataEntry();
-                                    //newDataKey = 
                                     //set inUse bit for file/data block to 1 and 
                                     dataData = sessionStorage.getItem(dataKey);
                                     dataData = "1" + dataData.substr(1);
@@ -436,7 +441,6 @@ module TSOS {
                     else {
                         //get readerble data from hard disk and append the the new contents to it
                         var newData = sessionStorage.getItem(dataKey).substring(this.headerSize);
-                        // alert ("New Data = " + newData);
                         var prevContents = this.convertToString(newData);
                         var newContents = prevContents;
 
@@ -445,12 +449,8 @@ module TSOS {
                         //reset header tsb
                         sessionStorage.setItem(dataKey, "1" + "---" + newData);
                         while (newKey != "---") {
-                            //newKey = sessionStorage.getItem(headerTSB).substring(1, this.headerSize); 
                             newData = sessionStorage.getItem(newKey).substring(this.headerSize);
                             dataKey = sessionStorage.getItem(newKey).substring(1, this.headerSize);
-
-                            // alert ("New Data = " + newData);
-                            //prevContents = this.convertToString(newData);
                             newContents = newContents + this.convertToString(newData);
 
                             //reset header tsb
@@ -460,7 +460,6 @@ module TSOS {
                             newKey = dataKey;
 
                         }
-                        //alert("2 Appending file...  " + newContents + contents);
                         //recall write to function
                         this.writeToFile(fileName, newContents + contents);
 
@@ -514,8 +513,6 @@ module TSOS {
                         if (inUseBit == "0") {
                             return key;
                         }
-
-
                     }
                 }
             }
@@ -525,7 +522,7 @@ module TSOS {
 
         }
 
-        // 
+        // check to see if a file is on HD
         public findFilename(fileName) {
             var key = "";
             var data = "";
@@ -567,11 +564,7 @@ module TSOS {
                     break;
                 }
             }
-
-
         }
-
-
 
 
     }

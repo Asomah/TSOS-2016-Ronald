@@ -15,24 +15,26 @@ var TSOS;
     // Extends DeviceDriver
     var DeviceDriverFileSystem = (function (_super) {
         __extends(DeviceDriverFileSystem, _super);
-        function DeviceDriverFileSystem(tracks, sectors, blocks, dataSize, headerSize) {
+        function DeviceDriverFileSystem(tracks, sectors, blocks, dataSize, headerSize, formatCount // Display format waiting message once
+            ) {
             if (tracks === void 0) { tracks = 4; }
             if (sectors === void 0) { sectors = 8; }
             if (blocks === void 0) { blocks = 8; }
             if (dataSize === void 0) { dataSize = 60; }
             if (headerSize === void 0) { headerSize = 4; }
+            if (formatCount === void 0) { formatCount = 1; }
             _super.call(this);
             this.tracks = tracks;
             this.sectors = sectors;
             this.blocks = blocks;
             this.dataSize = dataSize;
             this.headerSize = headerSize;
+            this.formatCount = formatCount;
             this.driverEntry = this.krnFsDriverEntry;
         }
         DeviceDriverFileSystem.prototype.krnFsDriverEntry = function () {
             // Initialization routine for this, the kernel-mode File System Device Driver.
             this.status = "File System Driver loaded";
-            // More?
         };
         // Initalize blocks with " - " and " 0 "
         DeviceDriverFileSystem.prototype.initializeBlock = function () {
@@ -47,6 +49,7 @@ var TSOS;
             }
             return data;
         };
+        //list all files available on HD
         DeviceDriverFileSystem.prototype.listFiles = function () {
             for (var i = 0; i < this.sectors; i++) {
                 for (var j = 1; j < this.blocks; j++) {
@@ -62,34 +65,75 @@ var TSOS;
                 }
             }
         };
+        // reinitialize HD
         DeviceDriverFileSystem.prototype.format = function () {
-            for (var i = 0; i < this.tracks; i++) {
-                for (var j = 0; j < this.sectors; j++) {
-                    for (var k = 0; k < this.blocks; k++) {
-                        var key = i.toString() + j.toString() + k.toString();
-                        sessionStorage.setItem(key, this.initializeBlock());
-                        this.updateHardDiskTable(key);
+            //look to see if there is a program in the ready queue that is on the HD. Do not execute format command if there is one
+            var format = true; //boolean to check if format command should be executed or not
+            if (_ReadyQueue.length > 1) {
+                for (var i = 0; i < _ReadyQueue.length; i++) {
+                    if (_ReadyQueue[i].location == "Hard Disk") {
+                        //alert ("Location " + _ReadyQueue[i].location);
+                        format = false;
+                        if (this.formatCount == 1) {
+                            _StdOut.putText("FORMAT WAITING...");
+                            _StdOut.advanceLine();
+                            this.formatCount++;
+                        }
+                        break;
                     }
                 }
             }
-            //Display suscces status
-            _StdOut.putText("Successfully Formatted");
+            else if (_ResidentQueue.length > 1) {
+                for (var i = 0; i < _ResidentQueue.length; i++) {
+                    if (_ResidentQueue[i].location == "Hard Disk") {
+                        //alert ("Location " + _ResidentQueue[i].location);
+                        format = false;
+                        _StdOut.putText("Cannot format HD now... There are programs on HD waiting to be executed.");
+                        //set format command back to not activated
+                        _FormatCommandActive = false;
+                        break;
+                    }
+                }
+            }
+            //alert ("Format " + format);
+            if (format == true) {
+                for (var i = 0; i < this.tracks; i++) {
+                    for (var j = 0; j < this.sectors; j++) {
+                        for (var k = 0; k < this.blocks; k++) {
+                            var key = i.toString() + j.toString() + k.toString();
+                            var data = this.initializeBlock();
+                            //Set MBR inUse bit to 1 so that it never gets accessed
+                            if (key == "000") {
+                                data = "1000" + data.substring(this.headerSize);
+                            }
+                            sessionStorage.setItem(key, data);
+                            this.updateHardDiskTable(key);
+                        }
+                    }
+                }
+                //Display suscces status
+                if (_CPU.isExecuting == true) {
+                    _StdOut.advanceLine();
+                }
+                _StdOut.putText("Successfully Formatted");
+                if (_CPU.isExecuting == true) {
+                    _StdOut.advanceLine();
+                }
+                //set format command back to not activated
+                _FormatCommandActive = false;
+            }
         };
-        //converts a hex dtring back to regular string
+        //converts a hex string back to regular string
         DeviceDriverFileSystem.prototype.convertToString = function (data) {
             var str = "";
-            //alert("data Length = " + data.length);
             for (var i = 0; i < data.length; i += 2) {
                 if ((data[i] + data[i + 1]) == "00") {
-                    //alert("1 Function " + str);
                     return str;
                 }
                 else {
-                    //alert("Data = " + data[i] + data[i + 1]);
                     str += String.fromCharCode(parseInt(data.substr(i, 2), 16));
                 }
             }
-            //alert("2 Function " + str);
             return str;
         };
         //converts the string-data provided to hex
@@ -109,7 +153,6 @@ var TSOS;
         DeviceDriverFileSystem.prototype.writeData = function (key, data) {
             var hexString = data.substring(0, this.headerSize);
             var newData = data.substring(this.headerSize);
-            //alert (key[0]);
             //check to see if header tsb is free, convert newdata to hex if not free
             if (data.substring(1, this.headerSize) != "---" || key[0] != "0") {
                 hexString += this.convertToHex(newData);
@@ -121,6 +164,7 @@ var TSOS;
         };
         //create file
         DeviceDriverFileSystem.prototype.createFile = function (fileName) {
+            //var fileNameDirKey = this.findFilename(fileName);
             var dirKey = this.getFreeDirEntry();
             var dataKey = this.getFreeDataEntry();
             var dirData = "";
@@ -156,7 +200,9 @@ var TSOS;
                 }
             }
         };
+        //delete a given file 
         DeviceDriverFileSystem.prototype.deleteFile = function (fileName) {
+            //check to see if file exists. delete file if it exist else display error.
             var dirKey = this.findFilename(fileName);
             if (dirKey == null) {
                 _StdOut.putText("FAILURE");
@@ -182,12 +228,14 @@ var TSOS;
                     this.updateHardDiskTable(nextDataKey);
                     nextDataKey = dataKey;
                 }
+                //display success message if file is not a program's name ( a program in ready queue)
                 if (!_IsProgramName) {
                     //Display suscces status
                     _StdOut.putText("SUCCESS : " + fileName + " has been deleted");
                 }
             }
         };
+        //read a specified file if it exists
         DeviceDriverFileSystem.prototype.readFile = function (fileName) {
             var dirKey = this.findFilename(fileName);
             if (dirKey == null) {
@@ -200,39 +248,22 @@ var TSOS;
                 var dataKey = dirData.substring(1, this.headerSize);
                 var fileData = "";
                 var nextDataKey = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
-                if (nextDataKey == "---") {
-                    fileData = fileData + this.convertToString(sessionStorage.getItem(dataKey).substring(this.headerSize));
-                }
-                else {
-                    fileData = fileData + this.convertToString(sessionStorage.getItem(dataKey).substring(this.headerSize));
-                    while (nextDataKey != "---") {
-                        fileData = fileData + this.convertToString(sessionStorage.getItem(nextDataKey).substring(this.headerSize));
-                        nextDataKey = sessionStorage.getItem(nextDataKey).substring(1, this.headerSize);
-                    }
+                //conver contents of file TSB linked to file name to asci string. Convert subsequent file TSB to string if it's not empty (---)
+                fileData = fileData + this.convertToString(sessionStorage.getItem(dataKey).substring(this.headerSize));
+                while (nextDataKey != "---") {
+                    fileData = fileData + this.convertToString(sessionStorage.getItem(nextDataKey).substring(this.headerSize));
+                    nextDataKey = sessionStorage.getItem(nextDataKey).substring(1, this.headerSize);
                 }
                 //_StdOut.putText("SUCCESS : Reading " + fileName + "...");
                 //_StdOut.advanceLine();
+                //display file content if file is not a program's name ( a program in ready queue)
                 if (!_IsProgramName) {
                     _StdOut.putText(fileData);
                 }
                 return fileData;
             }
         };
-        DeviceDriverFileSystem.prototype.storeProgramOnHD = function (fileName, program) {
-            var dirKey = this.findFilename(fileName);
-            if (dirKey == null) {
-                _StdOut.putText("FAILURE");
-                _StdOut.advanceLine();
-                _StdOut.putText("File name does not exist");
-            }
-            else {
-                var dirData = sessionStorage.getItem(dirKey);
-                var dataKey = dirData.substring(1, this.headerSize);
-                var dataData = "";
-                var inUseBit = sessionStorage.getItem(dataKey).substring(0, 1);
-                var headerTSB = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
-            }
-        };
+        //write to or update a file
         DeviceDriverFileSystem.prototype.writeToFile = function (fileName, contents) {
             var dirKey = this.findFilename(fileName);
             if (dirKey == null) {
@@ -253,8 +284,6 @@ var TSOS;
                         var newData = sessionStorage.getItem(dataKey).substring(this.headerSize);
                         var prevContents = this.convertToString(newData);
                         var newContents = prevContents + contents;
-                        //alert("Prev Cont = " +prevContents + " Lenght = " + prevContents.length);
-                        //alert("Prev Cont = " +newContents + " Lenght = " + newContents.length);
                         //recall write funtion if contents length is greater than 30
                         if (newContents.length > this.dataSize) {
                             this.writeToFile(fileName, newContents);
@@ -265,7 +294,7 @@ var TSOS;
                             this.writeData(dataKey, dataData);
                             this.updateHardDiskTable(dataKey);
                             if (!_IsProgramName) {
-                                //Display suscces status
+                                //Display suscces status if file is not a program's name ( a program in ready queue)
                                 _StdOut.putText("SUCCESS : " + fileName + " has been updated");
                             }
                         }
@@ -273,21 +302,15 @@ var TSOS;
                     else {
                         //get readerble data from hard disk and append the the new contents to it
                         var newData = sessionStorage.getItem(dataKey).substring(this.headerSize);
-                        // alert ("New Data = " + newData);
                         var prevContents = this.convertToString(newData);
                         var newContents = prevContents;
                         var newKey = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
                         //reset header tsb
                         sessionStorage.setItem(dataKey, "1" + "---" + newData);
-                        //var newData = "";
-                        //var prevContents = "";
-                        //var newContents = "";
                         while (newKey != "---") {
                             //newKey = sessionStorage.getItem(headerTSB).substring(1, this.headerSize); 
                             newData = sessionStorage.getItem(newKey).substring(this.headerSize);
                             dataKey = sessionStorage.getItem(newKey).substring(1, this.headerSize);
-                            // alert ("New Data = " + newData);
-                            //prevContents = this.convertToString(newData);
                             newContents = newContents + this.convertToString(newData);
                             //reset header tsb
                             sessionStorage.setItem(newKey, "0" + "---" + newData);
@@ -310,9 +333,6 @@ var TSOS;
                             while (contentSize < contents.length) {
                                 inUseBit = "1";
                                 dataData = inUseBit + headerTSB + contents.substring(contentSize, nextContentSize);
-                                //alert("Contents subStr = " + contents.substring(contentSize, nextContentSize));
-                                //alert("Contents Length = " + contents.substring(contentSize, nextContentSize).length);
-                                //sessionStorage.setItem(dataKey, dataData);
                                 this.writeData(dataKey, dataData);
                                 this.updateHardDiskTable(dataKey);
                                 contentSize = contentSize + this.dataSize;
@@ -321,13 +341,11 @@ var TSOS;
                                     //Write last contents less than or equal to 60 bytes to a file
                                     nextContentSize = contents.length;
                                     dataKey = this.getFreeDataEntry();
-                                    //sessionStorage.setItem(dataKey, dataData);
                                     headerTSB = "---";
                                 }
                                 else {
                                     nextContentSize = contentSize + this.dataSize;
                                     dataKey = this.getFreeDataEntry();
-                                    //newDataKey = 
                                     //set inUse bit for file/data block to 1 and 
                                     dataData = sessionStorage.getItem(dataKey);
                                     dataData = "1" + dataData.substr(1);
@@ -352,25 +370,20 @@ var TSOS;
                     else {
                         //get readerble data from hard disk and append the the new contents to it
                         var newData = sessionStorage.getItem(dataKey).substring(this.headerSize);
-                        // alert ("New Data = " + newData);
                         var prevContents = this.convertToString(newData);
                         var newContents = prevContents;
                         var newKey = sessionStorage.getItem(dataKey).substring(1, this.headerSize);
                         //reset header tsb
                         sessionStorage.setItem(dataKey, "1" + "---" + newData);
                         while (newKey != "---") {
-                            //newKey = sessionStorage.getItem(headerTSB).substring(1, this.headerSize); 
                             newData = sessionStorage.getItem(newKey).substring(this.headerSize);
                             dataKey = sessionStorage.getItem(newKey).substring(1, this.headerSize);
-                            // alert ("New Data = " + newData);
-                            //prevContents = this.convertToString(newData);
                             newContents = newContents + this.convertToString(newData);
                             //reset header tsb
                             sessionStorage.setItem(newKey, "0" + "---" + newData);
                             //get next header tsb 
                             newKey = dataKey;
                         }
-                        //alert("2 Appending file...  " + newContents + contents);
                         //recall write to function
                         this.writeToFile(fileName, newContents + contents);
                     }
@@ -417,7 +430,7 @@ var TSOS;
             //return null if there are no available or free tsb
             return null;
         };
-        // 
+        // check to see if a file is on HD
         DeviceDriverFileSystem.prototype.findFilename = function (fileName) {
             var key = "";
             var data = "";

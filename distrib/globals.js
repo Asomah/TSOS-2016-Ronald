@@ -70,7 +70,9 @@ var _CpuScheduler;
 var _DeviceDriverFileSystem;
 var _ProgramInput = ""; //Program input
 var _CpuSchedule = "rr"; // default cpu scheduling to round robbin
-var _IsProgramName = false;
+var _IsProgramName = false; // boolean to check if fileName is a name of a process on the ready queue 
+//var _Format = true;          //boolean to check if format command should be executed or not 
+var _FormatCommandActive = false; // boolean to check if format command is enterred or not
 // The OS Kernel and its queues.
 var _Kernel;
 var _KernelInterruptQueue; // Initializing this to null (which I would normally do) would then require us to specify the 'any' type, as below.

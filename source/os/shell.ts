@@ -847,11 +847,10 @@ module TSOS {
                 var fileName: string = args + "";
                 _DeviceDriverFileSystem.deleteFile(fileName);
             }
-
-
         }
 
         public shellFormat(args) {
+            _FormatCommandActive = true; 
             _DeviceDriverFileSystem.format();
 
         }

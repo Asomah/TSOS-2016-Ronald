@@ -675,6 +675,7 @@ var TSOS;
             }
         };
         Shell.prototype.shellFormat = function (args) {
+            _FormatCommandActive = true;
             _DeviceDriverFileSystem.format();
         };
         Shell.prototype.shellListFiles = function (args) {

@@ -133,7 +133,6 @@ module TSOS {
                     _ClockTicks++;
                     //increase wait time
                     _WaitTime++;
-                    // alert("1Clock Ticks " + _ClockTicks);
                 }
                 else {
 
@@ -141,11 +140,8 @@ module TSOS {
                     nextProgram = this.getNextprogram();
 
                     nextProgram.waitTime = _CurrentProgram.waitTime + _WaitTime;
-                    //alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
                     _MemoryManager.updatePcbTable(nextProgram);
 
-
-                    // alert("2Clock Ticks " + _ClockTicks);
                     this.contextSwitch();
 
                     //reset clock ticks 
@@ -160,10 +156,7 @@ module TSOS {
                 //set current's program's time
                 nextProgram = this.getNextprogram();
                 nextProgram.waitTime = _CurrentProgram.waitTime + _WaitTime;
-                //alert("PID " + nextProgram.PID + " wait time =" + nextProgram.waitTime);
                 _MemoryManager.updatePcbTable(nextProgram);
-
-
                 this.contextSwitch();
 
                 //reset wait time
@@ -196,12 +189,12 @@ module TSOS {
                         if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
                             _ReadyQueue.splice(i, 1);
 
+                            //Restore memory after program finishes running and update memory table
                             //alert("1 Resetting partition " + _CurrentProgram.PID + " and base " + _CurrentProgram.base + " value =" + _MemoryArray[_CurrentProgram.startIndex]);
                             _MemoryManager.resetPartition(_CurrentProgram);
                             _MemoryManager.updateMemTable(_CurrentProgram);
 
                             _MemoryManager.deleteRowPcb(_CurrentProgram);
-                            //alert("2 value  =" + _MemoryArray[_CurrentProgram.base]);
                             break;
                         }
 
@@ -225,6 +218,11 @@ module TSOS {
                     nextProgram.state = PS_Ready;
                     _MemoryManager.updatePcbTable(nextProgram);
 
+                    //execute format command if it is activated
+                        if (_FormatCommandActive == true){
+                            _DeviceDriverFileSystem.format();
+                        }
+
                 }
             }
             else {
@@ -237,8 +235,6 @@ module TSOS {
                     nextProgram.location = "Memory";
                     _MemoryManager.updatePcbTable(_CurrentProgram);
                 }
-                //alert("2 CPU " + _CPU.PC);
-                //alert("2 base " + nextProgram.base + " Limit " + nextProgram.limit);
                 //Break and save all cpu values to current program
                 _Kernel.krnInterruptHandler(BREAK_IRQ, "");
 
