@@ -338,6 +338,16 @@ var TSOS;
                     _MemoryManager.deleteRowPcb(_CurrentProgram);
                     _StdOut.advanceLine();
                     _StdOut.putText(">");
+                    //roll program that was swapped during the single run back into memory
+                    if (_RunOne == true && _RunHDProgram.location == "Hard Disk") {
+                        alert(_RunHDProgram.PID);
+                        _IsProgramName = true;
+                        TSOS.CpuScheduler.rollin(_RunHDProgram);
+                        _IsProgramName = false;
+                        _RunHDProgram.location = "Memory";
+                        _MemoryManager.updatePcbTable(_RunHDProgram);
+                        _RunOne = false;
+                    }
                     this.init();
                     _IR = "NA";
                     _MemoryManager.updateCpuTable();

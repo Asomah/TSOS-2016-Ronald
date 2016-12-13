@@ -542,7 +542,7 @@ module TSOS {
                 //Create a new PCB
                 //Update Memory Table
                 var programInput = _ProgramInput.replace(/[\s]/g, "");
-                if ((args.length == 1 && args == parseInt(args, 10)) || args.length == 0)   {
+                if ((args.length == 1 && args == parseInt(args, 10)) || args.length == 0) {
                     if (args.length == 1) {
                         _Priority = args;
                     }
@@ -555,8 +555,8 @@ module TSOS {
                             _MemoryManager = new MemoryManager();
                             //load program to memory
                             _MemoryManager.loadProgToMem();
-                            if (_CurrentProgram.base != -1){
-                            _MemoryManager.updateMemTable(_CurrentProgram);
+                            if (_CurrentProgram.base != -1) {
+                                _MemoryManager.updateMemTable(_CurrentProgram);
                             }
                         }
                         else {
@@ -566,13 +566,13 @@ module TSOS {
                             _MemoryManager = new MemoryManager();
                             //load program to memory
                             _MemoryManager.loadProgToMem();
-                            if (_CurrentProgram.base != -1){
-                            _MemoryManager.updateMemTable(_CurrentProgram);
+                            if (_CurrentProgram.base != -1) {
+                                _MemoryManager.updateMemTable(_CurrentProgram);
 
                             }
                             _CurrentProgram = newprog;
 
-                            
+
                         }
                     } else {
                         //Error if program is greater than or equal to 256
@@ -599,7 +599,6 @@ module TSOS {
             */
 
             //set Runall to false if running a specific program
-
             _DONE = false;
             _RunAll = false;
             _CPU.isExecuting = false;
@@ -619,9 +618,7 @@ module TSOS {
                     if (args == _ResidentQueue[index].PID) {
                         pid = _ResidentQueue[index].PID;
 
-
                         //remove process from resident queue and push it to ready queue
-                        //_ResidentQueue[index].state = PS_Ready;
                         _CurrentProgram = _ResidentQueue[index];
                         _CurrentProgram.state = PS_Ready;
                         _ResidentQueue.splice(index, 1);
@@ -632,6 +629,25 @@ module TSOS {
                         //update pcb table
                         _MemoryManager.updatePcbTable(_CurrentProgram);
                         break;
+                    }
+
+                }
+
+                //swap current program with some program in memory if current program is on HD
+                if (_CurrentProgram.location == "Hard Disk") {
+                    for (var i = 0; i < _ResidentQueue.length; i++) {
+                        if (_ResidentQueue[i].location == "Memory") {
+                           // alert("Swapping Programs " + _ResidentQueue[i].PID + "and " +  _CurrentProgram.PID);
+                            CpuScheduler.swapProgram(_ResidentQueue[i], _CurrentProgram);
+                            _ResidentQueue[i].location = "Hard Disk";
+                            _CurrentProgram.location = "Memory";
+                            _MemoryManager.updatePcbTable(_CurrentProgram);
+                            _MemoryManager.updatePcbTable(_ResidentQueue[i]);
+                            _RunHDProgram = _ResidentQueue[i];
+                            break;
+
+                        }
+
                     }
 
                 }
@@ -653,6 +669,7 @@ module TSOS {
                         }
                         else {
                             //base to start running program
+                            _RunOne = true;
                             _CPU.init();
                             _CPU.startIndex = _CurrentProgram.startIndex;
                             _CPU.isExecuting = true;
@@ -692,7 +709,7 @@ module TSOS {
                 _CurrentProgram = _ReadyQueue[0];
 
                 if (_CpuSchedule == "priority") {
-                     CpuScheduler.priority();
+                    CpuScheduler.priority();
                 }
 
 
@@ -850,7 +867,7 @@ module TSOS {
         }
 
         public shellFormat(args) {
-            _FormatCommandActive = true; 
+            _FormatCommandActive = true;
             _DeviceDriverFileSystem.format();
 
         }

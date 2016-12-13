@@ -489,7 +489,6 @@ var TSOS;
                     if (args == _ResidentQueue[index].PID) {
                         pid = _ResidentQueue[index].PID;
                         //remove process from resident queue and push it to ready queue
-                        //_ResidentQueue[index].state = PS_Ready;
                         _CurrentProgram = _ResidentQueue[index];
                         _CurrentProgram.state = PS_Ready;
                         _ResidentQueue.splice(index, 1);
@@ -498,6 +497,21 @@ var TSOS;
                         //update pcb table
                         _MemoryManager.updatePcbTable(_CurrentProgram);
                         break;
+                    }
+                }
+                //swap current program with some program in memory if current program is on HD
+                if (_CurrentProgram.location == "Hard Disk") {
+                    for (var i = 0; i < _ResidentQueue.length; i++) {
+                        if (_ResidentQueue[i].location == "Memory") {
+                            // alert("Swapping Programs " + _ResidentQueue[i].PID + "and " +  _CurrentProgram.PID);
+                            TSOS.CpuScheduler.swapProgram(_ResidentQueue[i], _CurrentProgram);
+                            _ResidentQueue[i].location = "Hard Disk";
+                            _CurrentProgram.location = "Memory";
+                            _MemoryManager.updatePcbTable(_CurrentProgram);
+                            _MemoryManager.updatePcbTable(_ResidentQueue[i]);
+                            _RunHDProgram = _ResidentQueue[i];
+                            break;
+                        }
                     }
                 }
                 if (_CurrentProgram.state == PS_Ready) {
@@ -514,6 +528,7 @@ var TSOS;
                         }
                         else {
                             //base to start running program
+                            _RunOne = true;
                             _CPU.init();
                             _CPU.startIndex = _CurrentProgram.startIndex;
                             _CPU.isExecuting = true;

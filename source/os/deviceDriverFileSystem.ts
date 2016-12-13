@@ -128,7 +128,6 @@ module TSOS {
 
         }
 
-
         //converts a hex string back to regular string
         public convertToString(data) {
             var str = "";

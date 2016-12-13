@@ -7,7 +7,6 @@ var TSOS;
         }
         //roll out a program from memory to hard drive
         CpuScheduler.rollout = function (program) {
-            program = _CurrentProgram;
             var programInput = "";
             for (var i = program.base; i <= program.limit; i++) {
                 programInput += _MemoryArray[i];

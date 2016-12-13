@@ -70,6 +70,8 @@ var _TaTime: number = 1;                  //Global to Initialize turn around tim
 
 
 var _RunAll: Boolean = false;    //booleann to check if we are running more than one program
+var _RunOne: boolean = false;    // running just one program
+var _RunHDProgram: TSOS.Pcb;
 var _ResetMem: Boolean = false;  
 
 var _RowNumber: number = 0;         //row number for each program

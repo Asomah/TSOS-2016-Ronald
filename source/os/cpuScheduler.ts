@@ -10,7 +10,6 @@ module TSOS {
 
         //roll out a program from memory to hard drive
         public static rollout(program) {
-            program = _CurrentProgram;
             var programInput: string = "";
 
             for (var i = program.base; i <= program.limit; i++) {

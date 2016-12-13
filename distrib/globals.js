@@ -51,6 +51,8 @@ var _ClockTicks = 0; //number of clock ticks
 var _WaitTime = 1; //Global to Initialize wait timer
 var _TaTime = 1; //Global to Initialize turn around time 
 var _RunAll = false; //booleann to check if we are running more than one program
+var _RunOne = false; // running just one program
+var _RunHDProgram;
 var _ResetMem = false;
 var _RowNumber = 0; //row number for each program
 var _CurrMemIndex = 0;

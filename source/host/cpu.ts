@@ -274,7 +274,7 @@ module TSOS {
 
             }
             else if (opCode == "FF") {
-                _IR = opCode;                                   
+                _IR = opCode;
                 _Kernel.krnInterruptHandler(SYSCALL_IRQ, this.Xreg);
             }
             else {
@@ -327,8 +327,8 @@ module TSOS {
                 _MemoryManager.updatePcbTable(_CurrentProgram);
 
                 if ((_RunAll == true && _DONE != true) || _ReadyQueue.length > 1) {
-                      //reset partition for terminated program
-                     //_MemoryManager.resetPartition(_CurrentProgram);
+                    //reset partition for terminated program
+                    //_MemoryManager.resetPartition(_CurrentProgram);
                     if (_CpuSchedule == "rr" || _CpuSchedule == "fcfs") {
                         CpuScheduler.roundRobin();
                         _ClockTicks = 1;
@@ -338,8 +338,8 @@ module TSOS {
                             for (var i = 0; i < _ReadyQueue.length; i++) {
                                 if (_ReadyQueue[i].PID == _CurrentProgram.PID) {
                                     _ReadyQueue.splice(i, 1);
-                              
-                                     //Restore memory after program finishes running and update memory table
+
+                                    //Restore memory after program finishes running and update memory table
                                     _MemoryManager.resetPartition(_CurrentProgram);
                                     _MemoryManager.updateMemTable(_CurrentProgram);
 
@@ -349,12 +349,12 @@ module TSOS {
 
                             }
                         }
-                        
+
                         this.isExecuting = true;
                         CpuScheduler.priority();
 
                         //execute format command if it is activated
-                        if (_FormatCommandActive == true){
+                        if (_FormatCommandActive == true) {
                             _DeviceDriverFileSystem.format();
                         }
 
@@ -380,6 +380,17 @@ module TSOS {
                     _MemoryManager.deleteRowPcb(_CurrentProgram);
                     _StdOut.advanceLine();
                     _StdOut.putText(">");
+
+                    //roll program that was swapped during the single run back into memory
+                    if (_RunOne == true && _RunHDProgram.location == "Hard Disk") {
+                        alert(_RunHDProgram.PID);
+                        _IsProgramName = true;
+                        CpuScheduler.rollin(_RunHDProgram);
+                        _IsProgramName = false;
+                        _RunHDProgram.location = "Memory";
+                        _MemoryManager.updatePcbTable(_RunHDProgram);
+                        _RunOne = false;
+                    }
 
                     this.init();
                     _IR = "NA";
