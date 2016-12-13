@@ -145,6 +145,7 @@ module TSOS {
         //converts the string-data provided to hex
         public convertToHex(data) {
             var hexString = "";
+            data+= "";
             //converts a char at an index to hex and builds the string
             for (var i = 0; i < data.length; i++) {
                 hexString += data.charCodeAt(i).toString(16);
@@ -175,7 +176,6 @@ module TSOS {
         //create file
         public createFile(fileName) {
 
-            //var fileNameDirKey = this.findFilename(fileName);
             var dirKey = this.getFreeDirEntry();
             var dataKey = this.getFreeDataEntry();
             var dirData = "";
@@ -193,13 +193,13 @@ module TSOS {
                 _StdOut.putText("Memory out of space... There is no free space to create this file");
 
             }
-            /*else if ( fileNameDirKey == null){
+            else if ( this.findFilename(fileName) != null){
                 //if file already exist don't create it. 
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("File already exist... Create file using a different file name");
 
-            }*/
+            }
             else {
                 //Create file if it passes the above cases
                 dirData = sessionStorage.getItem(dirKey);
@@ -540,7 +540,6 @@ module TSOS {
                     }
                 }
             }
-
             return null;
         }
 

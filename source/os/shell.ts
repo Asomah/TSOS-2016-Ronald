@@ -637,7 +637,7 @@ module TSOS {
                 if (_CurrentProgram.location == "Hard Disk") {
                     for (var i = 0; i < _ResidentQueue.length; i++) {
                         if (_ResidentQueue[i].location == "Memory") {
-                           // alert("Swapping Programs " + _ResidentQueue[i].PID + "and " +  _CurrentProgram.PID);
+                            // alert("Swapping Programs " + _ResidentQueue[i].PID + "and " +  _CurrentProgram.PID);
                             CpuScheduler.swapProgram(_ResidentQueue[i], _CurrentProgram);
                             _ResidentQueue[i].location = "Hard Disk";
                             _CurrentProgram.location = "Memory";
@@ -655,6 +655,7 @@ module TSOS {
 
                 if (_CurrentProgram.state == PS_Ready) {
                     _StdOut.putText('Running PID ' + pid);
+                     _RunOne = true;
                     if ((<HTMLButtonElement>document.getElementById("singleStep")).value == "Exit") {
                         _CPU.cycle();
                     }
@@ -663,13 +664,13 @@ module TSOS {
                         if (_ReadyQueue.length > 1) {
                             _CurrentProgram = activeProg;
                             _ClockTicks++;
+                            _RunOne = false;
                             _RunAll = true;
                             _CPU.isExecuting = true;
 
                         }
                         else {
                             //base to start running program
-                            _RunOne = true;
                             _CPU.init();
                             _CPU.startIndex = _CurrentProgram.startIndex;
                             _CPU.isExecuting = true;
@@ -761,13 +762,20 @@ module TSOS {
 
         public shellQuantum(args) {
             //Sets quantum number for round robin
+            if (_CpuSchedule == "fcfs") {
+                //do not allow user to change quantum number if current scheduling is fcfs
+                _StdOut.putText("Cannot set qauntum at fcfs CPU schedule...");
+            } else {
+                if (args == parseInt(args, 10)) {
+                    _Quantum = args;
+                }
+                else {
+                    _StdOut.putText("Please enter an integer");
+                }
 
-            if (args == parseInt(args, 10)) {
-                _Quantum = args;
             }
-            else {
-                _StdOut.putText("Please enter an integer");
-            }
+
+
         }
 
         public shellActivePids(args) {

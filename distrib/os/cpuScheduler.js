@@ -52,8 +52,15 @@ var TSOS;
             if (nextProgram.location == "Hard Disk") {
                 if (_CurrentProgram.state == PS_Terminated) {
                     _IsProgramName = true;
-                    //Get the start index for the next program in a particular segment
-                    nextProgram.startIndex = (nextProgram.startIndex - nextProgram.base) + _CurrentProgram.base;
+                    if (nextProgram.base == -1) {
+                        nextProgram.startIndex = _CurrentProgram.base;
+                    }
+                    else {
+                        //Get the start index for the next program in a particular segment
+                        nextProgram.startIndex = (nextProgram.startIndex - nextProgram.base) + _CurrentProgram.base;
+                    }
+                    nextProgram.base = _CurrentProgram.base;
+                    nextProgram.limit = _CurrentProgram.limit;
                     this.rollin(nextProgram);
                     _IsProgramName = false;
                     nextProgram.location = "Memory";
@@ -149,8 +156,13 @@ var TSOS;
                     if (nextProgram.location == "Hard Disk") {
                         //alert("next Program in HD =" + nextProgram.PID);
                         //roll next prongram to memory after deleting terminated program
-                        //Get the start index for the next program in a particular segment
-                        nextProgram.startIndex = (nextProgram.startIndex - nextProgram.base) + _CurrentProgram.base;
+                        if (nextProgram.base == -1) {
+                            nextProgram.startIndex = _CurrentProgram.base;
+                        }
+                        else {
+                            //Get the start index for the next program in a particular segment
+                            nextProgram.startIndex = (nextProgram.startIndex - nextProgram.base) + _CurrentProgram.base;
+                        }
                         //get base and limit for next program
                         nextProgram.base = _CurrentProgram.base;
                         nextProgram.limit = _CurrentProgram.limit;

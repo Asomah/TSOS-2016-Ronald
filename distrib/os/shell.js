@@ -516,6 +516,7 @@ var TSOS;
                 }
                 if (_CurrentProgram.state == PS_Ready) {
                     _StdOut.putText('Running PID ' + pid);
+                    _RunOne = true;
                     if (document.getElementById("singleStep").value == "Exit") {
                         _CPU.cycle();
                     }
@@ -523,12 +524,12 @@ var TSOS;
                         if (_ReadyQueue.length > 1) {
                             _CurrentProgram = activeProg;
                             _ClockTicks++;
+                            _RunOne = false;
                             _RunAll = true;
                             _CPU.isExecuting = true;
                         }
                         else {
                             //base to start running program
-                            _RunOne = true;
                             _CPU.init();
                             _CPU.startIndex = _CurrentProgram.startIndex;
                             _CPU.isExecuting = true;
@@ -598,11 +599,17 @@ var TSOS;
         };
         Shell.prototype.shellQuantum = function (args) {
             //Sets quantum number for round robin
-            if (args == parseInt(args, 10)) {
-                _Quantum = args;
+            if (_CpuSchedule == "fcfs") {
+                //do not allow user to change quantum number if current scheduling is fcfs
+                _StdOut.putText("Cannot set qauntum at fcfs CPU schedule...");
             }
             else {
-                _StdOut.putText("Please enter an integer");
+                if (args == parseInt(args, 10)) {
+                    _Quantum = args;
+                }
+                else {
+                    _StdOut.putText("Please enter an integer");
+                }
             }
         };
         Shell.prototype.shellActivePids = function (args) {

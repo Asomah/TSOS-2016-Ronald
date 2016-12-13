@@ -338,9 +338,10 @@ var TSOS;
                     _MemoryManager.deleteRowPcb(_CurrentProgram);
                     _StdOut.advanceLine();
                     _StdOut.putText(">");
+                    //alert("ID " + _RunHDProgram.PID + " location =" + _RunHDProgram.location + " bool =" + _RunAll);
                     //roll program that was swapped during the single run back into memory
                     if (_RunOne == true && _RunHDProgram.location == "Hard Disk") {
-                        alert(_RunHDProgram.PID);
+                        //alert(_RunHDProgram.PID);
                         _IsProgramName = true;
                         TSOS.CpuScheduler.rollin(_RunHDProgram);
                         _IsProgramName = false;
