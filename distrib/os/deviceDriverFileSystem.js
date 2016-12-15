@@ -113,11 +113,11 @@ var TSOS;
                     }
                 }
                 //Display suscces status
-                if (_CPU.isExecuting == true) {
+                if (_FormatCommandActive == true) {
                     _StdOut.advanceLine();
                 }
                 _StdOut.putText("Successfully Formatted");
-                if (_CPU.isExecuting == true) {
+                if (_FormatCommandActive == true) {
                     _StdOut.advanceLine();
                 }
                 //set format command back to not activated
@@ -200,7 +200,7 @@ var TSOS;
                 sessionStorage.setItem(dataKey, dataData);
                 this.updateHardDiskTable(dirKey);
                 this.updateHardDiskTable(dataKey);
-                if (!fileName.match(/process\d+/)) {
+                if (!fileName.match(/PROCESS\d+/)) {
                     //Display suscces status
                     _StdOut.putText("SUCCESS : " + fileName + " has been created");
                 }
@@ -235,7 +235,7 @@ var TSOS;
                     nextDataKey = dataKey;
                 }
                 //display success message if file is not a program's name ( a program in ready queue)
-                if (!fileName.match(/process\d+/)) {
+                if (!fileName.match(/PROCESS\d+/)) {
                     //Display suscces status
                     _StdOut.putText("SUCCESS : " + fileName + " has been deleted");
                 }
@@ -263,7 +263,7 @@ var TSOS;
                 //_StdOut.putText("SUCCESS : Reading " + fileName + "...");
                 //_StdOut.advanceLine();
                 //display file content if file is not a program's name ( a program in ready queue)
-                if (!fileName.match(/process\d+/)) {
+                if (!fileName.match(/PROCESS\d+/)) {
                     _StdOut.putText(fileData);
                 }
                 return fileData;
@@ -299,7 +299,7 @@ var TSOS;
                             sessionStorage.setItem(dataKey, dataData);
                             this.writeData(dataKey, dataData);
                             this.updateHardDiskTable(dataKey);
-                            if (!fileName.match(/process\d+/)) {
+                            if (!fileName.match(/PROCESS\d+/)) {
                                 //Display suscces status if file is not a program's name ( a program in ready queue)
                                 _StdOut.putText("SUCCESS : " + fileName + " has been updated");
                             }
@@ -347,11 +347,19 @@ var TSOS;
                                     //Write last contents less than or equal to 60 bytes to a file
                                     nextContentSize = contents.length;
                                     dataKey = this.getFreeDataEntry();
+                                    if (dataKey == null) {
+                                        //stop writing to file when HD is out of space
+                                        break;
+                                    }
                                     headerTSB = "---";
                                 }
                                 else {
                                     nextContentSize = contentSize + this.dataSize;
                                     dataKey = this.getFreeDataEntry();
+                                    if (dataKey == null) {
+                                        //stop writing to file when HD is out of space
+                                        break;
+                                    }
                                     //set inUse bit for file/data block to 1 and 
                                     dataData = sessionStorage.getItem(dataKey);
                                     dataData = "1" + dataData.substr(1);
@@ -360,12 +368,12 @@ var TSOS;
                                     newDataKey = this.getFreeDataEntry();
                                     headerTSB = newDataKey;
                                     if (newDataKey == null) {
-                                        //TO DO:: Error if file is too large
+                                        //stop writing to file when HD is out of space
                                         break;
                                     }
                                 }
                             }
-                            if (!fileName.match(/process\d+/)) {
+                            if (!fileName.match(/PROCESS\d+/)) {
                                 //Display suscces status
                                 _StdOut.putText("SUCCESS : " + fileName + " has been updated");
                             }

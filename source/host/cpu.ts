@@ -317,7 +317,7 @@ module TSOS {
             }
             else {
 
-                //this.isExecuting = false;
+                this.isExecuting = false;
                 //set the next program to execute
                 //Get current program if ready queue length is 1
                 if (_ReadyQueue.length == 1) {
@@ -371,7 +371,7 @@ module TSOS {
                 else {
 
                     //remove the only program from ready queue
-                    // alert("Removing the only program " + _CurrentProgram.PID);
+                    alert("Removing the only program " + _CurrentProgram.PID + "  " + this.isExecuting);
 
                     _ReadyQueue.splice(0, 1);
 
@@ -381,20 +381,25 @@ module TSOS {
                     _StdOut.advanceLine();
                     _StdOut.putText(">");
 
-                    //alert("ID " + _RunHDProgram.PID + " location =" + _RunHDProgram.location + " bool =" + _RunAll);
+                    
+                    alert("ID " + _CurrentProgram.PID + " location =" + _CurrentProgram.location + " bool =" + _RunOne);
                     //roll program that was swapped during the single run back into memory
                     if (_RunOne == true && _RunHDProgram.location == "Hard Disk") {
-                        //alert(_RunHDProgram.PID);
+
+                        alert("2. ID " + _RunHDProgram.PID + " location =" + _CurrentProgram.location );
                         CpuScheduler.rollin(_RunHDProgram);
                         _RunHDProgram.location = "Memory";
                         _MemoryManager.updatePcbTable(_RunHDProgram);
                         _RunOne = false;
                     }
                     else if (_RunOne == true && _CurrentProgram.location == "Memory") {
-                        //load a program from HD to memory if there is an empty partition
+                        alert("Yes in memory");
+                        //load a program from HD to memory if there is an empty partition in memory
                         if (_ResidentQueue.length > 1) {
+                             alert("Yes res queue greate than 1");
                             for (var i = 0; i < _ResidentQueue.length; i++) {
                                 if (_ResidentQueue[i].location == "Hard Disk") {
+                                    alert("program " + _ResidentQueue[i].PID + " is on HD");
                                     if (_ResidentQueue[i].base == -1) {
                                         _ResidentQueue[i].startIndex = _CurrentProgram.base;
                                         //alert("New prog start index =" + nextProg.startIndex);
@@ -421,8 +426,6 @@ module TSOS {
                     _IR = "NA";
                     _MemoryManager.updateCpuTable();
                     _DONE = true;
-                    this.isExecuting = false;
-
                 }
 
             }

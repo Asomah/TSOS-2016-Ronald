@@ -18,8 +18,7 @@ module TSOS {
             public dataSize: number = 60,    //blocks to contain data 
             public headerSize: number = 4,
             public formatCount: number = 1    // Display format waiting message once
-            ) {
-
+        ) {
             super();
             this.driverEntry = this.krnFsDriverEntry;
         }
@@ -46,85 +45,85 @@ module TSOS {
         }
 
         //list all files available on HD
-        public listFiles(){
-                for (var i = 0; i < this.sectors; i++) {
-                    for (var j = 1; j < this.blocks; j++) {
-                        var key = "0" + i + j;
-                        var inUseBit = sessionStorage.getItem(key).substring(0,1);
+        public listFiles() {
+            for (var i = 0; i < this.sectors; i++) {
+                for (var j = 1; j < this.blocks; j++) {
+                    var key = "0" + i + j;
+                    var inUseBit = sessionStorage.getItem(key).substring(0, 1);
 
-                        if (inUseBit == "1"){
-                            var data = sessionStorage.getItem(key).substring(this.headerSize);
-                            var fileName = this.convertToString(data);
-                            //Display file name 
-                            _StdOut.putText(fileName);
-                            _StdOut.advanceLine();
+                    if (inUseBit == "1") {
+                        var data = sessionStorage.getItem(key).substring(this.headerSize);
+                        var fileName = this.convertToString(data);
+                        //Display file name 
+                        _StdOut.putText(fileName);
+                        _StdOut.advanceLine();
 
-                        }
                     }
                 }
-            
+            }
+
         }
 
         // reinitialize HD
-        public format(){
+        public format() {
             //look to see if there is a program in the ready queue that is on the HD. Do not execute format command if there is one
             var format = true;        //boolean to check if format command should be executed or not
-             if (_ReadyQueue.length > 1){
-                for (var i = 0; i < _ReadyQueue.length; i++){
-                if (_ReadyQueue[i].location == "Hard Disk"){
-                    //alert ("Location " + _ReadyQueue[i].location);
-                    format = false;
-                    if (this.formatCount == 1){
-                    _StdOut.putText("FORMAT WAITING...");
-                    _StdOut.advanceLine();
-                    this.formatCount++;
+            if (_ReadyQueue.length > 1) {
+                for (var i = 0; i < _ReadyQueue.length; i++) {
+                    if (_ReadyQueue[i].location == "Hard Disk") {
+                        //alert ("Location " + _ReadyQueue[i].location);
+                        format = false;
+                        if (this.formatCount == 1) {
+                            _StdOut.putText("FORMAT WAITING...");
+                            _StdOut.advanceLine();
+                            this.formatCount++;
+                        }
+                        break;
                     }
-                    break;
                 }
-             }
-                         
-            }else if (_ResidentQueue.length > 1){
-                for (var i = 0; i < _ResidentQueue.length; i++){
-                if (_ResidentQueue[i].location == "Hard Disk"){
-                    //alert ("Location " + _ResidentQueue[i].location);
-                    format = false;
-                   _StdOut.putText("Cannot format HD now... There are programs on HD waiting to be executed.");
-                      //set format command back to not activated
-                      _FormatCommandActive = false;
-                    break;
+
+            } else if (_ResidentQueue.length > 1) {
+                for (var i = 0; i < _ResidentQueue.length; i++) {
+                    if (_ResidentQueue[i].location == "Hard Disk") {
+                        //alert ("Location " + _ResidentQueue[i].location);
+                        format = false;
+                        _StdOut.putText("Cannot format HD now... There are programs on HD waiting to be executed.");
+                        //set format command back to not activated
+                        _FormatCommandActive = false;
+                        break;
+                    }
                 }
+
             }
-                
-            } 
-            
+
             //alert ("Format " + format);
             if (format == true) {
                 for (var i = 0; i < this.tracks; i++) {
                     for (var j = 0; j < this.sectors; j++) {
-                    for (var k = 0; k < this.blocks; k++) {
-                        var key = i.toString() + j.toString() + k.toString();
-                        var data = this.initializeBlock();
-                        //Set MBR inUse bit to 1 so that it never gets accessed
-                        if (key == "000"){
-                             data = "1000"+ data.substring(this.headerSize); 
+                        for (var k = 0; k < this.blocks; k++) {
+                            var key = i.toString() + j.toString() + k.toString();
+                            var data = this.initializeBlock();
+                            //Set MBR inUse bit to 1 so that it never gets accessed
+                            if (key == "000") {
+                                data = "1000" + data.substring(this.headerSize);
+                            }
+                            sessionStorage.setItem(key, data);
+                            this.updateHardDiskTable(key);
                         }
-                        sessionStorage.setItem(key, data );
-                        this.updateHardDiskTable(key);
                     }
                 }
-            }
 
-             //Display suscces status
-            if (_CPU.isExecuting == true){
-                _StdOut.advanceLine();
+                //Display suscces status
+                if (_FormatCommandActive == true) {
+                    _StdOut.advanceLine();
+                }
+                _StdOut.putText("Successfully Formatted");
+                if (_FormatCommandActive == true) {
+                    _StdOut.advanceLine();
+                }
+                //set format command back to not activated
+                _FormatCommandActive = false;
             }
-             _StdOut.putText("Successfully Formatted");
-             if (_CPU.isExecuting == true){
-                _StdOut.advanceLine();
-            }
-             //set format command back to not activated
-             _FormatCommandActive = false;
-        }
 
         }
 
@@ -192,7 +191,7 @@ module TSOS {
                 _StdOut.putText("Memory out of space... There is no free space to create this file");
 
             }
-            else if ( this.findFilename(fileName) != null){
+            else if (this.findFilename(fileName) != null) {
                 //if file already exist don't create it. 
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
@@ -217,9 +216,9 @@ module TSOS {
                 this.updateHardDiskTable(dirKey);
                 this.updateHardDiskTable(dataKey);
 
-                if (!fileName.match(/process\d+/)){
-                //Display suscces status
-                _StdOut.putText("SUCCESS : " + fileName + " has been created");
+                if (!fileName.match(/PROCESS\d+/)) {
+                    //Display suscces status
+                    _StdOut.putText("SUCCESS : " + fileName + " has been created");
 
                 }
             }
@@ -262,9 +261,9 @@ module TSOS {
 
                 }
                 //display success message if file is not a program's name ( a program in ready queue)
-                 if (!fileName.match(/process\d+/)){
-                //Display suscces status
-                _StdOut.putText("SUCCESS : " + fileName + " has been deleted");
+                if (!fileName.match(/PROCESS\d+/)) {
+                    //Display suscces status
+                    _StdOut.putText("SUCCESS : " + fileName + " has been deleted");
                 }
 
             }
@@ -289,17 +288,17 @@ module TSOS {
 
                 //conver contents of file TSB linked to file name to asci string. Convert subsequent file TSB to string if it's not empty (---)
                 fileData = fileData + this.convertToString(sessionStorage.getItem(dataKey).substring(this.headerSize));
-                    while (nextDataKey != "---") {
-                        fileData = fileData + this.convertToString(sessionStorage.getItem(nextDataKey).substring(this.headerSize));
-                        nextDataKey = sessionStorage.getItem(nextDataKey).substring(1, this.headerSize);
-                    }
-                
+                while (nextDataKey != "---") {
+                    fileData = fileData + this.convertToString(sessionStorage.getItem(nextDataKey).substring(this.headerSize));
+                    nextDataKey = sessionStorage.getItem(nextDataKey).substring(1, this.headerSize);
+                }
+
                 //_StdOut.putText("SUCCESS : Reading " + fileName + "...");
                 //_StdOut.advanceLine();
                 //display file content if file is not a program's name ( a program in ready queue)
-                 if (!fileName.match(/process\d+/)){
-                _StdOut.putText(fileData);
-                 }
+                if (!fileName.match(/PROCESS\d+/)) {
+                    _StdOut.putText(fileData);
+                }
                 return fileData;
 
             }
@@ -338,9 +337,9 @@ module TSOS {
                             this.writeData(dataKey, dataData);
                             this.updateHardDiskTable(dataKey);
 
-                            if (!fileName.match(/process\d+/)){
-                            //Display suscces status if file is not a program's name ( a program in ready queue)
-                            _StdOut.putText("SUCCESS : " + fileName + " has been updated");
+                            if (!fileName.match(/PROCESS\d+/)) {
+                                //Display suscces status if file is not a program's name ( a program in ready queue)
+                                _StdOut.putText("SUCCESS : " + fileName + " has been updated");
                             }
 
                         }
@@ -388,7 +387,7 @@ module TSOS {
                             while (contentSize < contents.length) {
                                 inUseBit = "1";
                                 dataData = inUseBit + headerTSB + contents.substring(contentSize, nextContentSize);
-    
+
                                 this.writeData(dataKey, dataData);
                                 this.updateHardDiskTable(dataKey);
 
@@ -398,12 +397,30 @@ module TSOS {
                                     //Write last contents less than or equal to 60 bytes to a file
                                     nextContentSize = contents.length;
                                     dataKey = this.getFreeDataEntry();
+
+                                    if (dataKey == null) {
+                                        //stop writing to file when HD is out of space
+                                        break;
+                                        /*TO DO in future:: Keep track of the data entries of the new file being updated
+                                        if HD is full, roll back and delete the new content of the file and keep the old
+                                        one. DO NOT ALLOW THE FILE TO BE UPDATED IF HD IS FULL.
+                                        */
+                                    }
                                     headerTSB = "---";
 
                                 }
                                 else {
                                     nextContentSize = contentSize + this.dataSize;
                                     dataKey = this.getFreeDataEntry();
+                                    if (dataKey == null) {
+                                        //stop writing to file when HD is out of space
+                                        break;
+                                        /*TO DO in future:: Keep track of the data entries of the new file being updated
+                                        if HD is full, roll back and delete the new content of the file and keep the old
+                                        one. DO NOT ALLOW THE FILE TO BE UPDATED IF HD IS FULL.
+                                        */
+                                    }
+
                                     //set inUse bit for file/data block to 1 and 
                                     dataData = sessionStorage.getItem(dataKey);
                                     dataData = "1" + dataData.substr(1);
@@ -413,25 +430,28 @@ module TSOS {
                                     newDataKey = this.getFreeDataEntry();
                                     headerTSB = newDataKey;
 
-
                                     if (newDataKey == null) {
-                                        //TO DO:: Error if file is too large
-
+                                        //stop writing to file when HD is out of space
                                         break;
-
+                                        /*TO DO in future:: Keep track of the data entries of the new file being updated
+                                        if HD is full, roll back and delete the new content of the file and keep the old
+                                        one. DO NOT ALLOW THE FILE TO BE UPDATED IF HD IS FULL.
+                                        */
                                     }
 
                                 }
 
                             }
-                            if (!fileName.match(/process\d+/)){
-                            //Display suscces status
-                            _StdOut.putText("SUCCESS : " + fileName + " has been updated");
+                            if (!fileName.match(/PROCESS\d+/)) {
+                                //Display suscces status
+                                _StdOut.putText("SUCCESS : " + fileName + " has been updated");
                             }
                         }
                         else {
-                            //TO DO:: Error if file is too large
-
+                            /*TO DO in future:: Keep track of the data entries of the new file being updated
+                            if HD is full, roll back and delete the new content of the file and keep the old
+                            one. DO NOT ALLOW THE FILE TO BE UPDATED IF HD IS FULL.
+                            */
                         }
 
 
@@ -463,10 +483,8 @@ module TSOS {
 
                     }
                 }
-
                 else {
-                    //TO DO:: Error if file is too large
-
+                    //TO DO:: Some OS Error
                 }
 
             }

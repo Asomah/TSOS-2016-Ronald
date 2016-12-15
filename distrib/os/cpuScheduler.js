@@ -11,8 +11,8 @@ var TSOS;
             for (var i = program.base; i <= program.limit; i++) {
                 programInput += _MemoryArray[i];
             }
-            _DeviceDriverFileSystem.createFile("process" + program.PID);
-            _DeviceDriverFileSystem.writeToFile("process" + program.PID, programInput);
+            _DeviceDriverFileSystem.createFile("PROCESS" + program.PID);
+            _DeviceDriverFileSystem.writeToFile("PROCESS" + program.PID, programInput);
             _CurrentProgram.location = "Hard Disk";
             _MemoryManager.resetPartition(program);
             //log roll out process
@@ -20,7 +20,7 @@ var TSOS;
         };
         //load a program from hard drive and load it to memory
         CpuScheduler.rollin = function (program) {
-            var programInput = _DeviceDriverFileSystem.readFile("process" + program.PID);
+            var programInput = _DeviceDriverFileSystem.readFile("PROCESS" + program.PID);
             var j = program.base;
             for (var i = 0; i < programInput.length; i++) {
                 _MemoryArray[j] = programInput[i] + programInput[i + 1];
@@ -29,7 +29,7 @@ var TSOS;
             }
             //_MemoryManager.loadProgToMem();
             _MemoryManager.updateMemTable(program);
-            _DeviceDriverFileSystem.deleteFile("process" + program.PID);
+            _DeviceDriverFileSystem.deleteFile("PROCESS" + program.PID);
             //log roll in process
             _Kernel.krnTrace(program.PID + " Rolled in ");
         };

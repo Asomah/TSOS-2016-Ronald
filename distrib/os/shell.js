@@ -626,7 +626,7 @@ var TSOS;
         };
         Shell.prototype.shellCreateFile = function (args) {
             var str = args + "";
-            if (str.match(/process\d+/)) {
+            if (str.match(/PROCESS\d+/)) {
                 //Don't allow users to create file names that can be a name of a program/process on HD
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();

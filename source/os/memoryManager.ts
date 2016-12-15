@@ -47,8 +47,8 @@ module TSOS {
                   }
                   else{
                         _IsProgramName = true;
-                        _DeviceDriverFileSystem.createFile("process" + _PID);
-                        _DeviceDriverFileSystem.writeToFile("process" + _PID, programInput);
+                        _DeviceDriverFileSystem.createFile("PROCESS" + _PID);
+                        _DeviceDriverFileSystem.writeToFile("PROCESS" + _PID, programInput);
                         _CurrentProgram.location = "Hard Disk";
                         _IsProgramName = false;
                         
