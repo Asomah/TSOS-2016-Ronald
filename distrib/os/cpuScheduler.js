@@ -15,6 +15,8 @@ var TSOS;
             _DeviceDriverFileSystem.writeToFile("process" + program.PID, programInput);
             _CurrentProgram.location = "Hard Disk";
             _MemoryManager.resetPartition(program);
+            //log roll out process
+            _Kernel.krnTrace(program.PID + " Rolled out ");
         };
         //load a program from hard drive and load it to memory
         CpuScheduler.rollin = function (program) {
@@ -28,6 +30,8 @@ var TSOS;
             //_MemoryManager.loadProgToMem();
             _MemoryManager.updateMemTable(program);
             _DeviceDriverFileSystem.deleteFile("process" + program.PID);
+            //log roll in process
+            _Kernel.krnTrace(program.PID + " Rolled in ");
         };
         //Swap out process and place it on 
         CpuScheduler.swapProgram = function (currProg, nextProg) {
@@ -40,18 +44,17 @@ var TSOS;
             }
             nextProg.base = currProg.base;
             nextProg.limit = currProg.limit;
-            _IsProgramName = true;
             if (currProg.state != PS_Terminated) {
                 this.rollout(currProg);
             }
             this.rollin(nextProg);
-            _IsProgramName = false;
+            //log roll out process
+            _Kernel.krnTrace("Swapping " + currProg.PID + " out of memory and " + nextProg.PID + " into memory");
         };
         CpuScheduler.priority = function () {
             var nextProgram = this.priorityNextProgram();
             if (nextProgram.location == "Hard Disk") {
                 if (_CurrentProgram.state == PS_Terminated) {
-                    _IsProgramName = true;
                     if (nextProgram.base == -1) {
                         nextProgram.startIndex = _CurrentProgram.base;
                     }
@@ -62,7 +65,6 @@ var TSOS;
                     nextProgram.base = _CurrentProgram.base;
                     nextProgram.limit = _CurrentProgram.limit;
                     this.rollin(nextProgram);
-                    _IsProgramName = false;
                     nextProgram.location = "Memory";
                 }
                 else {
@@ -166,9 +168,7 @@ var TSOS;
                         //get base and limit for next program
                         nextProgram.base = _CurrentProgram.base;
                         nextProgram.limit = _CurrentProgram.limit;
-                        _IsProgramName = true;
                         this.rollin(nextProgram);
-                        _IsProgramName = false;
                         nextProgram.location = "Memory";
                     }
                     nextProgram.state = PS_Ready;

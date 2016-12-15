@@ -371,7 +371,7 @@ module TSOS {
                 else {
 
                     //remove the only program from ready queue
-                    //alert("Removing the only program " + _CurrentProgram.PID );
+                    // alert("Removing the only program " + _CurrentProgram.PID);
 
                     _ReadyQueue.splice(0, 1);
 
@@ -385,12 +385,36 @@ module TSOS {
                     //roll program that was swapped during the single run back into memory
                     if (_RunOne == true && _RunHDProgram.location == "Hard Disk") {
                         //alert(_RunHDProgram.PID);
-                        _IsProgramName = true;
                         CpuScheduler.rollin(_RunHDProgram);
-                        _IsProgramName = false;
                         _RunHDProgram.location = "Memory";
                         _MemoryManager.updatePcbTable(_RunHDProgram);
                         _RunOne = false;
+                    }
+                    else if (_RunOne == true && _CurrentProgram.location == "Memory") {
+                        //load a program from HD to memory if there is an empty partition
+                        if (_ResidentQueue.length > 1) {
+                            for (var i = 0; i < _ResidentQueue.length; i++) {
+                                if (_ResidentQueue[i].location == "Hard Disk") {
+                                    if (_ResidentQueue[i].base == -1) {
+                                        _ResidentQueue[i].startIndex = _CurrentProgram.base;
+                                        //alert("New prog start index =" + nextProg.startIndex);
+                                    } else {
+                                        //Get the start index for the next program in a particular segment
+                                        _ResidentQueue[i].startIndex = (_ResidentQueue[i].startIndex - _ResidentQueue[i].base) + _CurrentProgram.base;
+                                    }
+                                    _ResidentQueue[i].base = _CurrentProgram.base;
+                                    _ResidentQueue[i].limit = _CurrentProgram.limit;
+                                    CpuScheduler.rollin(_ResidentQueue[i]);
+                                    _ResidentQueue[i].location = "Memory";
+                                    _MemoryManager.updatePcbTable(_ResidentQueue[i]);
+                                    _RunOne = false;
+
+                                    break;
+
+                                }
+
+                            }
+                        }
                     }
 
                     this.init();

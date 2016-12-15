@@ -23,6 +23,9 @@ module TSOS {
 
             _MemoryManager.resetPartition(program);
 
+            //log roll out process
+            _Kernel.krnTrace( program.PID + " Rolled out ");
+
         }
 
         //load a program from hard drive and load it to memory
@@ -41,6 +44,9 @@ module TSOS {
 
             _DeviceDriverFileSystem.deleteFile("process" + program.PID);
 
+            //log roll in process
+            _Kernel.krnTrace( program.PID + " Rolled in ");
+
         }
 
         //Swap out process and place it on 
@@ -56,14 +62,14 @@ module TSOS {
             nextProg.base = currProg.base;
             nextProg.limit = currProg.limit;
 
-            _IsProgramName = true;
             if (currProg.state != PS_Terminated) {
                 this.rollout(currProg);
 
             }
             this.rollin(nextProg);
 
-            _IsProgramName = false;
+            //log roll out process
+            _Kernel.krnTrace( "Swapping " + currProg.PID + " out of memory and " + nextProg.PID + " into memory");
 
         }
 
@@ -72,7 +78,6 @@ module TSOS {
 
             if (nextProgram.location == "Hard Disk") {
                 if (_CurrentProgram.state == PS_Terminated) {
-                    _IsProgramName = true;
                     if (nextProgram.base == -1) {
                         nextProgram.startIndex = _CurrentProgram.base;
                         //alert("New prog start index =" + nextProg.startIndex);
@@ -84,7 +89,6 @@ module TSOS {
                     nextProgram.limit = _CurrentProgram.limit;
 
                     this.rollin(nextProgram);
-                    _IsProgramName = false;
                     nextProgram.location = "Memory";
                 }
                 else {
@@ -223,9 +227,7 @@ module TSOS {
                         nextProgram.base = _CurrentProgram.base;
                         nextProgram.limit = _CurrentProgram.limit;
 
-                        _IsProgramName = true;
                         this.rollin(nextProgram);
-                        _IsProgramName = false;
                         nextProgram.location = "Memory";
                     }
                     nextProgram.state = PS_Ready;

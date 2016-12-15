@@ -15,7 +15,8 @@ var TSOS;
     // Extends DeviceDriver
     var DeviceDriverFileSystem = (function (_super) {
         __extends(DeviceDriverFileSystem, _super);
-        function DeviceDriverFileSystem(tracks, sectors, blocks, dataSize, headerSize, formatCount // Display format waiting message once
+        function DeviceDriverFileSystem(tracks, sectors, blocks, dataSize, //blocks to contain data 
+            headerSize, formatCount // Display format waiting message once
             ) {
             if (tracks === void 0) { tracks = 4; }
             if (sectors === void 0) { sectors = 8; }
@@ -139,7 +140,6 @@ var TSOS;
         //converts the string-data provided to hex
         DeviceDriverFileSystem.prototype.convertToHex = function (data) {
             var hexString = "";
-            data += "";
             //converts a char at an index to hex and builds the string
             for (var i = 0; i < data.length; i++) {
                 hexString += data.charCodeAt(i).toString(16);
@@ -200,7 +200,7 @@ var TSOS;
                 sessionStorage.setItem(dataKey, dataData);
                 this.updateHardDiskTable(dirKey);
                 this.updateHardDiskTable(dataKey);
-                if (!_IsProgramName) {
+                if (!fileName.match(/process\d+/)) {
                     //Display suscces status
                     _StdOut.putText("SUCCESS : " + fileName + " has been created");
                 }
@@ -235,7 +235,7 @@ var TSOS;
                     nextDataKey = dataKey;
                 }
                 //display success message if file is not a program's name ( a program in ready queue)
-                if (!_IsProgramName) {
+                if (!fileName.match(/process\d+/)) {
                     //Display suscces status
                     _StdOut.putText("SUCCESS : " + fileName + " has been deleted");
                 }
@@ -263,7 +263,7 @@ var TSOS;
                 //_StdOut.putText("SUCCESS : Reading " + fileName + "...");
                 //_StdOut.advanceLine();
                 //display file content if file is not a program's name ( a program in ready queue)
-                if (!_IsProgramName) {
+                if (!fileName.match(/process\d+/)) {
                     _StdOut.putText(fileData);
                 }
                 return fileData;
@@ -299,7 +299,7 @@ var TSOS;
                             sessionStorage.setItem(dataKey, dataData);
                             this.writeData(dataKey, dataData);
                             this.updateHardDiskTable(dataKey);
-                            if (!_IsProgramName) {
+                            if (!fileName.match(/process\d+/)) {
                                 //Display suscces status if file is not a program's name ( a program in ready queue)
                                 _StdOut.putText("SUCCESS : " + fileName + " has been updated");
                             }
@@ -365,7 +365,7 @@ var TSOS;
                                     }
                                 }
                             }
-                            if (!_IsProgramName) {
+                            if (!fileName.match(/process\d+/)) {
                                 //Display suscces status
                                 _StdOut.putText("SUCCESS : " + fileName + " has been updated");
                             }

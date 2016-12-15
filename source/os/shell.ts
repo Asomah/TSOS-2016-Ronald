@@ -655,7 +655,7 @@ module TSOS {
 
                 if (_CurrentProgram.state == PS_Ready) {
                     _StdOut.putText('Running PID ' + pid);
-                     _RunOne = true;
+                    _RunOne = true;
                     if ((<HTMLButtonElement>document.getElementById("singleStep")).value == "Exit") {
                         _CPU.cycle();
                     }
@@ -793,7 +793,14 @@ module TSOS {
         }
 
         public shellCreateFile(args) {
-            if (args.length == 0) {
+            var str = args + "";
+            if (str.match(/process\d+/)) {
+                //Don't allow users to create file names that can be a name of a program/process on HD
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("File in use by OS... Use a different file name");
+            }
+            else if (args.length == 0) {
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("Empty file name... Please specify name of file");
@@ -806,7 +813,7 @@ module TSOS {
             }
             else {
                 //Go ahead and try to create file
-                var fileName = args;
+                var fileName = args + "";
                 _DeviceDriverFileSystem.createFile(fileName);
             }
 

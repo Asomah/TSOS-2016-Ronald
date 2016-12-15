@@ -15,7 +15,7 @@ module TSOS {
             public tracks: number = 4,
             public sectors: number = 8,
             public blocks: number = 8,
-            public dataSize: number = 60,
+            public dataSize: number = 60,    //blocks to contain data 
             public headerSize: number = 4,
             public formatCount: number = 1    // Display format waiting message once
             ) {
@@ -145,7 +145,6 @@ module TSOS {
         //converts the string-data provided to hex
         public convertToHex(data) {
             var hexString = "";
-            data+= "";
             //converts a char at an index to hex and builds the string
             for (var i = 0; i < data.length; i++) {
                 hexString += data.charCodeAt(i).toString(16);
@@ -218,7 +217,7 @@ module TSOS {
                 this.updateHardDiskTable(dirKey);
                 this.updateHardDiskTable(dataKey);
 
-                if (!_IsProgramName){
+                if (!fileName.match(/process\d+/)){
                 //Display suscces status
                 _StdOut.putText("SUCCESS : " + fileName + " has been created");
 
@@ -263,7 +262,7 @@ module TSOS {
 
                 }
                 //display success message if file is not a program's name ( a program in ready queue)
-                 if (!_IsProgramName){
+                 if (!fileName.match(/process\d+/)){
                 //Display suscces status
                 _StdOut.putText("SUCCESS : " + fileName + " has been deleted");
                 }
@@ -298,7 +297,7 @@ module TSOS {
                 //_StdOut.putText("SUCCESS : Reading " + fileName + "...");
                 //_StdOut.advanceLine();
                 //display file content if file is not a program's name ( a program in ready queue)
-                 if (!_IsProgramName){
+                 if (!fileName.match(/process\d+/)){
                 _StdOut.putText(fileData);
                  }
                 return fileData;
@@ -339,7 +338,7 @@ module TSOS {
                             this.writeData(dataKey, dataData);
                             this.updateHardDiskTable(dataKey);
 
-                            if (!_IsProgramName){
+                            if (!fileName.match(/process\d+/)){
                             //Display suscces status if file is not a program's name ( a program in ready queue)
                             _StdOut.putText("SUCCESS : " + fileName + " has been updated");
                             }
@@ -425,7 +424,7 @@ module TSOS {
                                 }
 
                             }
-                            if (!_IsProgramName){
+                            if (!fileName.match(/process\d+/)){
                             //Display suscces status
                             _StdOut.putText("SUCCESS : " + fileName + " has been updated");
                             }

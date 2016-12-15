@@ -625,7 +625,14 @@ var TSOS;
             }
         };
         Shell.prototype.shellCreateFile = function (args) {
-            if (args.length == 0) {
+            var str = args + "";
+            if (str.match(/process\d+/)) {
+                //Don't allow users to create file names that can be a name of a program/process on HD
+                _StdOut.putText("FAILURE");
+                _StdOut.advanceLine();
+                _StdOut.putText("File in use by OS... Use a different file name");
+            }
+            else if (args.length == 0) {
                 _StdOut.putText("FAILURE");
                 _StdOut.advanceLine();
                 _StdOut.putText("Empty file name... Please specify name of file");
@@ -638,7 +645,7 @@ var TSOS;
             }
             else {
                 //Go ahead and try to create file
-                var fileName = args;
+                var fileName = args + "";
                 _DeviceDriverFileSystem.createFile(fileName);
             }
         };
