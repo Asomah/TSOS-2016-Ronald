@@ -340,21 +340,19 @@ var TSOS;
                     _StdOut.putText(">");
                     alert("ID " + _CurrentProgram.PID + " location =" + _CurrentProgram.location + " bool =" + _RunOne);
                     //roll program that was swapped during the single run back into memory
-                    if (_RunOne == true && _RunHDProgram.location == "Hard Disk") {
-                        alert("2. ID " + _RunHDProgram.PID + " location =" + _CurrentProgram.location);
-                        TSOS.CpuScheduler.rollin(_RunHDProgram);
+                    /*if (_RunOne == true && _RunHDProgram.location == "Hard Disk") {
+
+                        //alert("2. ID " + _RunHDProgram.PID + " location =" + _CurrentProgram.location );
+                        CpuScheduler.rollin(_RunHDProgram);
                         _RunHDProgram.location = "Memory";
                         _MemoryManager.updatePcbTable(_RunHDProgram);
                         _RunOne = false;
-                    }
-                    else if (_RunOne == true && _CurrentProgram.location == "Memory") {
-                        alert("Yes in memory");
+                    }*/
+                    if (_RunOne == true && _CurrentProgram.location == "Memory") {
                         //load a program from HD to memory if there is an empty partition in memory
                         if (_ResidentQueue.length > 1) {
-                            alert("Yes res queue greate than 1");
                             for (var i = 0; i < _ResidentQueue.length; i++) {
                                 if (_ResidentQueue[i].location == "Hard Disk") {
-                                    alert("program " + _ResidentQueue[i].PID + " is on HD");
                                     if (_ResidentQueue[i].base == -1) {
                                         _ResidentQueue[i].startIndex = _CurrentProgram.base;
                                     }

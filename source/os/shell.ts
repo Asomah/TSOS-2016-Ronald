@@ -611,6 +611,7 @@ module TSOS {
                 var pid = -1;
                 var index = -1;
 
+                _RunHDProgram = new Pcb();
                 var activeProg = new Pcb();
                 activeProg = _CurrentProgram;
 

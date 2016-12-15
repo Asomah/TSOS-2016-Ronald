@@ -483,6 +483,7 @@ var TSOS;
             else {
                 var pid = -1;
                 var index = -1;
+                _RunHDProgram = new TSOS.Pcb();
                 var activeProg = new TSOS.Pcb();
                 activeProg = _CurrentProgram;
                 for (index = 0; index < _ResidentQueue.length; index++) {
