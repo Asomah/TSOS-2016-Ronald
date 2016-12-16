@@ -611,7 +611,7 @@ module TSOS {
                 var pid = -1;
                 var index = -1;
 
-                _RunHDProgram = new Pcb();
+                //_RunHDProgram = new Pcb();
                 var activeProg = new Pcb();
                 activeProg = _CurrentProgram;
 
@@ -644,7 +644,7 @@ module TSOS {
                             _CurrentProgram.location = "Memory";
                             _MemoryManager.updatePcbTable(_CurrentProgram);
                             _MemoryManager.updatePcbTable(_ResidentQueue[i]);
-                            _RunHDProgram = _ResidentQueue[i];
+                            //_RunHDProgram = _ResidentQueue[i];
                             break;
 
                         }

@@ -371,7 +371,7 @@ module TSOS {
                 else {
 
                     //remove the only program from ready queue
-                    alert("Removing the only program " + _CurrentProgram.PID + "  " + this.isExecuting);
+                   // alert("Removing the only program " + _CurrentProgram.PID + "  " + this.isExecuting);
 
                     _ReadyQueue.splice(0, 1);
 
@@ -382,7 +382,7 @@ module TSOS {
                     _StdOut.putText(">");
 
                     
-                    alert("ID " + _CurrentProgram.PID + " location =" + _CurrentProgram.location + " bool =" + _RunOne);
+                    //alert("ID " + _CurrentProgram.PID + " location =" + _CurrentProgram.location + " bool =" + _RunOne);
                     //roll program that was swapped during the single run back into memory
                     /*if (_RunOne == true && _RunHDProgram.location == "Hard Disk") {
 

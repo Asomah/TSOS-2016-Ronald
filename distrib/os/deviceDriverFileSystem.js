@@ -65,6 +65,7 @@ var TSOS;
                     }
                 }
             }
+            _Kernel.krnTrace("List files on Hard Disk ");
         };
         // reinitialize HD
         DeviceDriverFileSystem.prototype.format = function () {
@@ -92,6 +93,7 @@ var TSOS;
                         _StdOut.putText("Cannot format HD now... There are programs on HD waiting to be executed.");
                         //set format command back to not activated
                         _FormatCommandActive = false;
+                        this.formatCount = 1;
                         break;
                     }
                 }
@@ -122,7 +124,9 @@ var TSOS;
                 }
                 //set format command back to not activated
                 _FormatCommandActive = false;
+                this.formatCount = 1;
             }
+            _Kernel.krnTrace("Format Hard Disk ");
         };
         //converts a hex string back to regular string
         DeviceDriverFileSystem.prototype.convertToString = function (data) {
@@ -205,6 +209,7 @@ var TSOS;
                     _StdOut.putText("SUCCESS : " + fileName + " has been created");
                 }
             }
+            _Kernel.krnTrace(fileName + " created and and stored on Hard Disk ");
         };
         //delete a given file 
         DeviceDriverFileSystem.prototype.deleteFile = function (fileName) {
@@ -240,6 +245,7 @@ var TSOS;
                     _StdOut.putText("SUCCESS : " + fileName + " has been deleted");
                 }
             }
+            _Kernel.krnTrace(fileName + " deleted from Hard Disk ");
         };
         //read a specified file if it exists
         DeviceDriverFileSystem.prototype.readFile = function (fileName) {
@@ -268,6 +274,7 @@ var TSOS;
                 }
                 return fileData;
             }
+            _Kernel.krnTrace(fileName + " read ");
         };
         //write to or update a file
         DeviceDriverFileSystem.prototype.writeToFile = function (fileName, contents) {
@@ -405,6 +412,7 @@ var TSOS;
                 else {
                 }
             }
+            _Kernel.krnTrace(fileName + " has been updated");
         };
         //get availble dir that is not in use
         DeviceDriverFileSystem.prototype.getFreeDirEntry = function () {

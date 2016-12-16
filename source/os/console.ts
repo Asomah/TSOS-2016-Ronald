@@ -24,7 +24,7 @@ module TSOS {
             public prevXpositions = [],
             public arrayOfCommands = _ArrayOfCommands = ["ver", "help", "shutdown", "cls", "man", "trace", "rot13",
                 "prompt", "date", "whereami", "restart", "alpaca", "load","run","clearmem","runall","quantum","ps",
-                "kill"]
+                "kill", "create", "read", "write", "delete", "format", "ls", "setschedule", "getschedule" ]
         ) {
         }
 

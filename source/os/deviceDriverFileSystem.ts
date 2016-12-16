@@ -62,6 +62,7 @@ module TSOS {
                 }
             }
 
+            _Kernel.krnTrace("List files on Hard Disk ");            
         }
 
         // reinitialize HD
@@ -90,6 +91,7 @@ module TSOS {
                         _StdOut.putText("Cannot format HD now... There are programs on HD waiting to be executed.");
                         //set format command back to not activated
                         _FormatCommandActive = false;
+                        this.formatCount = 1;
                         break;
                     }
                 }
@@ -123,7 +125,10 @@ module TSOS {
                 }
                 //set format command back to not activated
                 _FormatCommandActive = false;
+                this.formatCount = 1;
             }
+
+             _Kernel.krnTrace("Format Hard Disk ");
 
         }
 
@@ -222,6 +227,7 @@ module TSOS {
 
                 }
             }
+             _Kernel.krnTrace(fileName + " created and and stored on Hard Disk ");
 
         }
 
@@ -268,6 +274,7 @@ module TSOS {
 
             }
 
+            _Kernel.krnTrace(fileName + " deleted from Hard Disk ");
         }
 
         //read a specified file if it exists
@@ -302,6 +309,8 @@ module TSOS {
                 return fileData;
 
             }
+
+            _Kernel.krnTrace(fileName + " read ");
         }
 
         //write to or update a file
@@ -488,7 +497,7 @@ module TSOS {
                 }
 
             }
-
+            _Kernel.krnTrace(fileName + " has been updated");
 
         }
         //get availble dir that is not in use

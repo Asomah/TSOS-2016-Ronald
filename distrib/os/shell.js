@@ -483,7 +483,7 @@ var TSOS;
             else {
                 var pid = -1;
                 var index = -1;
-                _RunHDProgram = new TSOS.Pcb();
+                //_RunHDProgram = new Pcb();
                 var activeProg = new TSOS.Pcb();
                 activeProg = _CurrentProgram;
                 for (index = 0; index < _ResidentQueue.length; index++) {
@@ -510,7 +510,7 @@ var TSOS;
                             _CurrentProgram.location = "Memory";
                             _MemoryManager.updatePcbTable(_CurrentProgram);
                             _MemoryManager.updatePcbTable(_ResidentQueue[i]);
-                            _RunHDProgram = _ResidentQueue[i];
+                            //_RunHDProgram = _ResidentQueue[i];
                             break;
                         }
                     }
